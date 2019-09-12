@@ -71,6 +71,46 @@ Getting help from `cpg-proto-writer`:
 LLVM Bitcode is platform specific. In order to write tests against bitcode it is recommended
 to compile it on the target (developer) machine.
 
+#### Validation Tests
+
+There is a shortcut for the fast iterations over `cpg-proto-writer`: validation tests.
+
+To enable it you need to pass another option to the CMake. Example:
+
+```
+cmake -G Ninja \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DPATH_TO_LLVM=/opt/llvm/8.0.0 \
+    -DPATH_TO_CODEPROPERTYGRAPH=/opt/codepropertygraph
+    ../llvm2cpg
+```
+
+Otherwise, the validation tests will be disabled.
+
+You should specify CPG for which bitcode file you want to validate in the `tests/validation-tests/CMakeLists.txt`.
+Example:
+```
+validate_cpg(hello_world_c_bc)
+```
+
+_`hello_world_c_bc` is a fixture name, read the `Fixtures` section to learn more._
+
+Call to `validate_cpg` will generate a target you can use within the build system. Example:
+
+```
+> ninja validate-hello_world_c_bc
+[ 35%] Built target CPG
+[ 57%] Built target CPGProto
+[ 78%] Built target CPGProtoWriter
+[ 92%] Built target cpg-proto-writer
+Validating /opt/llvm2cpg/cmake-build-debug/tests/validation-tests/hello_world_c_bc/cpg.bin.zip
+on-disk overflow file: /tmp/mvstore4648208665182620618.bin
+CPG construction finished in 301ms.
+Validation error: Expected 1 to 1 outgoing AST edges from METHOD to BLOCK but found 0. METHOD details: id: 5, properties: Map(NAME -> hello_world, AST_PARENT_TYPE -> NAMESPACE_BLOCK, FULL_NAME -> hello_world, IS_EXTERNAL -> false, AST_PARENT_FULL_NAME -> /opt/llvm2cpg/tests/fixtures/hello_world/hello_world.c_global)
+Found 1 errors.
+```
+
 #### Fixtures
 
 Test harness contains a number of utilities to generate and to use fixtures.

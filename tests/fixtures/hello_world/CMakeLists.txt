@@ -10,5 +10,5 @@ compile_fixture(
   COMPILER ${CMAKE_C_COMPILER}
   INPUT ${SOURCE}
   OUTPUT_EXTENSION ll
-  FLAGS -c -emit-llvm
+  FLAGS -c -emit-llvm -S
 )
