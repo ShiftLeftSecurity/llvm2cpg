@@ -1,0 +1,4 @@
+add_subdirectory(hello_world)
+add_subdirectory(hello_world_cxx)
+add_subdirectory(inline_example)
+add_subdirectory(simple_c_example)
