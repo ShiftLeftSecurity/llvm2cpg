@@ -14,10 +14,10 @@ TEST(BitcodeLoader, loadBitcode_invalidPath) {
 TEST(BitcodeLoader, loadBitcode_validPath) {
   llvm::LLVMContext context;
   BitcodeLoader loader;
-  auto bitcode = loader.loadBitcode(fixtures::hello_world_hello_world_bc_path(), context);
+  auto bitcode = loader.loadBitcode(fixtures::hello_world_c_bc_output_path(), context);
   bitcode->print(llvm::errs(), nullptr);
 
   ASSERT_NE(bitcode.get(), nullptr);
-  ASSERT_STREQ(fixtures::hello_world_hello_world_bc_input_path(),
+  ASSERT_STREQ(fixtures::hello_world_c_bc_input_path(),
                bitcode.get()->getSourceFileName().c_str());
 }
