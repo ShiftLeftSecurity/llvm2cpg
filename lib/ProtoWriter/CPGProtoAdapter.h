@@ -21,7 +21,7 @@ private:
   cpg::CpgStruct cpgBuilder;
   cpg::PropertyValue propertyBuilder;
 
-  cpg::CpgStruct *graph;
+  std::unique_ptr<cpg::CpgStruct> graph;
 
 #pragma mark - Nodes
 
@@ -32,6 +32,7 @@ private:
   cpg::CpgStruct_Node *newMethodNode(const std::string &name);
   cpg::CpgStruct_Node *newMethodReturnNode();
   cpg::CpgStruct_Node *newTypeDeclNode();
+  cpg::CpgStruct_Node *newMethodBlockNode();
 
   void connectASTNodes(cpg::CpgStruct_Node *from, cpg::CpgStruct_Node *to);
 
@@ -44,9 +45,18 @@ private:
                           bool value);
 
   void setLanguage(cpg::CpgStruct_Node *metadata, cpg::LANGUAGES language);
+  void setVersion(cpg::CpgStruct_Node *metadata, const std::string &version);
   void setName(cpg::CpgStruct_Node *node, const std::string &name);
   void setFullName(cpg::CpgStruct_Node *node, const std::string &name);
+  void setASTParentType(cpg::CpgStruct_Node *node, const std::string &type);
+  void setASTParentFullName(cpg::CpgStruct_Node *node, const std::string &name);
+  void setSignature(cpg::CpgStruct_Node *node, const std::string &signature);
+  void setTypeFullName(cpg::CpgStruct_Node *node, const std::string &name);
+  void setCode(cpg::CpgStruct_Node *node, const std::string &code);
+  void setEvaluationStrategy(cpg::CpgStruct_Node *node, const std::string &strategy);
   void setIsExternal(cpg::CpgStruct_Node *node, bool isExternal);
+  void setOrder(cpg::CpgStruct_Node *node, int order);
+  void setArgumentIndex(cpg::CpgStruct_Node *node, int index);
 
   void saveToArchive();
 };

@@ -10,6 +10,14 @@
 
 using namespace llvm2cpg;
 
+static std::string typeToString(llvm::Type *type) {
+  std::string typeName;
+  llvm::raw_string_ostream stream(typeName);
+  type->print(stream);
+  stream.flush();
+  return typeName;
+}
+
 CPGProtoAdapter::CPGProtoAdapter(std::string zipPath, bool debug)
     : debug(debug), zipPath(std::move(zipPath)), nodeId(0), graph(cpgBuilder.New()) {}
 
@@ -18,6 +26,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 
   auto metadata = newMetadataNode();
   setLanguage(metadata, cpg::LANGUAGES::C);
+  setVersion(metadata, "42");
 
   std::set<llvm::Type *> types;
   for (auto &file : cpg.getFiles()) {
@@ -28,31 +37,48 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 
   for (auto type : types) {
     auto typeDeclNode = newTypeDeclNode();
-    std::string typeName;
-    llvm::raw_string_ostream stream(typeName);
-    type->print(stream);
-    stream.flush();
+    auto typeName = typeToString(type);
     setName(typeDeclNode, typeName);
     setFullName(typeDeclNode, typeName);
+    setIsExternal(typeDeclNode, false);
+    setOrder(typeDeclNode, 0);
+    setASTParentType(typeDeclNode, "NAMESPACE_BLOCK");
+    setASTParentFullName(typeDeclNode, "global");
   }
 
   for (auto &file : cpg.getFiles()) {
     auto fileNode = newFileNode(file.getName());
-    auto ns = newNamespaceNodeBlock(file.getName() + "_global");
-    setFullName(ns, file.getName() + "_global");
-    connectASTNodes(fileNode, ns);
+    setOrder(fileNode, 0);
+    auto namespaceBlockName = file.getName() + "_global";
+    auto namespaceBlockNode = newNamespaceNodeBlock(namespaceBlockName);
+    setFullName(namespaceBlockNode, namespaceBlockName);
+    setOrder(namespaceBlockNode, 0);
+    connectASTNodes(fileNode, namespaceBlockNode);
 
     for (auto &method : file.getMethods()) {
-      auto methodNode = newMethodNode(method.getName());
-      connectASTNodes(ns, methodNode);
-      setFullName(methodNode, method.getName());
-      setStringProperty(methodNode, cpg::NodePropertyName::AST_PARENT_TYPE, "NAMESPACE_BLOCK");
-      setStringProperty(
-          methodNode, cpg::NodePropertyName::AST_PARENT_FULL_NAME, file.getName() + "_global");
-      setIsExternal(methodNode, method.isExternal());
+      auto methodReturnType = typeToString(method.getReturnType());
 
-      auto methodReturnNode = newMethodReturnNode();
-      connectASTNodes(methodNode, methodReturnNode);
+      auto methodNode = newMethodNode(method.getName());
+      setFullName(methodNode, method.getName());
+      setASTParentType(methodNode, "NAMESPACE_BLOCK");
+      setASTParentFullName(methodNode, namespaceBlockName);
+      setIsExternal(methodNode, method.isExternal());
+      setSignature(methodNode, method.getSignature());
+      setOrder(methodNode, 0);
+
+      auto returnNode = newMethodReturnNode();
+      setOrder(returnNode, 0);
+      setTypeFullName(returnNode, methodReturnType);
+      setCode(returnNode, "x + 42");
+      setEvaluationStrategy(returnNode, "EVAL");
+      connectASTNodes(methodNode, returnNode);
+
+      auto blockNode = newMethodBlockNode();
+      setOrder(blockNode, 0);
+      setTypeFullName(blockNode, methodReturnType);
+      setCode(blockNode, "x + 42");
+      setArgumentIndex(blockNode, 0);
+      connectASTNodes(methodNode, blockNode);
     }
   }
 
@@ -62,6 +88,12 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 #pragma mark - Nodes
 
 cpg::CpgStruct_Node *CPGProtoAdapter::newNode() {
+  /// the graph holds the ownership over the allocated nodes
+  /// https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.repeated_field
+  ///
+  ///   RepeatedPtrField is particularly different from STL vector as it manages ownership of the
+  ///   pointers that it contains.
+  ///
   auto node = graph->add_node();
   node->set_key(nodeId++);
   return node;
@@ -113,15 +145,26 @@ cpg::CpgStruct_Node *CPGProtoAdapter::newTypeDeclNode() {
   return node;
 }
 
+cpg::CpgStruct_Node *CPGProtoAdapter::newMethodBlockNode() {
+  auto node = newNode();
+  node->set_type(cpg::CpgStruct_Node_NodeType_BLOCK);
+  return node;
+}
+
 #pragma mark - Properties
 
+/// Note on memory management and ownership:
+/// The caller of the `New` method should take ownership of the returned pointer
+/// However, ownership is taken over by `set_allocated_value`, so we don't need to take care of it
+/// Search for `set_allocated_` at
+/// https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
 void CPGProtoAdapter::setStringProperty(cpg::CpgStruct_Node *node,
                                         cpg::NodePropertyName propertyName,
                                         const std::string &value) {
   auto property = node->add_property();
-  auto propertyValue = propertyBuilder.New();
-
   property->set_name(propertyName);
+
+  auto propertyValue = propertyBuilder.New();
   propertyValue->set_string_value(value);
   property->set_allocated_value(propertyValue);
 }
@@ -129,9 +172,9 @@ void CPGProtoAdapter::setStringProperty(cpg::CpgStruct_Node *node,
 void CPGProtoAdapter::setIntProperty(cpg::CpgStruct_Node *node, cpg::NodePropertyName propertyName,
                                      int value) {
   auto property = node->add_property();
-  auto propertyValue = propertyBuilder.New();
-
   property->set_name(propertyName);
+
+  auto propertyValue = propertyBuilder.New();
   propertyValue->set_int_value(value);
   property->set_allocated_value(propertyValue);
 }
@@ -139,14 +182,15 @@ void CPGProtoAdapter::setIntProperty(cpg::CpgStruct_Node *node, cpg::NodePropert
 void CPGProtoAdapter::setBooleanProperty(cpg::CpgStruct_Node *node,
                                          cpg::NodePropertyName propertyName, bool value) {
   auto property = node->add_property();
-  auto propertyValue = propertyBuilder.New();
-
   property->set_name(propertyName);
+
+  auto propertyValue = propertyBuilder.New();
   propertyValue->set_bool_value(value);
   property->set_allocated_value(propertyValue);
 }
 
 void CPGProtoAdapter::setLanguage(cpg::CpgStruct_Node *metadata, cpg::LANGUAGES language) {
+  assert(metadata->type() == cpg::CpgStruct_Node_NodeType::CpgStruct_Node_NodeType_META_DATA);
   setStringProperty(metadata, cpg::NodePropertyName::LANGUAGE, cpg::LANGUAGES_Name(language));
 }
 
@@ -160,6 +204,44 @@ void CPGProtoAdapter::setFullName(cpg::CpgStruct_Node *node, const std::string &
 
 void CPGProtoAdapter::setIsExternal(cpg::CpgStruct_Node *node, bool isExternal) {
   setBooleanProperty(node, cpg::NodePropertyName::IS_EXTERNAL, isExternal);
+}
+
+void CPGProtoAdapter::setVersion(cpg::CpgStruct_Node *metadata, const std::string &version) {
+  assert(metadata->type() == cpg::CpgStruct_Node_NodeType::CpgStruct_Node_NodeType_META_DATA);
+  setStringProperty(metadata, cpg::NodePropertyName::VERSION, version);
+}
+
+void CPGProtoAdapter::setOrder(cpg::CpgStruct_Node *node, int order) {
+  setIntProperty(node, cpg::NodePropertyName::ORDER, order);
+}
+
+void CPGProtoAdapter::setASTParentType(cpg::CpgStruct_Node *node, const std::string &type) {
+  setStringProperty(node, cpg::NodePropertyName::AST_PARENT_TYPE, type);
+}
+
+void CPGProtoAdapter::setASTParentFullName(cpg::CpgStruct_Node *node, const std::string &name) {
+  setStringProperty(node, cpg::NodePropertyName::AST_PARENT_FULL_NAME, name);
+}
+
+void CPGProtoAdapter::setSignature(cpg::CpgStruct_Node *node, const std::string &signature) {
+  setStringProperty(node, cpg::NodePropertyName::SIGNATURE, signature);
+}
+
+void CPGProtoAdapter::setTypeFullName(cpg::CpgStruct_Node *node, const std::string &name) {
+  setStringProperty(node, cpg::NodePropertyName::TYPE_FULL_NAME, name);
+}
+
+void CPGProtoAdapter::setCode(cpg::CpgStruct_Node *node, const std::string &code) {
+  setStringProperty(node, cpg::NodePropertyName::CODE, code);
+}
+
+void CPGProtoAdapter::setEvaluationStrategy(cpg::CpgStruct_Node *node,
+                                            const std::string &strategy) {
+  setStringProperty(node, cpg::NodePropertyName::EVALUATION_STRATEGY, strategy);
+}
+
+void CPGProtoAdapter::setArgumentIndex(cpg::CpgStruct_Node *node, int index) {
+  setIntProperty(node, cpg::NodePropertyName::ARGUMENT_INDEX, index);
 }
 
 #pragma mark -

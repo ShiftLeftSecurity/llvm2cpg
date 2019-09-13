@@ -166,6 +166,11 @@ const std::set<llvm::Type *> &CPGMethod::getTypes() const {
   return types;
 }
 
+llvm::Type *CPGMethod::getReturnType() const {
+  assert(function.getFunctionType() != nullptr);
+  return function.getFunctionType()->getReturnType();
+}
+
 const std::string &CPGMethod::getName() const {
   return name;
 }

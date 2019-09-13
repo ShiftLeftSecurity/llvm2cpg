@@ -46,6 +46,7 @@ public:
   ASTNode *getRoot() const;
   ASTNode *getTree(llvm::Value *value) const;
   const std::set<llvm::Type *> &getTypes() const;
+  llvm::Type *getReturnType() const;
   const std::string &getName() const;
   const std::string &getSignature() const;
   bool isExternal() const;
