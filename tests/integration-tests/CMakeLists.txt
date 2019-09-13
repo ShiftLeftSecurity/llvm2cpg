@@ -1,0 +1,3 @@
+add_integration_test(HelloWorldTest hello_world_c_bc hello_world_cpp_bc)
+
+enable_integration_tests()

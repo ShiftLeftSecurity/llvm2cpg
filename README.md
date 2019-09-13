@@ -111,6 +111,76 @@ Validation error: Expected 1 to 1 outgoing AST edges from METHOD to BLOCK but fo
 Found 1 errors.
 ```
 
+#### Integration tests
+
+Integration tests are implemented using Scala, which adds some complexity to the setup,
+but it is still easy to use.
+
+##### Running tests
+
+There are two ways to run the tests. What follows is assuming that you have the build system ready.
+
+Run tests using `sbt`:
+
+```
+cd build
+ninja prepare-integration-tests
+cd ../llvm2cpg/tests/integration-tests
+sbt test
+```
+
+Run tests using `llvm2cpg` build system:
+
+```
+cd build
+ninja run-integration-tests
+```
+
+##### Adding new test
+
+Let's add a test called `FooTest`.
+
+ - Create a file `tests/integration-tests/src/test/scala/io/shiftleft/llvm2cpgintegration/FooTest.scala`
+with the following content:
+
+```
+package io.shiftleft.llvm2cpgintegration
+
+import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
+import org.scalatest.{Matchers, WordSpec}
+import io.shiftleft.semanticcpg.language._
+
+class FooTest extends WordSpec with Matchers {
+  val cpg = CpgLoader.load(TestCpgPaths.fooCPG)
+  "test" in {
+    cpg.file.toList.size shouldBe 42
+  }
+}
+```
+
+ - Add an entry for the CPG file path to `tests/integration-tests/src/test/scala/io/shiftleft/llvm2cpgintegration/TestCpgPaths.scala.in`, i.e.:
+
+```
+object TestCpgPaths {
+  val helloWorldCPG = "@HelloWorldTest@"
+  val fooCPG = "@FooTest@"
+}
+```
+
+The variable (`fooCPG`) can have any name, but the value should follow the `"@TestName@"` format!
+
+- Register the test within the build system (`tests/integration-tests/CMakeLists.txt`), e.g.:
+
+```
+add_integration_test(FooTest hello_world_c_bc hello_world_cpp_bc)
+
+enable_integration_tests()
+```
+
+The parameter to `add_integration_test` is the name of the test, all the rest are names of bitcode fixtures.
+You can pass as many fixtures as you like.
+Important note, `add_integration_test` should go strictly before calling `enable_integration_tests`!
+
 #### Fixtures
 
 Test harness contains a number of utilities to generate and to use fixtures.

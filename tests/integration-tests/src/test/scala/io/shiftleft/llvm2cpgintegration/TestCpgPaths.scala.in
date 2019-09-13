@@ -1,0 +1,5 @@
+package io.shiftleft.llvm2cpgintegration
+
+object TestCpgPaths {
+  val helloWorldCPG = "@HelloWorldTest@"
+}

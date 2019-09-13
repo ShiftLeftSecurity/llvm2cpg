@@ -1,0 +1,4 @@
+target
+project
+src/test/scala/io/shiftleft/llvm2cpgintegration/TestCpgPaths.scala
+
