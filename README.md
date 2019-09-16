@@ -42,8 +42,8 @@ cmake -G Ninja \
 #### Build and run tests:
 
 ```
-ninja llvm2cpg-tests
-./tests/CPGTests/llvm2cpg-tests
+ninja unit-tests
+./tests/unit-tests/unit-tests
 ```
 
 #### Build and run `cpg-proto-writer`
