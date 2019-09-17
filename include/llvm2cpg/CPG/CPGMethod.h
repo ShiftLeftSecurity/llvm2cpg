@@ -50,6 +50,7 @@ public:
   const std::string &getName() const;
   const std::string &getSignature() const;
   bool isExternal() const;
+  const llvm::Function &getFunction() const;
 
   void dump() const;
 

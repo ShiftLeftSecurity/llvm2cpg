@@ -182,3 +182,7 @@ const std::string &CPGMethod::getSignature() const {
 bool CPGMethod::isExternal() const {
   return function.isDeclaration();
 }
+
+const llvm::Function &CPGMethod::getFunction() const {
+  return function;
+}

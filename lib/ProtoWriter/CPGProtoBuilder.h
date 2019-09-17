@@ -10,6 +10,8 @@ class CPGProtoBuilder {
 public:
   CPGProtoBuilder();
 
+  CPGProtoNode unknownNode();
+
   CPGProtoNode metadataNode();
   CPGProtoNode fileNode();
   CPGProtoNode namespaceBlockNode();
@@ -19,6 +21,8 @@ public:
   CPGProtoNode typeNode();
   CPGProtoNode methodBlockNode();
   CPGProtoNode returnNode();
+  CPGProtoNode literalNode();
+  CPGProtoNode methodParameterInNode();
 
   void connectAST(const CPGProtoNode &from, const CPGProtoNode &to);
   void connectCFG(const CPGProtoNode &from, const CPGProtoNode &to);

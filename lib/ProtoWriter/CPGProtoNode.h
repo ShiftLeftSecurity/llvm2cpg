@@ -15,6 +15,7 @@ public:
   CPGProtoNode &operator=(const CPGProtoNode &) = delete;
 
   int64_t getID() const;
+  bool isReturn() const;
 
   CPGProtoNode &setLanguage(cpg::LANGUAGES language);
   CPGProtoNode &setVersion(const std::string &version);

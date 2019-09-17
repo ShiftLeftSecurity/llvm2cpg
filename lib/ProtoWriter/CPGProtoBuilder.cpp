@@ -41,6 +41,18 @@ CPGProtoNode CPGProtoBuilder::returnNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_RETURN);
 }
 
+CPGProtoNode CPGProtoBuilder::literalNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_LITERAL);
+}
+
+CPGProtoNode CPGProtoBuilder::unknownNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_UNKNOWN_NODE_TYPE);
+}
+
+CPGProtoNode CPGProtoBuilder::methodParameterInNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_METHOD_PARAMETER_IN);
+}
+
 void CPGProtoBuilder::connectAST(const CPGProtoNode &from, const CPGProtoNode &to) {
   connect(cpg::CpgStruct_Edge_EdgeType_AST, from, to);
 }

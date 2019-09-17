@@ -11,7 +11,13 @@ CPGProtoNode::CPGProtoNode(CPGProtoNode &&that) noexcept
 }
 
 int64_t CPGProtoNode::getID() const {
+  assert(cpgNode);
   return cpgNode->key();
+}
+
+bool CPGProtoNode::isReturn() const {
+  assert(cpgNode);
+  return cpgNode->type() == cpg::CpgStruct_Node_NodeType_RETURN;
 }
 
 CPGProtoNode &CPGProtoNode::setLanguage(cpg::LANGUAGES language) {
@@ -94,6 +100,7 @@ CPGProtoNode &CPGProtoNode::setArgumentIndex(int index) {
 /// Search for `set_allocated_` at
 /// https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
 void CPGProtoNode::setBooleanProperty(cpg::NodePropertyName propertyName, bool value) {
+  assert(cpgNode);
   auto property = cpgNode->add_property();
   property->set_name(propertyName);
 
@@ -103,6 +110,7 @@ void CPGProtoNode::setBooleanProperty(cpg::NodePropertyName propertyName, bool v
 }
 
 void CPGProtoNode::setStringProperty(cpg::NodePropertyName propertyName, const std::string &value) {
+  assert(cpgNode);
   auto property = cpgNode->add_property();
   property->set_name(propertyName);
 
@@ -112,6 +120,7 @@ void CPGProtoNode::setStringProperty(cpg::NodePropertyName propertyName, const s
 }
 
 void CPGProtoNode::setIntProperty(cpg::NodePropertyName propertyName, int value) {
+  assert(cpgNode);
   auto property = cpgNode->add_property();
   property->set_name(propertyName);
 

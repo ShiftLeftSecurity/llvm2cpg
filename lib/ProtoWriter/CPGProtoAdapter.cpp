@@ -1,5 +1,7 @@
 #include "CPGProtoAdapter.h"
 #include <google/protobuf/text_format.h>
+#include <llvm/IR/InstIterator.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm2cpg/CPG/CPG.h>
@@ -27,7 +29,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   auto metadata = builder.metadataNode();
   metadata //
       .setLanguage(cpg::LANGUAGES::C)
-      .setVersion("42");
+      .setVersion("0");
 
   std::set<llvm::Type *> types;
   for (auto &file : cpg.getFiles()) {
@@ -84,6 +86,20 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
           .setSignature(method.getSignature())
           .setOrder(0);
 
+      const llvm::Function &function = method.getFunction();
+      size_t argIndex = 0;
+      for (const auto &arg : function.args()) {
+        auto parameterInNode = builder.methodParameterInNode();
+        parameterInNode //
+            .setName(arg.getName())
+            .setTypeFullName(typeToString(arg.getType()))
+            .setCode(arg.getName())
+            .setEvaluationStrategy("EVAL")
+            .setOrder(argIndex);
+
+        builder.connectAST(methodNode, parameterInNode);
+      }
+
       auto methodReturnNode = builder.methodReturnNode();
       methodReturnNode //
           .setOrder(0)
@@ -99,6 +115,15 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
           .setCode("x + 42")
           .setArgumentIndex(0);
       builder.connectAST(methodNode, blockNode);
+
+      for (auto &inst : llvm::instructions(function)) {
+        auto node = emitValue(&inst);
+        builder.connectAST(blockNode, node);
+
+        if (node.isReturn()) {
+          builder.connectCFG(node, methodReturnNode);
+        }
+      }
     }
   }
 
@@ -157,4 +182,38 @@ void CPGProtoAdapter::saveToArchive() {
   }
 
   std::cout << "CPG is successfully save on disk: " << zipPath << "\n";
+}
+
+CPGProtoNode CPGProtoAdapter::emitValue(const llvm::Value *value) {
+  if (auto retInst = llvm::dyn_cast<llvm::ReturnInst>(value)) {
+    auto returnNode = builder.returnNode();
+    returnNode //
+        .setOrder(0)
+        .setArgumentIndex(0)
+        .setCode("return");
+
+    if (auto retValue = retInst->getReturnValue()) {
+      auto node = emitValue(retValue);
+      builder.connectAST(returnNode, node);
+      builder.connectCFG(node, returnNode);
+    }
+
+    return returnNode;
+  }
+
+  if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
+    auto literalNode = builder.literalNode();
+    literalNode //
+        .setOrder(0)
+        .setArgumentIndex(0)
+        .setTypeFullName(typeToString(constantInt->getType()))
+        .setCode(constantInt->getValue().toString(10, true));
+    return literalNode;
+  }
+
+  llvm::errs() << *value << "\n";
+
+  llvm_unreachable("Cannot handle this value");
+
+  return builder.unknownNode();
 }

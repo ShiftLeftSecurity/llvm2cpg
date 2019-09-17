@@ -1,1 +1,0 @@
-validate_cpg(hello_world_c_bc)
