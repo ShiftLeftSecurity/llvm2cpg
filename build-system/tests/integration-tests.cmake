@@ -24,10 +24,24 @@ function(add_integration_test test_name)
     DEPENDS cpg-proto-writer ${bitcode_dependencies}
     )
 
+  if (PATH_TO_CODEPROPERTYGRAPH)
+    add_custom_target(validation-${test_name}
+      COMMAND cmake -E echo "Validating ${cpg}"
+      COMMAND ${PATH_TO_CODEPROPERTYGRAPH}/cpgvalidator.sh ${cpg}
+      DEPENDS ${cpg}
+      WORKING_DIRECTORY ${PATH_TO_CODEPROPERTYGRAPH}
+      )
+    set (validation_test validation-${test_name})
+  endif()
+
   add_custom_target(integration-${test_name}
     COMMAND sbt "testOnly io.shiftleft.llvm2cpgintegration.${test_name}"
     DEPENDS ${cpg}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
+  set (integration_test integration-${test_name})
+  add_custom_target(run-full-${test_name}
+    DEPENDS ${validaion_test} ${integration_test}
     )
 endfunction()
 
