@@ -1,17 +1,19 @@
 #include "llvm2cpg/CPG/CPGMethod.h"
-#include <llvm/IR/InstIterator.h>
-#include <llvm/IR/Instructions.h>
-#include <memory>
+#include "CPGInstVisitor.h"
 #include <set>
 #include <string>
 
 using namespace llvm2cpg;
 
 CPGMethod::CPGMethod(llvm::Function &function)
-    : function(function), types(), name(function.getName().str()) {}
+    : function(function), types(), name(function.getName().str()), arguments(), localVariables() {
+  CPGInstVisitor visitor(arguments, localVariables, types);
+  visitor.visit(function);
+}
 
 CPGMethod::CPGMethod(CPGMethod &&that) noexcept
-    : function(that.function), name(std::move(that.name)) {}
+    : function(that.function), types(std::move(that.types)), name(std::move(that.name)),
+      arguments(std::move(that.arguments)), localVariables(std::move(that.localVariables)) {}
 
 const std::set<llvm::Type *> &CPGMethod::getTypes() const {
   return types;
@@ -36,4 +38,12 @@ bool CPGMethod::isExternal() const {
 
 const llvm::Function &CPGMethod::getFunction() const {
   return function;
+}
+
+const std::vector<llvm::Value *> &CPGMethod::getArguments() const {
+  return arguments;
+}
+
+const std::vector<llvm::Value *> &CPGMethod::getLocalVariables() const {
+  return localVariables;
 }

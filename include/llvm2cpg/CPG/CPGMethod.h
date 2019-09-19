@@ -30,10 +30,16 @@ public:
   bool isExternal() const;
   const llvm::Function &getFunction() const;
 
+  const std::vector<llvm::Value *> &getArguments() const;
+  const std::vector<llvm::Value *> &getLocalVariables() const;
+
 private:
   llvm::Function &function;
   std::set<llvm::Type *> types;
   std::string name;
+
+  std::vector<llvm::Value *> arguments;
+  std::vector<llvm::Value *> localVariables;
 };
 
 } // namespace llvm2cpg
