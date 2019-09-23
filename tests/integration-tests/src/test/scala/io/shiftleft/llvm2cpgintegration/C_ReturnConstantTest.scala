@@ -63,10 +63,24 @@ class C_ReturnConstantTest extends WordSpec with Matchers {
     val ret = block.start.astChildren.isReturnNode.head
     ret.code shouldBe "return"
 
-    new Return(ret.start.raw).astChildren.l.size shouldBe 1
-    val child = new Return(ret.start.raw).astChildren.isLiteral.head
+    ret.start.astChildren.l.size shouldBe 1
+    val child = ret.start.astChildren.isLiteral.head
     child.code shouldBe "42"
     child.typeFullName shouldBe "i32"
+    child.order shouldBe 1
     child.start.cfgNext.head shouldBe ret
   }
+
+  "CFG" in {
+    val method = cpg.method.name(methodName).head
+    val block = method.start.block.head
+
+    val ret = block.start.astChildren.isReturnNode.head
+    val retValue = ret.start.astChildren.isLiteral.head
+    retValue.start.cfgNext.head shouldBe ret
+    method.start.cfgFirst.head shouldBe retValue
+    val methodReturn = method.start.methodReturn.head
+    methodReturn.start.cfgLast.head shouldBe ret
+  }
+
 }

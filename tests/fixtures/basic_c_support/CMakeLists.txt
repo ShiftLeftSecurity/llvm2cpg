@@ -1,5 +1,8 @@
 set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/return_constant.c
+  ${CMAKE_CURRENT_LIST_DIR}/return_parameter.c
+  ${CMAKE_CURRENT_LIST_DIR}/return_multiplied_parameter.c
+  ${CMAKE_CURRENT_LIST_DIR}/return_conditional.c
   )
 
 foreach(source ${SOURCES})
