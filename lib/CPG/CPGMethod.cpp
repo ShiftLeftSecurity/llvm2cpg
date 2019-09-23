@@ -1,7 +1,5 @@
 #include "llvm2cpg/CPG/CPGMethod.h"
 #include "CPGInstVisitor.h"
-#include <set>
-#include <string>
 
 using namespace llvm2cpg;
 
