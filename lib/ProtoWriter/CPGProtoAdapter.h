@@ -22,7 +22,7 @@ private:
 
   void saveToArchive();
 
-  CPGProtoNode emitValue(const llvm::Value *value);
+  CPGProtoNode *emitValue(const llvm::Value *value);
 };
 
 } // namespace llvm2cpg

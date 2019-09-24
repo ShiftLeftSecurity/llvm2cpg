@@ -8,8 +8,8 @@ namespace llvm2cpg {
 class CPGProtoNode {
 public:
   CPGProtoNode(cpg::CpgStruct_Node *cpgNode, cpg::PropertyValue &propertyBuilder);
-  CPGProtoNode(CPGProtoNode &&that) noexcept;
 
+  CPGProtoNode(CPGProtoNode &&that) = delete;
   CPGProtoNode &operator=(CPGProtoNode &&) = delete;
   CPGProtoNode(const CPGProtoNode &) = delete;
   CPGProtoNode &operator=(const CPGProtoNode &) = delete;
@@ -28,13 +28,20 @@ public:
   CPGProtoNode &setTypeFullName(const std::string &name);
   CPGProtoNode &setCode(const std::string &code);
   CPGProtoNode &setEvaluationStrategy(const std::string &strategy);
+  CPGProtoNode &setDispatchType(const std::string &dispatchType);
+  CPGProtoNode &setMethodInstFullName(const std::string &name);
   CPGProtoNode &setIsExternal(bool isExternal);
   CPGProtoNode &setOrder(int order);
   CPGProtoNode &setArgumentIndex(int index);
+  CPGProtoNode &setOrderAndIndex(int order);
+  CPGProtoNode &setLineNumber(int line);
 
 private:
   cpg::CpgStruct_Node *cpgNode;
   cpg::PropertyValue &propertyBuilder;
+
+  /// id is stored within cpgNode, but it's useful to also have it here for debugging
+  int64_t id;
 
   void setStringProperty(cpg::NodePropertyName propertyName, const std::string &value);
   void setIntProperty(cpg::NodePropertyName propertyName, int value);

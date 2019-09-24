@@ -2,7 +2,7 @@ name := "llvm2cpgintegration"
 ThisBuild / organization := "io.shiftleft"
 ThisBuild / scalaVersion := "2.12.8"
 
-val cpgVersion      = "0.10.5"
+val cpgVersion      = "0.10.19"
 
 ThisBuild / resolvers ++= Seq(
   Resolver.mavenLocal,

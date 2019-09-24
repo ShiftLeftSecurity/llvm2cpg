@@ -3,15 +3,11 @@
 using namespace llvm2cpg;
 
 CPGProtoNode::CPGProtoNode(cpg::CpgStruct_Node *cpgNode, cpg::PropertyValue &propertyBuilder)
-    : cpgNode(cpgNode), propertyBuilder(propertyBuilder) {}
-
-CPGProtoNode::CPGProtoNode(CPGProtoNode &&that) noexcept
-    : cpgNode(that.cpgNode), propertyBuilder(that.propertyBuilder) {
-  that.cpgNode = nullptr;
-}
+    : cpgNode(cpgNode), propertyBuilder(propertyBuilder), id(cpgNode->key()) {}
 
 int64_t CPGProtoNode::getID() const {
   assert(cpgNode);
+  assert(cpgNode->key() != 0);
   return cpgNode->key();
 }
 
@@ -77,6 +73,16 @@ CPGProtoNode &CPGProtoNode::setEvaluationStrategy(const std::string &strategy) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setDispatchType(const std::string &dispatchType) {
+  setStringProperty(cpg::NodePropertyName::DISPATCH_TYPE, dispatchType);
+  return *this;
+}
+
+CPGProtoNode &CPGProtoNode::setMethodInstFullName(const std::string &name) {
+  setStringProperty(cpg::NodePropertyName::METHOD_INST_FULL_NAME, name);
+  return *this;
+}
+
 CPGProtoNode &CPGProtoNode::setIsExternal(bool isExternal) {
   setBooleanProperty(cpg::NodePropertyName::IS_EXTERNAL, isExternal);
   return *this;
@@ -89,6 +95,17 @@ CPGProtoNode &CPGProtoNode::setOrder(int order) {
 
 CPGProtoNode &CPGProtoNode::setArgumentIndex(int index) {
   setIntProperty(cpg::NodePropertyName::ARGUMENT_INDEX, index);
+  return *this;
+}
+
+CPGProtoNode &CPGProtoNode::setOrderAndIndex(int order) {
+  setOrder(order);
+  setArgumentIndex(order);
+  return *this;
+}
+
+CPGProtoNode &CPGProtoNode::setLineNumber(int line) {
+  setIntProperty(cpg::NodePropertyName::LINE_NUMBER, line);
   return *this;
 }
 

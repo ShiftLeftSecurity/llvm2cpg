@@ -27,7 +27,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   auto metadata = builder.metadataNode();
-  metadata //
+  (*metadata) //
       .setLanguage(cpg::LANGUAGES::C)
       .setVersion("0");
 
@@ -42,7 +42,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     auto typeName = typeToString(type);
 
     auto typeDeclNode = builder.typeDeclNode();
-    typeDeclNode //
+    (*typeDeclNode) //
         .setName(typeName)
         .setFullName(typeName)
         .setIsExternal(false)
@@ -51,7 +51,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
         .setASTParentFullName("dangling_area");
 
     auto typeNode = builder.typeNode();
-    typeNode //
+    (*typeNode) //
         .setName(typeName)
         .setFullName(typeName)
         .setTypeDeclFullName(typeName);
@@ -60,13 +60,13 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   for (auto &file : cpg.getFiles()) {
 
     auto fileNode = builder.fileNode();
-    fileNode //
+    (*fileNode) //
         .setName(file.getName())
         .setOrder(0);
 
     auto namespaceBlockName = file.getName() + "_global";
     auto namespaceBlockNode = builder.namespaceBlockNode();
-    namespaceBlockNode //
+    (*namespaceBlockNode) //
         .setName(namespaceBlockName)
         .setFullName(namespaceBlockName)
         .setOrder(0);
@@ -77,7 +77,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       auto methodReturnType = typeToString(method.getReturnType());
 
       auto methodNode = builder.methodNode();
-      methodNode //
+      (*methodNode) //
           .setName(method.getName())
           .setFullName(method.getName())
           .setASTParentType("NAMESPACE_BLOCK")
@@ -90,7 +90,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       size_t argIndex = 0;
       for (const auto &arg : function.args()) {
         auto parameterInNode = builder.methodParameterInNode();
-        parameterInNode //
+        (*parameterInNode) //
             .setName(arg.getName())
             .setTypeFullName(typeToString(arg.getType()))
             .setCode(arg.getName())
@@ -101,7 +101,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       }
 
       auto methodReturnNode = builder.methodReturnNode();
-      methodReturnNode //
+      (*methodReturnNode) //
           .setOrder(0)
           .setTypeFullName(methodReturnType)
           .setCode(methodReturnType)
@@ -109,7 +109,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       builder.connectAST(methodNode, methodReturnNode);
 
       auto blockNode = builder.methodBlockNode();
-      blockNode //
+      (*blockNode) //
           .setOrder(0)
           .setTypeFullName(methodReturnType)
           .setCode("x + 42")
@@ -117,11 +117,11 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       builder.connectAST(methodNode, blockNode);
 
       for (auto &inst : llvm::instructions(function)) {
-        auto node = emitValue(&inst);
+        CPGProtoNode *node = emitValue(&inst);
         builder.connectAST(blockNode, node);
 
-        if (node.isReturn()) {
-          builder.connectCFG(node, methodReturnNode);
+        if (node->isReturn()) {
+          builder.connectCFG(node->getID(), methodReturnNode->getID());
         }
       }
     }
@@ -184,10 +184,10 @@ void CPGProtoAdapter::saveToArchive() {
   std::cout << "CPG is successfully save on disk: " << zipPath << "\n";
 }
 
-CPGProtoNode CPGProtoAdapter::emitValue(const llvm::Value *value) {
+CPGProtoNode *CPGProtoAdapter::emitValue(const llvm::Value *value) {
   if (auto retInst = llvm::dyn_cast<llvm::ReturnInst>(value)) {
     auto returnNode = builder.returnNode();
-    returnNode //
+    (*returnNode) //
         .setOrder(0)
         .setArgumentIndex(0)
         .setCode("return");
@@ -195,7 +195,7 @@ CPGProtoNode CPGProtoAdapter::emitValue(const llvm::Value *value) {
     if (auto retValue = retInst->getReturnValue()) {
       auto node = emitValue(retValue);
       builder.connectAST(returnNode, node);
-      builder.connectCFG(node, returnNode);
+      builder.connectCFG(node->getID(), returnNode->getID());
     }
 
     return returnNode;
@@ -203,7 +203,7 @@ CPGProtoNode CPGProtoAdapter::emitValue(const llvm::Value *value) {
 
   if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
     auto literalNode = builder.literalNode();
-    literalNode //
+    (*literalNode) //
         .setOrder(0)
         .setArgumentIndex(0)
         .setTypeFullName(typeToString(constantInt->getType()))

@@ -2,6 +2,12 @@
 
 using namespace llvm2cpg;
 
+static void setNameIfEmpty(llvm::Value *value, const std::string &name) {
+  if (!value->hasName()) {
+    value->setName(name);
+  }
+}
+
 CPGInstVisitor::CPGInstVisitor(std::vector<llvm::Value *> &arguments,
                                std::vector<llvm::Value *> &variables, std::set<llvm::Type *> &types)
     : arguments(arguments), variables(variables), types(types) {}
@@ -28,11 +34,23 @@ void CPGInstVisitor::visitLoadInst(llvm::LoadInst &value) {
   recordTypes(&value);
 }
 
+void CPGInstVisitor::visitBinaryOperator(llvm::BinaryOperator &binaryOperator) {
+  addTempVariable(&binaryOperator);
+  recordTypes(&binaryOperator);
+}
+
+void CPGInstVisitor::visitCmpInst(llvm::CmpInst &comparison) {
+  addTempVariable(&comparison);
+  recordTypes(&comparison);
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
+  if (llvm::isa<llvm::BranchInst>(instruction)) {
+    return;
+  }
   /// TODO: Feels like too much overhead to collect this info here
   /// It might be better to emit it lazily during CPG generation
   for (auto &operand : instruction->operands()) {
-    llvm::errs() << *operand->getType() << "\n";
     types.insert(operand->getType());
   }
   types.insert(instruction->getType());
@@ -46,10 +64,4 @@ void CPGInstVisitor::addLocalVariable(llvm::Value *value) {
 void CPGInstVisitor::addTempVariable(llvm::Value *value) {
   setNameIfEmpty(value, "tmp");
   variables.push_back(value);
-}
-
-void CPGInstVisitor::setNameIfEmpty(llvm::Value *value, const std::string &name) {
-  if (!value->hasName()) {
-    value->setName(name);
-  }
 }
