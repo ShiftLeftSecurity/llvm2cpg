@@ -3,17 +3,12 @@
 using namespace llvm2cpg;
 
 CPGProtoNode::CPGProtoNode(cpg::CpgStruct_Node *cpgNode, cpg::PropertyValue &propertyBuilder)
-    : cpgNode(cpgNode), propertyBuilder(propertyBuilder), id(cpgNode->key()) {}
+    : cpgNode(cpgNode), propertyBuilder(propertyBuilder), id(cpgNode->key()), entry(0) {}
 
 int64_t CPGProtoNode::getID() const {
   assert(cpgNode);
   assert(cpgNode->key() != 0);
   return cpgNode->key();
-}
-
-bool CPGProtoNode::isReturn() const {
-  assert(cpgNode);
-  return cpgNode->type() == cpg::CpgStruct_Node_NodeType_RETURN;
 }
 
 CPGProtoNode &CPGProtoNode::setLanguage(cpg::LANGUAGES language) {
@@ -144,4 +139,13 @@ void CPGProtoNode::setIntProperty(cpg::NodePropertyName propertyName, int value)
   auto propertyValue = propertyBuilder.New();
   propertyValue->set_int_value(value);
   property->set_allocated_value(propertyValue);
+}
+
+void CPGProtoNode::setEntry(int64_t e) {
+  entry = e;
+}
+
+int64_t CPGProtoNode::getEntry() const {
+  assert(entry != 0);
+  return entry;
 }

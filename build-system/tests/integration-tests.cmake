@@ -35,6 +35,7 @@ function(add_integration_test test_name)
   endif()
 
   add_custom_target(integration-${test_name}
+    COMMAND cmake -E echo "Running integration test: ${cpg}"
     COMMAND sbt "testOnly io.shiftleft.llvm2cpgintegration.${test_name}"
     DEPENDS ${cpg}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}

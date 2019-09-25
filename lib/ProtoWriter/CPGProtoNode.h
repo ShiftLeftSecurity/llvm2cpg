@@ -3,6 +3,10 @@
 #include <cpg.pb.h>
 #include <string>
 
+namespace llvm {
+class Value;
+}
+
 namespace llvm2cpg {
 
 class CPGProtoNode {
@@ -15,7 +19,9 @@ public:
   CPGProtoNode &operator=(const CPGProtoNode &) = delete;
 
   int64_t getID() const;
-  bool isReturn() const;
+
+  void setEntry(int64_t e);
+  int64_t getEntry() const;
 
   CPGProtoNode &setLanguage(cpg::LANGUAGES language);
   CPGProtoNode &setVersion(const std::string &version);
@@ -42,6 +48,7 @@ private:
 
   /// id is stored within cpgNode, but it's useful to also have it here for debugging
   int64_t id;
+  int64_t entry;
 
   void setStringProperty(cpg::NodePropertyName propertyName, const std::string &value);
   void setIntProperty(cpg::NodePropertyName propertyName, int value);

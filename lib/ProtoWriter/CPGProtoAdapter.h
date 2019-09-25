@@ -1,14 +1,10 @@
 #pragma once
 
 #include "CPGProtoBuilder.h"
-#include <cstdint>
-#include <llvm/IR/Instruction.h>
 
 namespace llvm2cpg {
 
 class CPG;
-class CPGMethod;
-class ASTNode;
 
 class CPGProtoAdapter {
 public:
@@ -21,8 +17,6 @@ private:
   CPGProtoBuilder builder;
 
   void saveToArchive();
-
-  CPGProtoNode *emitValue(const llvm::Value *value);
 };
 
 } // namespace llvm2cpg

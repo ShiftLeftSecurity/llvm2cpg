@@ -29,7 +29,7 @@ public:
   const std::string &getName() const;
   const std::string &getSignature() const;
   bool isExternal() const;
-  const llvm::Function &getFunction() const;
+  llvm::Function &getFunction() const;
 
   const std::vector<llvm::Value *> &getArguments() const;
   const std::vector<llvm::Value *> &getLocalVariables() const;

@@ -1,4 +1,5 @@
 set (SOURCES
+  CPGEmitter.cpp
   CPGProtoWriter.cpp
   CPGProtoAdapter.cpp
   CPGProtoBuilder.cpp

@@ -136,3 +136,70 @@ Figuring out the right optimization passes will take some fiddling. We probably 
 
 We will almost surely want to include at least some language specific handling of constructs like C++ vtables, objective C-style vtables, etc. Attempting "user gives us bitcode without more info" is probably a unrealistic if we want good analysis results. So the goal might rather be to have many llvm front-end languages like objectivec2cpg or c2cpg or cpp2cpg that all share a solid llvm2cpg, not have a single llvm2cpg that does everything on its own. Currently we just need to keep that in mind for our code, in order to be prepared to later include language specific parts.
 
+## CFG construction
+
+As mentioned above, we construct a flat/wide CPG from an LLVM function.
+
+Each instruction is converted into a tree consisting of `CPGProtoNode`s.
+Such trees constitute a set of top-level nodes. The top-level nodes are connected to the `method block` via AST edges.
+This way, the tree structure forms the AST representation of bitcode.
+
+Building of the CFG is the two-phase process.
+
+1. Build CFG within top-level node (i.e. for each instruction).
+2. Build CFG across top-level nodes (i.e. connect all instructions).
+
+To do this we add a property `entry` to the `CPGProtoNode`.
+The property holds the `id` (or `key`) of the next node in the CFG. There are two cases:
+
+1. If the node is a leaf (i.e. does not have children), then the `entry` equals to the node's `id`.
+2. Otherwise, the `entry` equals to an `entry` to the node's first child.
+
+#### Build CFG within a top-level node
+
+Then CFG nodes are added as follows:
+
+1. Each child connects with an entry to its next sibling.
+2. The last child (the one without siblings) connects to its parent node `id`. 
+
+Here is the code:
+
+```
+void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
+  if (children.empty()) {
+    parent->setEntry(parent->getID());
+    return;
+  }
+
+  parent->setEntry(children.front()->getEntry());
+  builder.connectCFG(children.back()->getID(), parent->getID());
+
+  for (size_t i = 0; i < children.size() - 1; i++) {
+    CPGProtoNode *current = children[i];
+    CPGProtoNode *next = children[i + 1];
+    builder.connectCFG(current->getID(), next->getEntry());
+  }
+}
+```
+
+#### Build CFG across top-level nodes
+
+This is also two-phase process:
+
+1. Connect top-level nodes within a basic block.
+
+These are just consecutive nodes. Same algorithm as above applies: 
+
+```
+for (size_t i = 0; i < nodes.size() - 1; i++) {
+  CPGProtoNode *current = nodes[i];
+  CPGProtoNode *next = nodes[i + 1];
+  builder.connectCFG(current->getID(), next->getEntry());
+}
+```
+
+2. Connect top-level nodes via branches
+
+Each basic block ends with a terminator instruction. We do not process them immediately, but collect
+and process after all the top level nodes are constructed. Take a look at `CPGEmitter::emitMethod` 
+for more details.
