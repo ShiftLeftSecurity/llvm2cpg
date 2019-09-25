@@ -5,4 +5,5 @@ object TestCpgPaths {
   val C_ReturnParameterCPG = "@C_ReturnParameterTest@"
   val C_ReturnMultipliedParameterCPG = "@C_ReturnMultipliedParameterTest@"
   val C_ReturnConditionalCPG = "@C_ReturnConditionalTest@"
+  val C_ReturnGlobalCPG = "@C_ReturnGlobalTest@"
 }

@@ -29,6 +29,11 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   builder.connectAST(methodNode, methodBlock);
   builder.connectAST(methodNode, methodReturnNode);
 
+  llvm::Module *module = method.getFunction().getParent();
+  for (llvm::GlobalVariable &global : module->getGlobalList()) {
+    globals.insert(&global);
+  }
+
   for (size_t localIndex = 0; localIndex < method.getLocalVariables().size(); localIndex++) {
     llvm::Value *variable = method.getLocalVariables()[localIndex];
     CPGProtoNode *local = emitLocalVariable(variable, localIndex);
@@ -211,7 +216,7 @@ CPGProtoNode *CPGEmitter::emitMethodBlock(const CPGMethod &method) {
 }
 
 CPGProtoNode *CPGEmitter::emitRefOrConstant(const llvm::Value *value) {
-  if (isLocal(value)) {
+  if (isLocal(value) || isGlobal(value)) {
     return emitRef(value);
   }
 
@@ -219,14 +224,17 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(const llvm::Value *value) {
 }
 
 CPGProtoNode *CPGEmitter::emitRef(const llvm::Value *value) {
-  assert(isLocal(value) && "Local was not emitted");
+  assert((isLocal(value) || isGlobal(value)) && "Cannot emit reference to a non-variable");
 
   CPGProtoNode *valueRef = builder.identifierNode();
   (*valueRef) //
       .setName(value->getName())
       .setCode(value->getName())
       .setTypeFullName(typeToString(value->getType()));
-  builder.connectREF(valueRef, getLocal(value));
+
+  if (!isGlobal(value)) {
+    builder.connectREF(valueRef, getLocal(value));
+  }
   resolveConnections(valueRef, {});
   return valueRef;
 }
@@ -371,6 +379,10 @@ const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
 
 bool CPGEmitter::isLocal(const llvm::Value *value) const {
   return locals.count(value) != 0;
+}
+
+bool CPGEmitter::isGlobal(const llvm::Value *value) const {
+  return globals.count(value) != 0;
 }
 
 void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {

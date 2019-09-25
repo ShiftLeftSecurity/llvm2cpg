@@ -20,6 +20,7 @@ private:
   CPGProtoBuilder &builder;
 
   std::unordered_map<const llvm::Value *, CPGProtoNode *> locals;
+  std::unordered_set<const llvm::Value *> globals;
 
   CPGProtoNode *visitInstruction(llvm::Instruction &instruction);
   CPGProtoNode *visitReturnInst(llvm::ReturnInst &instruction);
@@ -48,6 +49,8 @@ private:
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
+  // Returns true if the value is a global variable, false otherwise
+  bool isGlobal(const llvm::Value *value) const;
 
   // Returns a reference to the emitted local variable or argument
   const CPGProtoNode *getLocal(const llvm::Value *value) const;
