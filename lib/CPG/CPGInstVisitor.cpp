@@ -49,6 +49,11 @@ void CPGInstVisitor::visitCastInst(llvm::CastInst &instruction) {
   recordTypes(&instruction);
 }
 
+void CPGInstVisitor::visitSelectInst(llvm::SelectInst &instruction) {
+  addTempVariable(&instruction);
+  recordTypes(&instruction);
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
   if (llvm::isa<llvm::BranchInst>(instruction)) {
     return;

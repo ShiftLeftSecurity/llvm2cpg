@@ -6,4 +6,6 @@ add_integration_test(C_ReturnGlobalTest return_global_c_bc)
 add_integration_test(C_ReturnCastTest return_cast_c_bc)
 add_integration_test(C_SwitchTest switch_c_bc)
 
+add_integration_test(LLVM_SelectInstTest select_inst_ll_bc)
+
 enable_integration_tests()

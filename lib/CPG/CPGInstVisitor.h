@@ -18,8 +18,8 @@ public:
   void visitLoadInst(llvm::LoadInst &value);
   void visitBinaryOperator(llvm::BinaryOperator &binaryOperator);
   void visitCmpInst(llvm::CmpInst &comparison);
-
   void visitCastInst(llvm::CastInst &instruction);
+  void visitSelectInst(llvm::SelectInst &instruction);
 
 private:
   std::vector<llvm::Value *> &arguments;

@@ -8,4 +8,6 @@ object TestCpgPaths {
   val C_ReturnGlobalCPG = "@C_ReturnGlobalTest@"
   val C_ReturnCastCPG = "@C_ReturnCastTest@"
   val C_SwitchCPG = "@C_SwitchTest@"
+
+  val LLVM_SelectInstCPG = "@LLVM_SelectInstTest@"
 }

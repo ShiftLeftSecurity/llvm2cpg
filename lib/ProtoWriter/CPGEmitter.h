@@ -30,6 +30,7 @@ private:
   CPGProtoNode *visitBinaryOperator(llvm::BinaryOperator &instruction);
   CPGProtoNode *visitCmpInst(llvm::CmpInst &instruction);
   CPGProtoNode *visitCastInst(llvm::CastInst &instruction);
+  CPGProtoNode *visitSelectInst(llvm::SelectInst &instruction);
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
@@ -48,6 +49,7 @@ private:
   CPGProtoNode *emitBinaryCall(const llvm::BinaryOperator *binary);
   CPGProtoNode *emitCmpCall(const llvm::CmpInst *comparison);
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
+  CPGProtoNode *emitSelect(const llvm::SelectInst *instruction);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;

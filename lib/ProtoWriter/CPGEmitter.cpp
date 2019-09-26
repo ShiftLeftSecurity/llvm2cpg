@@ -130,7 +130,7 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   for (const llvm::SwitchInst *switchInst : unresolvedSwitches) {
     const llvm::Value *sourceInstruction = switchInst->getCondition();
     CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
-    for (size_t i = 0; i< switchInst->getNumSuccessors(); i++) {
+    for (size_t i = 0; i < switchInst->getNumSuccessors(); i++) {
       const llvm::BasicBlock *successor = switchInst->getSuccessor(i);
       // TODO: won't work if the successor is an empty basic block
       CPGProtoNode *destination = topLevelNodes.at(&successor->front());
@@ -188,6 +188,13 @@ CPGProtoNode *CPGEmitter::visitCastInst(llvm::CastInst &instruction) {
   CPGProtoNode *ref = emitRef(&instruction);
   CPGProtoNode *castCall = emitCast(&instruction);
   CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, castCall);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::visitSelectInst(llvm::SelectInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *selectCall = emitSelect(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, selectCall);
   return assignCall;
 }
 
@@ -263,12 +270,28 @@ CPGProtoNode *CPGEmitter::emitRef(const llvm::Value *value) {
   return valueRef;
 }
 
+// TODO: Think of a better solution
+// At the bitcode level we don't know whether a number is signed or not
+// Also we don't know if it's a boolean, or an arbitrary number
+static std::string constantIntToString(const llvm::APInt &constant) {
+  // assume boolean if it's one bit
+  if (constant.getBitWidth() == 1) {
+    if (constant.isAllOnesValue()) {
+      return std::string("true");
+    }
+    return std::string("false");
+  }
+  bool printAsSigned = constant.isNegative();
+  return constant.toString(10, printAsSigned);
+}
+
 CPGProtoNode *CPGEmitter::emitConstant(const llvm::Value *value) {
   if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
+    const llvm::APInt &constant = constantInt->getValue();
     CPGProtoNode *literalNode = builder.literalNode();
     (*literalNode) //
         .setTypeFullName(typeToString(constantInt->getType()))
-        .setCode(constantInt->getValue().toString(10, true));
+        .setCode(constantIntToString(constant));
     resolveConnections(literalNode, {});
     return literalNode;
   }
@@ -397,7 +420,7 @@ CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
 }
 
 CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
-  auto castCall = builder.functionCallNode();
+  CPGProtoNode *castCall = builder.functionCallNode();
   std::string name(instruction->getOpcodeName());
   (*castCall) //
       .setName(name)
@@ -407,10 +430,30 @@ CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
       .setSignature("xxx")
       .setDispatchType("STATIC");
 
-  auto cast = emitRefOrConstant(instruction->getOperand(0));
+  CPGProtoNode *cast = emitRefOrConstant(instruction->getOperand(0));
 
   resolveConnections(castCall, { cast });
   return castCall;
+}
+
+CPGProtoNode *CPGEmitter::emitSelect(const llvm::SelectInst *instruction) {
+  CPGProtoNode *selectCall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  (*selectCall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  // TODO: at a first glance it is unclear if on these can by null or not
+  CPGProtoNode *conditionValue = emitRefOrConstant(instruction->getCondition());
+  CPGProtoNode *trueValue = emitRefOrConstant(instruction->getTrueValue());
+  CPGProtoNode *falseValue = emitRefOrConstant(instruction->getFalseValue());
+
+  resolveConnections(selectCall, { conditionValue, trueValue, falseValue });
+  return selectCall;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
