@@ -26,7 +26,7 @@ function(add_integration_test test_name)
 
   if (PATH_TO_CODEPROPERTYGRAPH)
     add_custom_target(validation-${test_name}
-      COMMAND cmake -E echo "Validating ${cpg}"
+      COMMAND cmake -E echo "Running validation test: ${cpg}"
       COMMAND ${PATH_TO_CODEPROPERTYGRAPH}/cpgvalidator.sh ${cpg}
       DEPENDS ${cpg}
       WORKING_DIRECTORY ${PATH_TO_CODEPROPERTYGRAPH}
@@ -42,7 +42,7 @@ function(add_integration_test test_name)
     )
   set (integration_test integration-${test_name})
   add_custom_target(run-full-${test_name}
-    DEPENDS ${validaion_test} ${integration_test}
+    DEPENDS ${validation_test} ${integration_test}
     )
 endfunction()
 
