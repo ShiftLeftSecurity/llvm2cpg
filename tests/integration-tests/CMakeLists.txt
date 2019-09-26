@@ -3,5 +3,6 @@ add_integration_test(C_ReturnParameterTest return_parameter_c_bc)
 add_integration_test(C_ReturnMultipliedParameterTest return_multiplied_parameter_c_bc)
 add_integration_test(C_ReturnConditionalTest return_conditional_c_bc)
 add_integration_test(C_ReturnGlobalTest return_global_c_bc)
+add_integration_test(C_ReturnCastTest return_cast_c_bc)
 
 enable_integration_tests()

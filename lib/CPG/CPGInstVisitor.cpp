@@ -44,6 +44,11 @@ void CPGInstVisitor::visitCmpInst(llvm::CmpInst &comparison) {
   recordTypes(&comparison);
 }
 
+void CPGInstVisitor::visitCastInst(llvm::CastInst &instruction) {
+  addTempVariable(&instruction);
+  recordTypes(&instruction);
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
   if (llvm::isa<llvm::BranchInst>(instruction)) {
     return;

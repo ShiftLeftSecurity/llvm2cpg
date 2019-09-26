@@ -19,6 +19,8 @@ public:
   void visitBinaryOperator(llvm::BinaryOperator &binaryOperator);
   void visitCmpInst(llvm::CmpInst &comparison);
 
+  void visitCastInst(llvm::CastInst &instruction);
+
 private:
   std::vector<llvm::Value *> &arguments;
   std::vector<llvm::Value *> &variables;

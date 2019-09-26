@@ -167,6 +167,13 @@ CPGProtoNode *CPGEmitter::visitCmpInst(llvm::CmpInst &instruction) {
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitCastInst(llvm::CastInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *castCall = emitCast(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, castCall);
+  return assignCall;
+}
+
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
   CPGProtoNode *returnNode = builder.returnNode();
   returnNode->setCode("return");
@@ -260,7 +267,7 @@ CPGProtoNode *CPGEmitter::emitLocalVariable(const llvm::Value *variable, size_t 
       .setName(variable->getName())
       .setCode(variable->getName())
       .setTypeFullName(typeToString(variable->getType()))
-      .setOrderAndIndex(order);
+      .setOrder(order);
   return local;
 }
 
@@ -271,7 +278,7 @@ CPGProtoNode *CPGEmitter::emitFunctionArgument(const llvm::Value *argument, size
       .setCode(argument->getName())
       .setTypeFullName(typeToString(argument->getType()))
       .setEvaluationStrategy("EVAL")
-      .setOrderAndIndex(order);
+      .setOrder(order);
   return parameterInNode;
 }
 
@@ -370,6 +377,23 @@ CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
 
   resolveConnections(cmpCall, { lhs, rhs });
   return cmpCall;
+}
+
+CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
+  auto castCall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  (*castCall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getDestTy()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  auto cast = emitRefOrConstant(instruction->getOperand(0));
+
+  resolveConnections(castCall, { cast });
+  return castCall;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
