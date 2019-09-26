@@ -5,6 +5,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/return_conditional.c
   ${CMAKE_CURRENT_LIST_DIR}/return_global.c
   ${CMAKE_CURRENT_LIST_DIR}/return_cast.c
+  ${CMAKE_CURRENT_LIST_DIR}/switch.c
   )
 
 foreach(source ${SOURCES})

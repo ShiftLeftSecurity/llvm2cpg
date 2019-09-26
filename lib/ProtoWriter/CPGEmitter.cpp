@@ -48,17 +48,22 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     locals.insert(std::make_pair(argument, parameterInNode));
   }
 
-  std::unordered_map<llvm::Value *, CPGProtoNode *> topLevelNodes;
-  std::vector<llvm::BranchInst *> unresolvedBranches;
+  std::unordered_map<const llvm::Value *, CPGProtoNode *> topLevelNodes;
+  std::vector<const llvm::BranchInst *> unresolvedBranches;
+  std::vector<const llvm::SwitchInst *> unresolvedSwitches;
 
   size_t topLevelOrder = 1;
   for (llvm::BasicBlock &basicBlock : method.getFunction()) {
     std::vector<CPGProtoNode *> nodes;
     for (llvm::Instruction &instruction : basicBlock) {
-      // We cannot make CFG connections for these branches yet
+      // We cannot make CFG connections for the terminators yet
       // So we collect them for later use
       if (auto branch = llvm::dyn_cast<llvm::BranchInst>(&instruction)) {
         unresolvedBranches.push_back(branch);
+        continue;
+      }
+      if (auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(&instruction)) {
+        unresolvedSwitches.push_back(switchInst);
         continue;
       }
       // TODO: Switch to llvm::Optional?
@@ -104,8 +109,8 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   builder.connectCFG(retNode->getID(), methodReturnNode->getID());
 
   // Connect CFG for unresolved branches
-  for (llvm::BranchInst *branch : unresolvedBranches) {
-    llvm::Value *sourceInstruction = nullptr;
+  for (const llvm::BranchInst *branch : unresolvedBranches) {
+    const llvm::Value *sourceInstruction = nullptr;
     if (branch->isConditional()) {
       sourceInstruction = branch->getCondition();
     } else {
@@ -115,6 +120,18 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
     for (size_t i = 0; i < branch->getNumSuccessors(); i++) {
       llvm::BasicBlock *successor = branch->getSuccessor(i);
+      // TODO: won't work if the successor is an empty basic block
+      CPGProtoNode *destination = topLevelNodes.at(&successor->front());
+      builder.connectCFG(source->getID(), destination->getEntry());
+    }
+  }
+
+  // Connect CFG for unresolved switches
+  for (const llvm::SwitchInst *switchInst : unresolvedSwitches) {
+    const llvm::Value *sourceInstruction = switchInst->getCondition();
+    CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
+    for (size_t i = 0; i< switchInst->getNumSuccessors(); i++) {
+      const llvm::BasicBlock *successor = switchInst->getSuccessor(i);
       // TODO: won't work if the successor is an empty basic block
       CPGProtoNode *destination = topLevelNodes.at(&successor->front());
       builder.connectCFG(source->getID(), destination->getEntry());
