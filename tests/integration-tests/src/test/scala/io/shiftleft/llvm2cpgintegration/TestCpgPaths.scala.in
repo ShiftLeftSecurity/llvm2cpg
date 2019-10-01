@@ -10,4 +10,7 @@ object TestCpgPaths {
   val C_SwitchCPG = "@C_SwitchTest@"
 
   val LLVM_SelectInstCPG = "@LLVM_SelectInstTest@"
+  val LLVM_GEPFlatStructCPG = "@LLVM_GEPFlatStructTest@"
+  val LLVM_GEPArrayCPG = "@LLVM_GEPArrayTest@"
+  val LLVM_GEPMixedCPG = "@LLVM_GEPMixedTest@"
 }

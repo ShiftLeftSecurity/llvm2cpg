@@ -7,5 +7,8 @@ add_integration_test(C_ReturnCastTest return_cast_c_bc)
 add_integration_test(C_SwitchTest switch_c_bc)
 
 add_integration_test(LLVM_SelectInstTest select_inst_ll_bc)
+add_integration_test(LLVM_GEPFlatStructTest gep_flat_struct_ll_bc)
+add_integration_test(LLVM_GEPArrayTest gep_array_ll_bc)
+add_integration_test(LLVM_GEPMixedTest gep_mixed_ll_bc)
 
 enable_integration_tests()

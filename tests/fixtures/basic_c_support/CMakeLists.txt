@@ -6,6 +6,8 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/return_global.c
   ${CMAKE_CURRENT_LIST_DIR}/return_cast.c
   ${CMAKE_CURRENT_LIST_DIR}/switch.c
+  ${CMAKE_CURRENT_LIST_DIR}/gep_flat_struct.c
+  ${CMAKE_CURRENT_LIST_DIR}/gep_array.c
   )
 
 foreach(source ${SOURCES})

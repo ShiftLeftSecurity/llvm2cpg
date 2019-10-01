@@ -3,20 +3,21 @@
 
 using namespace llvm2cpg;
 
-static std::string typeToString(llvm::Type *type) {
+static std::string typeToString(const llvm::Type *type) {
+  if (auto structType = llvm::dyn_cast<llvm::StructType>(type)) {
+    return structType->getStructName().str();
+  }
   std::string typeName;
   llvm::raw_string_ostream stream(typeName);
   type->print(stream);
-  stream.flush();
-  return typeName;
+  return stream.str();
 }
 
 static std::string valueToString(const llvm::Value *value) {
   std::string name;
   llvm::raw_string_ostream stream(name);
   value->printAsOperand(stream);
-  stream.flush();
-  return name;
+  return stream.str();
 }
 
 CPGEmitter::CPGEmitter(CPGProtoBuilder &builder) : builder(builder) {}
@@ -195,6 +196,13 @@ CPGProtoNode *CPGEmitter::visitSelectInst(llvm::SelectInst &instruction) {
   CPGProtoNode *ref = emitRef(&instruction);
   CPGProtoNode *selectCall = emitSelect(&instruction);
   CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, selectCall);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::visitGetElementPtrInst(llvm::GetElementPtrInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitGEP(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
   return assignCall;
 }
 
@@ -454,6 +462,123 @@ CPGProtoNode *CPGEmitter::emitSelect(const llvm::SelectInst *instruction) {
 
   resolveConnections(selectCall, { conditionValue, trueValue, falseValue });
   return selectCall;
+}
+
+//  This function yields a type for each index using the following rules:
+//  *t => t
+//  struct S { t1, t2, ..., tN } => S[index] => t1 or t2 or ... tN depending on the index' value
+//  [ t ] => t
+//  TODO: check sized structs
+static llvm::Type *nextIndexType(llvm::Type *type, llvm::Value *index) {
+  if (auto pointerType = llvm::dyn_cast<llvm::PointerType>(type)) {
+    return pointerType->getElementType();
+  }
+  if (auto structType = llvm::dyn_cast<llvm::StructType>(type)) {
+    llvm::ConstantInt *constantIndex = llvm::cast<llvm::ConstantInt>(index);
+    assert(constantIndex->getValue().getNumWords() == 1 &&
+           "Struct members always indexed using i32");
+    int32_t intIndex = *constantIndex->getValue().getRawData();
+    assert(intIndex < structType->getNumElements());
+    return structType->getElementType(intIndex);
+  }
+
+  if (auto arrayType = llvm::dyn_cast<llvm::ArrayType>(type)) {
+    return arrayType->getElementType();
+  }
+
+  llvm::errs() << *type << " " << *index << "\n";
+
+  llvm_unreachable("Cannot handle the type above yet");
+}
+
+CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
+  //
+  //  It is highly recommended to read these documents to get better understanding:
+  //
+  //   - https://llvm.org/docs/LangRef.html#getelementptr-instruction
+  //   - http://llvm.org/docs/GetElementPtr.html
+  //
+  //  The following documentation is just a brief note on how we emit CPG for the GEP instruction.
+  //
+  //  GEP, or getelementptr, computes an address of a struct member or of a vector element.
+  //  It has the following structure:
+  //
+  //    %x = getelementptr %ptr, index_0 [, index_1, ..., index_N]
+  //
+  //  which is equivalent to the following:
+  //
+  //    x = ptr[index_0][index_1] ... [index_N]
+  //
+  //  Each index is either a constant or a value.
+  //  In case of a struct an index_X points to a struct member.
+  //
+  //  For each index we emit either an index_access (for vector accesses) or
+  //  a member_access (for struct accesses).
+  //  The very first index is always an index_access and its type is the type of (*ptr).
+  //  Every other index is either an index_access or a member_access depending on a type.
+  //  The type of each index is determined using the nextIndexType function.
+  //  The type of the last access is always a pointer.
+  //
+  //  The CPG is built from left to right for each index, and the AST relation is built bottom-up:
+  //  each CPG node becomes a child of the next CPG node.
+  //
+  //  The GEP instruction has the following operands:
+  //    0: pointer
+  //    1: first index, always present
+  //    2..N: any other additional index
+  //
+  //  TODO: handle vectors of addresses, i.e. getelementptr yielding [ i32*, i32*, i32*, ... ]
+  //  instead of a single address
+  //
+
+  llvm::Value *element = instruction->getOperand(0);
+  llvm::Value *index = instruction->getOperand(1);
+
+  llvm::Type *indexType = nextIndexType(element->getType(), index);
+  if (instruction->getNumIndices() == 1) {
+    indexType = instruction->getType();
+  }
+
+  CPGProtoNode *access = emitGEPAccess(indexType, index, false);
+  CPGProtoNode *lhs = emitRef(element);
+  CPGProtoNode *rhs = emitRefOrConstant(index);
+
+  resolveConnections(access, { lhs, rhs });
+
+  // Skipping the pointer operand and the first index
+  for (size_t i = 2; i < instruction->getNumOperands(); i++) {
+    bool isStruct = indexType->isStructTy();
+    index = instruction->getOperand(i);
+    indexType = nextIndexType(indexType, index);
+    if (i == instruction->getNumOperands() - 1) {
+      indexType = instruction->getType();
+    }
+
+    lhs = access;
+    rhs = emitRefOrConstant(index);
+    access = emitGEPAccess(indexType, index, isStruct);
+    resolveConnections(access, { lhs, rhs });
+  }
+
+  return access;
+}
+
+CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *index,
+                                        bool memberAccess) {
+  std::string name("index_access");
+  if (memberAccess) {
+    name = "member_access";
+  }
+  CPGProtoNode *call = builder.functionCallNode();
+  (*call) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(type))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  return call;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {

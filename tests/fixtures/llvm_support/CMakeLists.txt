@@ -1,5 +1,8 @@
 set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/select_inst.ll
+  ${CMAKE_CURRENT_LIST_DIR}/gep_flat_struct.ll
+  ${CMAKE_CURRENT_LIST_DIR}/gep_array.ll
+  ${CMAKE_CURRENT_LIST_DIR}/gep_mixed.ll
   )
 
 foreach(source ${SOURCES})

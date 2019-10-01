@@ -20,6 +20,7 @@ public:
   void visitCmpInst(llvm::CmpInst &comparison);
   void visitCastInst(llvm::CastInst &instruction);
   void visitSelectInst(llvm::SelectInst &instruction);
+  void visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
 
 private:
   std::vector<llvm::Value *> &arguments;

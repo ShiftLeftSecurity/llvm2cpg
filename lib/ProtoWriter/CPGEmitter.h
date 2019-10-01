@@ -31,6 +31,7 @@ private:
   CPGProtoNode *visitCmpInst(llvm::CmpInst &instruction);
   CPGProtoNode *visitCastInst(llvm::CastInst &instruction);
   CPGProtoNode *visitSelectInst(llvm::SelectInst &instruction);
+  CPGProtoNode *visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
@@ -50,6 +51,8 @@ private:
   CPGProtoNode *emitCmpCall(const llvm::CmpInst *comparison);
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
   CPGProtoNode *emitSelect(const llvm::SelectInst *instruction);
+  CPGProtoNode *emitGEP(const llvm::GetElementPtrInst *instruction);
+  CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
