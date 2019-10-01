@@ -206,6 +206,13 @@ CPGProtoNode *CPGEmitter::visitGetElementPtrInst(llvm::GetElementPtrInst &instru
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitUnaryOperator(llvm::UnaryOperator &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitUnaryOperator(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
   CPGProtoNode *returnNode = builder.returnNode();
   returnNode->setCode("return");
@@ -579,6 +586,23 @@ CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *ind
       .setDispatchType("STATIC");
 
   return call;
+}
+
+CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instruction) {
+  CPGProtoNode *fnegCall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  (*fnegCall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  CPGProtoNode *argument = emitRefOrConstant(instruction->getOperand(0));
+
+  resolveConnections(fnegCall, { argument });
+  return fnegCall;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {

@@ -59,6 +59,11 @@ void CPGInstVisitor::visitGetElementPtrInst(llvm::GetElementPtrInst &instruction
   recordTypes(&instruction);
 }
 
+void CPGInstVisitor::visitUnaryOperator(llvm::UnaryOperator &instruction) {
+  addTempVariable(&instruction);
+  recordTypes(&instruction);
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
   if (llvm::isa<llvm::BranchInst>(instruction)) {
     return;
