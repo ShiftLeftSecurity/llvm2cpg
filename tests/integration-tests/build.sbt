@@ -2,7 +2,7 @@ name := "llvm2cpgintegration"
 ThisBuild / organization := "io.shiftleft"
 ThisBuild / scalaVersion := "2.12.8"
 
-val cpgVersion      = "0.10.19"
+val cpgVersion      = "0.10.34"
 
 ThisBuild / resolvers ++= Seq(
   Resolver.mavenLocal,
@@ -10,7 +10,7 @@ ThisBuild / resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.shiftleft"       % "semanticcpg"                       % cpgVersion,
+  "io.shiftleft"       %% "semanticcpg"                      % cpgVersion,
   "org.scalatest"      %% "scalatest"                        % "3.0.3" % Test,
 )
 

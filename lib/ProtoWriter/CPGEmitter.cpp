@@ -30,6 +30,11 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   builder.connectAST(methodNode, methodBlock);
   builder.connectAST(methodNode, methodReturnNode);
 
+  /// Skipping method declaration (empty methods)
+  if (method.getFunction().isDeclaration()) {
+    return;
+  }
+
   llvm::Module *module = method.getFunction().getParent();
   for (llvm::GlobalVariable &global : module->getGlobalList()) {
     globals.insert(&global);
@@ -619,6 +624,19 @@ bool CPGEmitter::isGlobal(const llvm::Value *value) const {
 }
 
 void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
+  resolveCFGConnections(parent, children);
+  resolveASTConnections(parent, children);
+}
+
+void CPGEmitter::resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
+  for (size_t i = 0; i < children.size(); i++) {
+    CPGProtoNode *current = children[i];
+    current->setOrder(i + 1).setArgumentIndex(i + 1);
+    builder.connectAST(parent, current);
+  }
+}
+
+void CPGEmitter::resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
   if (children.empty()) {
     parent->setEntry(parent->getID());
     return;
@@ -631,10 +649,5 @@ void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNo
     CPGProtoNode *current = children[i];
     CPGProtoNode *next = children[i + 1];
     builder.connectCFG(current->getID(), next->getEntry());
-  }
-  for (size_t i = 0; i < children.size(); i++) {
-    CPGProtoNode *current = children[i];
-    current->setOrder(i + 1).setArgumentIndex(i + 1);
-    builder.connectAST(parent, current);
   }
 }

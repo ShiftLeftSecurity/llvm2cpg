@@ -66,6 +66,8 @@ private:
 
   // Sets the right CFG/AST connections
   void resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
+  void resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
+  void resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
 };
 
 } // namespace llvm2cpg

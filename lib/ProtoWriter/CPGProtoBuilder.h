@@ -26,9 +26,11 @@ public:
   CPGProtoNode *functionCallNode();
   CPGProtoNode *localVariableNode();
   CPGProtoNode *identifierNode();
+  CPGProtoNode *methodRef();
 
   void connectAST(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectREF(const CPGProtoNode *from, const CPGProtoNode *to);
+  void connectReceiver(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectCFG(uint64_t from, uint64_t to);
 
   cpg::CpgStruct *getGraph() const;

@@ -67,6 +67,10 @@ CPGProtoNode *CPGProtoBuilder::identifierNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_IDENTIFIER);
 }
 
+CPGProtoNode *CPGProtoBuilder::methodRef() {
+  return newNode(cpg::CpgStruct_Node_NodeType_METHOD_REF);
+}
+
 #pragma mark - Node Connection
 
 void CPGProtoBuilder::connectAST(const CPGProtoNode *from, const CPGProtoNode *to) {
@@ -75,6 +79,10 @@ void CPGProtoBuilder::connectAST(const CPGProtoNode *from, const CPGProtoNode *t
 
 void CPGProtoBuilder::connectREF(const CPGProtoNode *from, const CPGProtoNode *to) {
   connect(cpg::CpgStruct_Edge_EdgeType_REF, from->getID(), to->getID());
+}
+
+void CPGProtoBuilder::connectReceiver(const CPGProtoNode *from, const CPGProtoNode *to) {
+  connect(cpg::CpgStruct_Edge_EdgeType_RECEIVER, from->getID(), to->getID());
 }
 
 void CPGProtoBuilder::connectCFG(uint64_t from, uint64_t to) {
