@@ -4,6 +4,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/gep_array.ll
   ${CMAKE_CURRENT_LIST_DIR}/gep_mixed.ll
   ${CMAKE_CURRENT_LIST_DIR}/fneg_inst.ll
+  ${CMAKE_CURRENT_LIST_DIR}/phi.ll
   )
 
 foreach(source ${SOURCES})

@@ -12,6 +12,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/call_string.c
   ${CMAKE_CURRENT_LIST_DIR}/call_unknown_function.c
   ${CMAKE_CURRENT_LIST_DIR}/call_function_pointer.c
+  ${CMAKE_CURRENT_LIST_DIR}/phi.c
   )
 
 foreach(source ${SOURCES})

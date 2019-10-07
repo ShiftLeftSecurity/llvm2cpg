@@ -2,6 +2,7 @@
 
 namespace llvm {
 class Module;
+class Function;
 }
 
 namespace llvm2cpg {
@@ -11,6 +12,7 @@ public:
   void transformBitcode(llvm::Module &bitcode);
 
 private:
+  void destructPHINodes(llvm::Function &function);
 };
 
 } // namespace llvm2cpg

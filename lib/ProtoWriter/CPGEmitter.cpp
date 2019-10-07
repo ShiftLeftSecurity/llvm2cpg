@@ -118,12 +118,15 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   // Connect CFG for unresolved branches
   for (const llvm::BranchInst *branch : unresolvedBranches) {
     const llvm::Value *sourceInstruction = nullptr;
-    if (branch->isConditional()) {
+    // The branch condition can be a const expression, which is not an instruction
+    // In this case we consider the previous instruction to be the source of CFG edges
+    if (branch->isConditional() && llvm::isa<llvm::Instruction>(branch->getCondition())) {
       sourceInstruction = branch->getCondition();
     } else {
       // TODO: may yield nullptr if the building block is empty
       sourceInstruction = branch->getPrevNonDebugInstruction();
     }
+    assert(sourceInstruction);
     CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
     for (size_t i = 0; i < branch->getNumSuccessors(); i++) {
       llvm::BasicBlock *successor = branch->getSuccessor(i);

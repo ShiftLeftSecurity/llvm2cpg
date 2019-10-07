@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CPGFile.h"
+#include "llvm2cpg/CPG/CPGFile.h"
+#include "llvm2cpg/Transforms/Transforms.h"
 #include <vector>
 
 namespace llvm {
@@ -15,6 +16,7 @@ public:
   void addBitcode(llvm::Module *bitcode);
 
 private:
+  Transforms transforms;
   std::vector<CPGFile> files;
 };
 
