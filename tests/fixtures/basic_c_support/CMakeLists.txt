@@ -8,6 +8,10 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/switch.c
   ${CMAKE_CURRENT_LIST_DIR}/gep_flat_struct.c
   ${CMAKE_CURRENT_LIST_DIR}/gep_array.c
+  ${CMAKE_CURRENT_LIST_DIR}/call_int.c
+  ${CMAKE_CURRENT_LIST_DIR}/call_string.c
+  ${CMAKE_CURRENT_LIST_DIR}/call_unknown_function.c
+  ${CMAKE_CURRENT_LIST_DIR}/call_function_pointer.c
   )
 
 foreach(source ${SOURCES})

@@ -22,6 +22,7 @@ public:
   void visitSelectInst(llvm::SelectInst &instruction);
   void visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
   void visitUnaryOperator(llvm::UnaryOperator &instruction);
+  void visitCallInst(llvm::CallInst &instruction);
 
 private:
   std::vector<llvm::Value *> &arguments;

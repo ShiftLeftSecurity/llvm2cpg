@@ -9,6 +9,11 @@ object TestCpgPaths {
   val C_ReturnCastCPG = "@C_ReturnCastTest@"
   val C_SwitchCPG = "@C_SwitchTest@"
 
+  val C_CallIntCPG = "@C_CallIntTest@"
+  val C_CallStringCPG = "@C_CallStringTest@"
+  val C_CallUnknownFunctionCPG = "@C_CallUnknownFunctionTest@"
+  val C_CallFunctionPointerCPG = "@C_CallFunctionPointerTest@"
+
   val LLVM_SelectInstCPG = "@LLVM_SelectInstTest@"
   val LLVM_GEPFlatStructCPG = "@LLVM_GEPFlatStructTest@"
   val LLVM_GEPArrayCPG = "@LLVM_GEPArrayTest@"

@@ -25,6 +25,7 @@ CPGEmitter::CPGEmitter(CPGProtoBuilder &builder) : builder(builder) {}
 void CPGEmitter::emitMethod(const CPGMethod &method) {
   CPGProtoNode *methodNode = emitMethodNode(method);
   CPGProtoNode *methodReturnNode = emitMethodReturnNode(method);
+
   CPGProtoNode *methodBlock = emitMethodBlock(method);
 
   builder.connectAST(methodNode, methodBlock);
@@ -218,6 +219,16 @@ CPGProtoNode *CPGEmitter::visitUnaryOperator(llvm::UnaryOperator &instruction) {
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
+  if (instruction.getFunctionType()->getReturnType()->isVoidTy()) {
+    return emitFunctionCall(&instruction);
+  }
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitFunctionCall(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
   CPGProtoNode *returnNode = builder.returnNode();
   returnNode->setCode("return");
@@ -266,7 +277,7 @@ CPGProtoNode *CPGEmitter::emitMethodBlock(const CPGMethod &method) {
   return blockNode;
 }
 
-CPGProtoNode *CPGEmitter::emitRefOrConstant(const llvm::Value *value) {
+CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   if (isLocal(value) || isGlobal(value)) {
     return emitRef(value);
   }
@@ -305,7 +316,7 @@ static std::string constantIntToString(const llvm::APInt &constant) {
   return constant.toString(10, printAsSigned);
 }
 
-CPGProtoNode *CPGEmitter::emitConstant(const llvm::Value *value) {
+CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
   if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
     const llvm::APInt &constant = constantInt->getValue();
     CPGProtoNode *literalNode = builder.literalNode();
@@ -316,7 +327,34 @@ CPGProtoNode *CPGEmitter::emitConstant(const llvm::Value *value) {
     return literalNode;
   }
 
-  llvm::errs() << "Cannot handle constant yet: " << *value << "\n";
+  if (auto constantExpr = llvm::dyn_cast<llvm::ConstantExpr>(value)) {
+    return emitConstantExpr(constantExpr);
+  }
+
+  if (auto function = llvm::dyn_cast<llvm::Function>(value)) {
+    // TODO: handle functions without a name
+    CPGProtoNode *methodRef = builder.methodRef();
+    (*methodRef) //
+        .setCode(function->getName())
+        .setMethodInstFullName(function->getName());
+    resolveConnections(methodRef, {});
+    return methodRef;
+  }
+
+  llvm::errs() << "Cannot handle constant yet: " << *value << " " << value->getValueID() << "\n";
+
+  return builder.unknownNode();
+}
+
+CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
+  llvm::Instruction *constInstruction = constantExpr->getAsInstruction();
+  if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(constInstruction)) {
+    return emitGEP(gep);
+  }
+  if (auto cast = llvm::dyn_cast<llvm::CastInst>(constInstruction)) {
+    return emitCast(cast);
+  }
+  llvm::errs() << "Cannot handle constant expression yet: " << *constInstruction << "\n";
 
   return builder.unknownNode();
 }
@@ -456,7 +494,7 @@ CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
   return castCall;
 }
 
-CPGProtoNode *CPGEmitter::emitSelect(const llvm::SelectInst *instruction) {
+CPGProtoNode *CPGEmitter::emitSelect(llvm::SelectInst *instruction) {
   CPGProtoNode *selectCall = builder.functionCallNode();
   std::string name(instruction->getOpcodeName());
   (*selectCall) //
@@ -608,6 +646,52 @@ CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instructi
 
   resolveConnections(fnegCall, { argument });
   return fnegCall;
+}
+
+CPGProtoNode *CPGEmitter::emitFunctionCall(const llvm::CallInst *instruction) {
+  if (!instruction->getCalledFunction()) {
+    CPGProtoNode *callNode = builder.functionCallNode();
+    std::string name("fptr");
+    (*callNode) //
+        .setName(name)
+        .setCode(name)
+        .setTypeFullName(typeToString(instruction->getType()))
+        .setMethodInstFullName(name)
+        .setSignature("xxx")
+        .setDispatchType("STATIC");
+
+    CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
+    builder.connectReceiver(callNode, receiver);
+
+    std::vector<CPGProtoNode *> children({ receiver });
+    for (const llvm::Use &argument : instruction->args()) {
+      CPGProtoNode *arg = emitRefOrConstant(argument.get());
+      children.push_back(arg);
+    }
+    // TODO: Receiver should not be connected via AST edge
+    resolveConnections(callNode, children);
+    receiver->setArgumentIndex(0);
+    return callNode;
+  }
+
+  CPGProtoNode *call = builder.functionCallNode();
+  std::string name(instruction->getCalledFunction()->getName());
+  (*call) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  std::vector<CPGProtoNode *> children;
+  for (const llvm::Use &argument : instruction->args()) {
+    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+    children.push_back(arg);
+  }
+
+  resolveConnections(call, children);
+  return call;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {

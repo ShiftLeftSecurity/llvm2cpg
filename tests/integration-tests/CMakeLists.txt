@@ -6,6 +6,11 @@ add_integration_test(C_ReturnGlobalTest return_global_c_bc)
 add_integration_test(C_ReturnCastTest return_cast_c_bc)
 add_integration_test(C_SwitchTest switch_c_bc)
 
+add_integration_test(C_CallIntTest call_int_c_bc)
+add_integration_test(C_CallStringTest call_string_c_bc)
+add_integration_test(C_CallUnknownFunctionTest call_unknown_function_c_bc)
+add_integration_test(C_CallFunctionPointerTest call_function_pointer_c_bc)
+
 add_integration_test(LLVM_SelectInstTest select_inst_ll_bc)
 add_integration_test(LLVM_GEPFlatStructTest gep_flat_struct_ll_bc)
 add_integration_test(LLVM_GEPArrayTest gep_array_ll_bc)

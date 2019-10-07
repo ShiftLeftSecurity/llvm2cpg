@@ -33,14 +33,16 @@ private:
   CPGProtoNode *visitSelectInst(llvm::SelectInst &instruction);
   CPGProtoNode *visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
   CPGProtoNode *visitUnaryOperator(llvm::UnaryOperator &instruction);
+  CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
 
-  CPGProtoNode *emitRefOrConstant(const llvm::Value *value);
+  CPGProtoNode *emitRefOrConstant(llvm::Value *value);
   CPGProtoNode *emitRef(const llvm::Value *value);
-  CPGProtoNode *emitConstant(const llvm::Value *value);
+  CPGProtoNode *emitConstant(llvm::Value *value);
+  CPGProtoNode *emitConstantExpr(llvm::ConstantExpr *constantExpr);
   CPGProtoNode *emitLocalVariable(const llvm::Value *variable, size_t order);
   CPGProtoNode *emitFunctionArgument(const llvm::Value *argument, size_t order);
 
@@ -51,10 +53,11 @@ private:
   CPGProtoNode *emitBinaryCall(const llvm::BinaryOperator *binary);
   CPGProtoNode *emitCmpCall(const llvm::CmpInst *comparison);
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
-  CPGProtoNode *emitSelect(const llvm::SelectInst *instruction);
+  CPGProtoNode *emitSelect(llvm::SelectInst *instruction);
   CPGProtoNode *emitGEP(const llvm::GetElementPtrInst *instruction);
   CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
+  CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;

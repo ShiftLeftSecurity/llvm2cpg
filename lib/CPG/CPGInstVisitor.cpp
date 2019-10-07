@@ -64,6 +64,13 @@ void CPGInstVisitor::visitUnaryOperator(llvm::UnaryOperator &instruction) {
   recordTypes(&instruction);
 }
 
+void CPGInstVisitor::visitCallInst(llvm::CallInst &instruction) {
+  if (!instruction.getFunctionType()->getReturnType()->isVoidTy()) {
+    addTempVariable(&instruction);
+  }
+  recordTypes(&instruction);
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
   if (llvm::isa<llvm::BranchInst>(instruction)) {
     return;
