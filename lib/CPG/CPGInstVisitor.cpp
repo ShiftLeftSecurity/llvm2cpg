@@ -71,6 +71,10 @@ void CPGInstVisitor::visitCallInst(llvm::CallInst &instruction) {
   recordTypes(&instruction);
 }
 
+void CPGInstVisitor::visitPHINode(llvm::PHINode &instruction) {
+  llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
+}
+
 void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
   if (llvm::isa<llvm::BranchInst>(instruction)) {
     return;

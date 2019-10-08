@@ -23,6 +23,7 @@ public:
   void visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
   void visitUnaryOperator(llvm::UnaryOperator &instruction);
   void visitCallInst(llvm::CallInst &instruction);
+  void visitPHINode(llvm::PHINode &instruction);
 
 private:
   std::vector<llvm::Value *> &arguments;

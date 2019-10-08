@@ -232,6 +232,11 @@ CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
+  llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
+  return nullptr;
+}
+
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
   CPGProtoNode *returnNode = builder.returnNode();
   returnNode->setCode("return");

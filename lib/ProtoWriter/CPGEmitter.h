@@ -34,6 +34,7 @@ private:
   CPGProtoNode *visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
   CPGProtoNode *visitUnaryOperator(llvm::UnaryOperator &instruction);
   CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
+  CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
