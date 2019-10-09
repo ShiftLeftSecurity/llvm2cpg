@@ -17,5 +17,6 @@ add_integration_test(LLVM_GEPArrayTest gep_array_ll_bc)
 add_integration_test(LLVM_GEPMixedTest gep_mixed_ll_bc)
 add_integration_test(LLVM_FnegInstTest fneg_inst_ll_bc)
 add_integration_test(LLVM_PHINodeTest phi_ll_bc)
+add_integration_test(LLVM_ConstNullTest const_null_ll_bc)
 
 enable_integration_tests()

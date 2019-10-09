@@ -20,4 +20,5 @@ object TestCpgPaths {
   val LLVM_GEPMixedCPG = "@LLVM_GEPMixedTest@"
   val LLVM_FnegInstCPG = "@LLVM_FnegInstTest@"
   val LLVM_PHINodeCPG = "@LLVM_PHINodeTest@"
+  val LLVM_ConstNullCPG = "@LLVM_ConstNullTest@"
 }

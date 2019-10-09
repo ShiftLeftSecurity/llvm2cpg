@@ -349,6 +349,15 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return methodRef;
   }
 
+  if (llvm::isa<llvm::ConstantPointerNull>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(typeToString(value->getType()))
+        .setCode("nullptr");
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
+
   llvm::errs() << "Cannot handle constant yet: " << *value << " " << value->getValueID() << "\n";
 
   return builder.unknownNode();
