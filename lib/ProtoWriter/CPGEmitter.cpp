@@ -31,6 +31,13 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   builder.connectAST(methodNode, methodBlock);
   builder.connectAST(methodNode, methodReturnNode);
 
+  for (size_t argIndex = 0; argIndex < method.getArguments().size(); argIndex++) {
+    llvm::Value *argument = method.getArguments()[argIndex];
+    CPGProtoNode *parameterInNode = emitFunctionArgument(argument, argIndex);
+    builder.connectAST(methodNode, parameterInNode);
+    locals.insert(std::make_pair(argument, parameterInNode));
+  }
+
   /// Skipping method declaration (empty methods)
   if (method.getFunction().isDeclaration()) {
     return;
@@ -46,13 +53,6 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     CPGProtoNode *local = emitLocalVariable(variable, localIndex);
     builder.connectAST(methodBlock, local);
     locals.insert(std::make_pair(variable, local));
-  }
-
-  for (size_t argIndex = 0; argIndex < method.getArguments().size(); argIndex++) {
-    llvm::Value *argument = method.getArguments()[argIndex];
-    CPGProtoNode *parameterInNode = emitFunctionArgument(argument, argIndex);
-    builder.connectAST(methodNode, parameterInNode);
-    locals.insert(std::make_pair(argument, parameterInNode));
   }
 
   std::unordered_map<const llvm::Value *, CPGProtoNode *> topLevelNodes;

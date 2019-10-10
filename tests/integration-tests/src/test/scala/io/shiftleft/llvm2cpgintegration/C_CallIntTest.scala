@@ -35,6 +35,14 @@ class C_CallIntTest extends WordSpec with Matchers {
     callParam.code shouldBe "45"
   }
 
+  "Function declaration parameters" in {
+    val method = cpg.method.name("dosomething").head
+    method.start.parameter.l.size shouldBe 1
+    val param = method.start.parameter.head
+    param.name shouldBe "arg"
+    param.typeFullName shouldBe "i32"
+  }
+
   "CPG" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
