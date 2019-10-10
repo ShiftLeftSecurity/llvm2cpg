@@ -41,7 +41,7 @@ private:
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
 
   CPGProtoNode *emitRefOrConstant(llvm::Value *value);
-  CPGProtoNode *emitRef(const llvm::Value *value);
+  CPGProtoNode *emitRef(llvm::Value *value);
   CPGProtoNode *emitConstant(llvm::Value *value);
   CPGProtoNode *emitConstantExpr(llvm::ConstantExpr *constantExpr);
   CPGProtoNode *emitLocalVariable(const llvm::Value *variable, size_t order);
@@ -50,7 +50,7 @@ private:
   CPGProtoNode *emitAllocaCall(const llvm::Value *value);
   CPGProtoNode *emitAssignCall(const llvm::Value *value, CPGProtoNode *lhs, CPGProtoNode *rhs);
   CPGProtoNode *emitIndirectionCall(const llvm::Value *value, CPGProtoNode *pointerRef);
-  CPGProtoNode *emitDereference(const llvm::Value *value);
+  CPGProtoNode *emitDereference(llvm::Value *value);
   CPGProtoNode *emitBinaryCall(const llvm::BinaryOperator *binary);
   CPGProtoNode *emitCmpCall(const llvm::CmpInst *comparison);
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
@@ -64,6 +64,7 @@ private:
   bool isLocal(const llvm::Value *value) const;
   // Returns true if the value is a global variable, false otherwise
   bool isGlobal(const llvm::Value *value) const;
+  bool isConstExpr(const llvm::Value *value) const;
 
   // Returns a reference to the emitted local variable or argument
   const CPGProtoNode *getLocal(const llvm::Value *value) const;

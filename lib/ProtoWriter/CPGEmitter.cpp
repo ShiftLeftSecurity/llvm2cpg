@@ -293,8 +293,13 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   return emitConstant(value);
 }
 
-CPGProtoNode *CPGEmitter::emitRef(const llvm::Value *value) {
-  assert((isLocal(value) || isGlobal(value)) && "Cannot emit reference to a non-variable");
+CPGProtoNode *CPGEmitter::emitRef(llvm::Value *value) {
+  assert((isLocal(value) || isGlobal(value) || isConstExpr(value)) &&
+         "Cannot emit reference to a non-variable");
+
+  if (isConstExpr(value)) {
+    return emitConstantExpr(llvm::cast<llvm::ConstantExpr>(value));
+  }
 
   CPGProtoNode *valueRef = builder.identifierNode();
   (*valueRef) //
@@ -439,7 +444,7 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Value *value, CPGProto
   return indirectionCall;
 }
 
-CPGProtoNode *CPGEmitter::emitDereference(const llvm::Value *value) {
+CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
   CPGProtoNode *addressRef = emitRef(value);
   addressRef->setOrder(1).setArgumentIndex(1);
   CPGProtoNode *dereferenceCall = builder.functionCallNode();
@@ -722,6 +727,10 @@ bool CPGEmitter::isLocal(const llvm::Value *value) const {
 
 bool CPGEmitter::isGlobal(const llvm::Value *value) const {
   return globals.count(value) != 0;
+}
+
+bool CPGEmitter::isConstExpr(const llvm::Value *value) const {
+  return llvm::isa<llvm::ConstantExpr>(value);
 }
 
 void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {

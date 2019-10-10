@@ -6,6 +6,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/fneg_inst.ll
   ${CMAKE_CURRENT_LIST_DIR}/phi.ll
   ${CMAKE_CURRENT_LIST_DIR}/const_null.ll
+  ${CMAKE_CURRENT_LIST_DIR}/store_const_expr.ll
   )
 
 foreach(source ${SOURCES})
