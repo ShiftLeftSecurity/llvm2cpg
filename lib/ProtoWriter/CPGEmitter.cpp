@@ -653,7 +653,7 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   }
 
   CPGProtoNode *access = emitGEPAccess(indexType, index, false);
-  CPGProtoNode *lhs = emitRef(element);
+  CPGProtoNode *lhs = emitRefOrConstant(element);
   CPGProtoNode *rhs = emitRefOrConstant(index);
 
   resolveConnections(access, { lhs, rhs });
