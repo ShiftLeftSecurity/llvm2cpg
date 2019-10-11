@@ -773,6 +773,13 @@ CPGProtoNode *CPGEmitter::emitNoop() {
   return noop;
 }
 
+CPGProtoNode *CPGEmitter::emitUnhandled() {
+  CPGProtoNode *unhandled = builder.unknownNode();
+  unhandled->setCode("unhandled");
+  unhandled->setEntry(unhandled->getID());
+  return unhandled;
+}
+
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
   assert(isLocal(value) && "Local was not emitted");
   return locals.find(value)->second;

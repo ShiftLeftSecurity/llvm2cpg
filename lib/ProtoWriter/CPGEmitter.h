@@ -62,6 +62,7 @@ private:
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
   CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
   CPGProtoNode *emitNoop();
+  CPGProtoNode *emitUnhandled();
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
