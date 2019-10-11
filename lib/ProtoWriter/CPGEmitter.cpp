@@ -391,6 +391,16 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return literalNode;
   }
 
+  if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
+    const llvm::APFloat &constant = constantFP->getValueAPF();
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(typeToString(constantFP->getType()))
+        .setCode(std::to_string(constant.convertToDouble()));
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
+
   llvm::errs() << "Cannot handle constant yet: " << *value << " " << value->getValueID() << "\n";
 
   return builder.unknownNode();
