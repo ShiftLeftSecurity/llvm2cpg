@@ -414,6 +414,9 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
   if (auto cast = llvm::dyn_cast<llvm::CastInst>(constInstruction)) {
     return emitCast(cast);
   }
+  if (auto binary = llvm::dyn_cast<llvm::BinaryOperator>(constInstruction)) {
+    return emitBinaryCall(binary);
+  }
   llvm::errs() << "Cannot handle constant expression yet: " << *constInstruction << "\n";
 
   return builder.unknownNode();
