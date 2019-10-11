@@ -401,6 +401,15 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return literalNode;
   }
 
+  if (auto constantAggregateZero = llvm::dyn_cast<llvm::ConstantAggregateZero>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(typeToString(constantAggregateZero->getType()))
+        .setCode("zero initialized");
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
+
   llvm::errs() << "Cannot handle constant yet: " << *value << " " << value->getValueID() << "\n";
 
   return builder.unknownNode();
