@@ -7,6 +7,8 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/phi.ll
   ${CMAKE_CURRENT_LIST_DIR}/const_null.ll
   ${CMAKE_CURRENT_LIST_DIR}/store_const_expr.ll
+  ${CMAKE_CURRENT_LIST_DIR}/branches.ll
+  ${CMAKE_CURRENT_LIST_DIR}/switches.ll
   )
 
 foreach(source ${SOURCES})

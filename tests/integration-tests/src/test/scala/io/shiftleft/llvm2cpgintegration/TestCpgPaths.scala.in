@@ -22,5 +22,6 @@ object TestCpgPaths {
   val LLVM_PHINodeCPG = "@LLVM_PHINodeTest@"
   val LLVM_ConstNullCPG = "@LLVM_ConstNullTest@"
   val LLVM_StoreConstExprCPG = "@LLVM_StoreConstExprTest@"
-
+  val LLVM_BranchesCPG = "@LLVM_BranchesTest@"
+  val LLVM_SwitchesCPG = "@LLVM_SwitchesTest@"
 }

@@ -67,11 +67,9 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
       // So we collect them for later use
       if (auto branch = llvm::dyn_cast<llvm::BranchInst>(&instruction)) {
         unresolvedBranches.push_back(branch);
-        continue;
       }
       if (auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(&instruction)) {
         unresolvedSwitches.push_back(switchInst);
-        continue;
       }
       // TODO: Switch to llvm::Optional?
       // visit returns a CPG node for the instruction. If we ignore or do not support an
@@ -105,12 +103,15 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   // Connect CFG: method -> method body -> method return
   auto &basicBlocks = method.getFunction().getBasicBlockList();
 
+  /// TODO: Use getEntryBlock instead
   llvm::Instruction *firstInstruction = &basicBlocks.front().getInstList().front();
   assert(topLevelNodes.count(firstInstruction) != 0);
   CPGProtoNode *head = topLevelNodes.at(firstInstruction);
   builder.connectCFG(methodNode->getID(), head->getEntry());
 
+  /// TODO: 'ret' is not necessary the last instruction
   llvm::Instruction *lastInstruction = &basicBlocks.back().getInstList().back();
+  assert(llvm::isa<llvm::ReturnInst>(lastInstruction));
   assert(topLevelNodes.count(lastInstruction) != 0);
   CPGProtoNode *retNode = topLevelNodes.at(lastInstruction);
   builder.connectCFG(retNode->getID(), methodReturnNode->getID());
@@ -122,15 +123,16 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     // In this case we consider the previous instruction to be the source of CFG edges
     if (branch->isConditional() && llvm::isa<llvm::Instruction>(branch->getCondition())) {
       sourceInstruction = branch->getCondition();
-    } else {
-      // TODO: may yield nullptr if the building block is empty
+    } else if (branch->getPrevNonDebugInstruction()) {
       sourceInstruction = branch->getPrevNonDebugInstruction();
+    } else {
+      sourceInstruction = branch;
     }
-    assert(sourceInstruction);
+    assert(topLevelNodes.count(sourceInstruction));
     CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
     for (size_t i = 0; i < branch->getNumSuccessors(); i++) {
       llvm::BasicBlock *successor = branch->getSuccessor(i);
-      // TODO: won't work if the successor is an empty basic block
+      assert(topLevelNodes.count(&successor->front()) && "cannot connect successor");
       CPGProtoNode *destination = topLevelNodes.at(&successor->front());
       builder.connectCFG(source->getID(), destination->getEntry());
     }
@@ -138,11 +140,19 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 
   // Connect CFG for unresolved switches
   for (const llvm::SwitchInst *switchInst : unresolvedSwitches) {
-    const llvm::Value *sourceInstruction = switchInst->getCondition();
+    const llvm::Value *sourceInstruction = nullptr;
+    if (llvm::isa<llvm::Instruction>(switchInst->getCondition())) {
+      sourceInstruction = switchInst->getCondition();
+    } else if (switchInst->getPrevNonDebugInstruction()) {
+      sourceInstruction = switchInst->getPrevNonDebugInstruction();
+    } else {
+      sourceInstruction = switchInst;
+    }
+    assert(topLevelNodes.count(sourceInstruction));
     CPGProtoNode *source = topLevelNodes.at(sourceInstruction);
     for (size_t i = 0; i < switchInst->getNumSuccessors(); i++) {
       const llvm::BasicBlock *successor = switchInst->getSuccessor(i);
-      // TODO: won't work if the successor is an empty basic block
+      assert(topLevelNodes.count(&successor->front()));
       CPGProtoNode *destination = topLevelNodes.at(&successor->front());
       builder.connectCFG(source->getID(), destination->getEntry());
     }
@@ -234,6 +244,24 @@ CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
 
 CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
   llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
+  return nullptr;
+}
+
+CPGProtoNode *CPGEmitter::visitBranchInst(llvm::BranchInst &instruction) {
+  /// Emit noop CPG node to reflect the 'empty' basic block:
+  /// a basic block with only branch instruction
+  if (!instruction.getPrevNonDebugInstruction()) {
+    return emitNoop();
+  }
+  return nullptr;
+}
+
+CPGProtoNode *CPGEmitter::visitSwitchInst(llvm::SwitchInst &instruction) {
+  /// Emit noop CPG node to reflect the 'empty' basic block:
+  /// a basic block with only branch instruction
+  if (!instruction.getPrevNonDebugInstruction()) {
+    return emitNoop();
+  }
   return nullptr;
 }
 
@@ -546,7 +574,7 @@ static llvm::Type *nextIndexType(llvm::Type *type, llvm::Value *index) {
     return pointerType->getElementType();
   }
   if (auto structType = llvm::dyn_cast<llvm::StructType>(type)) {
-    llvm::ConstantInt *constantIndex = llvm::cast<llvm::ConstantInt>(index);
+    auto *constantIndex = llvm::cast<llvm::ConstantInt>(index);
     assert(constantIndex->getValue().getNumWords() == 1 &&
            "Struct members always indexed using i32");
     int32_t intIndex = *constantIndex->getValue().getRawData();
@@ -714,6 +742,13 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(const llvm::CallInst *instruction) {
 
   resolveConnections(call, children);
   return call;
+}
+
+CPGProtoNode *CPGEmitter::emitNoop() {
+  CPGProtoNode *noop = builder.unknownNode();
+  noop->setCode("noop");
+  noop->setEntry(noop->getID());
+  return noop;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {

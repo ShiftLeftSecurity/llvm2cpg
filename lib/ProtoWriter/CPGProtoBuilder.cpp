@@ -48,7 +48,7 @@ CPGProtoNode *CPGProtoBuilder::literalNode() {
 }
 
 CPGProtoNode *CPGProtoBuilder::unknownNode() {
-  return newNode(cpg::CpgStruct_Node_NodeType_UNKNOWN_NODE_TYPE);
+  return newNode(cpg::CpgStruct_Node_NodeType_UNKNOWN);
 }
 
 CPGProtoNode *CPGProtoBuilder::methodParameterInNode() {

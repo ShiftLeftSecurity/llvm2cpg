@@ -35,6 +35,8 @@ private:
   CPGProtoNode *visitUnaryOperator(llvm::UnaryOperator &instruction);
   CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
   CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
+  CPGProtoNode *visitBranchInst(llvm::BranchInst &instruction);
+  CPGProtoNode *visitSwitchInst(llvm::SwitchInst &instruction);
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
@@ -59,6 +61,7 @@ private:
   CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
   CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
+  CPGProtoNode *emitNoop();
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
