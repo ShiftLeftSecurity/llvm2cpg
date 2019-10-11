@@ -101,20 +101,17 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   }
 
   // Connect CFG: method -> method body -> method return
-  auto &basicBlocks = method.getFunction().getBasicBlockList();
-
-  /// TODO: Use getEntryBlock instead
-  llvm::Instruction *firstInstruction = &basicBlocks.front().getInstList().front();
-  assert(topLevelNodes.count(firstInstruction) != 0);
-  CPGProtoNode *head = topLevelNodes.at(firstInstruction);
+  llvm::Instruction *entryInstruction = method.getEntryInstruction();
+  assert(topLevelNodes.count(entryInstruction) != 0);
+  CPGProtoNode *head = topLevelNodes.at(entryInstruction);
   builder.connectCFG(methodNode->getID(), head->getEntry());
 
-  /// TODO: 'ret' is not necessary the last instruction
-  llvm::Instruction *lastInstruction = &basicBlocks.back().getInstList().back();
-  assert(llvm::isa<llvm::ReturnInst>(lastInstruction));
-  assert(topLevelNodes.count(lastInstruction) != 0);
-  CPGProtoNode *retNode = topLevelNodes.at(lastInstruction);
-  builder.connectCFG(retNode->getID(), methodReturnNode->getID());
+  for (llvm::Instruction *returnInstruction : method.getReturnInstructions()) {
+    assert(llvm::isa<llvm::ReturnInst>(returnInstruction));
+    assert(topLevelNodes.count(returnInstruction) != 0);
+    CPGProtoNode *retNode = topLevelNodes.at(returnInstruction);
+    builder.connectCFG(retNode->getID(), methodReturnNode->getID());
+  }
 
   // Connect CFG for unresolved branches
   for (const llvm::BranchInst *branch : unresolvedBranches) {

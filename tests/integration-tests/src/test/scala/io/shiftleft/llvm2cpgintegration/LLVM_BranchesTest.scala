@@ -16,7 +16,7 @@ class LLVM_BranchesTest extends WordSpec with Matchers {
     val noop1 = block.start.astChildren.head.asInstanceOf[Unknown]
     noop1.code shouldBe "noop"
 
-    val noop2 = block.start.astChildren.l.apply(1).asInstanceOf[Unknown]
+    val noop2 = block.start.astChildren.l.apply(2).asInstanceOf[Unknown]
     noop2.code shouldBe "noop"
     noop1.getId shouldNot be(noop2.getId)
 
@@ -29,7 +29,7 @@ class LLVM_BranchesTest extends WordSpec with Matchers {
     val block = method.start.block.head
 
     val noop1 = block.start.astChildren.head.asInstanceOf[Expression]
-    val noop2 = block.start.astChildren.l.apply(1).asInstanceOf[Expression]
+    val noop2 = block.start.astChildren.l.apply(2).asInstanceOf[Expression]
     val ret = block.start.astChildren.isReturnNode.head
 
     method.start.cfgFirst.head shouldBe noop1

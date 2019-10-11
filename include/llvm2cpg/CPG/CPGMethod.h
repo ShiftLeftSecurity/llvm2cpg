@@ -10,6 +10,7 @@ namespace llvm {
 class Function;
 class Value;
 class Type;
+class Instruction;
 } // namespace llvm
 
 namespace llvm2cpg {
@@ -30,6 +31,9 @@ public:
   const std::string &getSignature() const;
   bool isExternal() const;
   llvm::Function &getFunction() const;
+
+  llvm::Instruction *getEntryInstruction() const;
+  std::vector<llvm::Instruction *> getReturnInstructions() const;
 
   const std::vector<llvm::Value *> &getArguments() const;
   const std::vector<llvm::Value *> &getLocalVariables() const;

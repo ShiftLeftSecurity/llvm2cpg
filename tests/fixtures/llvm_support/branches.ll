@@ -2,11 +2,11 @@ define void @empty_branches() {
 entry:
   br label %mid
 
-mid:
-  br label %exit
-
 exit:
   ret void
+
+mid:
+  br label %exit
 }
 
 define void @empty_conditional_branches() {
