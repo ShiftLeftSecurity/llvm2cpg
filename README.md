@@ -26,67 +26,72 @@ tar xf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
 mv clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04/ 8.0.0
 ```
 
+Next we need to figure out the path to llvm (find `LLVMConfig.cmake`) and, for validation tests, codepropertygraph (`cpgvalidator.sh`). For simplicity, we ume that these are in `/opt/llvm/` and `/opt/codepropertygraph` (if you want to copy-paste commands from here without thinking, then just place symlinks, like e.g. `ln -s /usr/lib/cmake/llvm/ /opt/llvm`).
+
 Prepare build system:
 
 ```
-git clone git@github.com:ShiftLeftSecurity/llvm2cpg.git --recursive
-mkdir build
-cd build
-cmake -G Ninja \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
-    -DPATH_TO_LLVM=/opt/llvm/8.0.0 \
-    ../llvm2cpg
+$ git clone git@github.com:ShiftLeftSecurity/llvm2cpg.git --recursive
+$ cd llvm2cpg
+llvm2cpg$ (cd target; cmake -G Ninja     -DCMAKE_C_COMPILER=clang     -DCMAKE_CXX_COMPILER=clang++     -DPATH_TO_LLVM=/opt/llvm/  -DPATH_TO_CODEPROPERTYGRAPH=/opt/codepropertygraph ..)
 ```
 
+We then want to build everything we need:
+```
+target$ ninja unit-tests
+target$ ./tests/unit-tests/unit-tests
+target$ ninja cpg-proto-writer
+
+```
 #### Build and run tests:
 
 ```
-ninja unit-tests
-./tests/unit-tests/unit-tests
+target$ ninja unit-tests
+target$ ./tests/unit-tests/unit-tests
 ```
 
 #### Build and run `cpg-proto-writer`
 
 ```
-ninja cpg-proto-writer
-./tools/cpg-proto-writer/cpg-proto-writer ./tests/fixtures/hello_world/hello_world.bc
-```
-
-You should see the following output:
-
-```
-Processing ./tests/fixtures/hello_world/hello_world.bc
+target$ ninja cpg-proto-writer
+target$ ./tools/cpg-proto-writer/cpg-proto-writer ./tests/fixtures/basic_c_support/return_constant.bc
+Processing ./tests/fixtures/basic_c_support/return_constant.bc
 CPG is successfully save on disk: ./cpg.bin.zip
 ```
 
 Getting help from `cpg-proto-writer`:
 
 ```
-./tools/cpg-proto-writer/cpg-proto-writer --help
+target$ ./tools/cpg-proto-writer/cpg-proto-writer --help-hidden
+USAGE: cpg-proto-writer [options] Bitcode files
+...
+```
+We can validate the file by 
+```
+target$ /opt/codepropertygraph/cpgvalidator.sh ./cpg.bin.zip 
+CPG construction finished in 554ms.
+Found 0 errors.
 ```
 
 ## Testing
 
-LLVM Bitcode is platform specific. In order to write tests against bitcode it is recommended
-to compile it on the target (developer) machine.
+LLVM IR is target specific. In order to write tests against C code, it is recommended
+to compile it on the target (developer) machine. TODO: Fix build config to use fixed target triple by default.
+
+### Unit Tests
+We have already seen the unit tests:
+```
+target$ ninja unit-tests
+target$ ./tests/unit-tests/unit-tests
+```
 
 #### Validation Tests
 
-There is a shortcut for the fast iterations over `cpg-proto-writer`: validation tests.
+TODO: Fix validation tests.
 
-To enable it you need to pass another option to the CMake. Example:
+Validation tests should be run via ninja
 
-```
-cmake -G Ninja \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
-    -DPATH_TO_LLVM=/opt/llvm/8.0.0 \
-    -DPATH_TO_CODEPROPERTYGRAPH=/opt/codepropertygraph
-    ../llvm2cpg
-```
-
-Otherwise, the validation tests will be disabled.
+There is a shortcut for the fast iterations over `cpg-proto-writer`: validation tests. This only works if `-DPATH_TO_CODEPROPERTYGRAPH` was set.
 
 You should specify CPG for which bitcode file you want to validate in the `tests/validation-tests/CMakeLists.txt`.
 Example:
@@ -123,17 +128,14 @@ There are two ways to run the tests. What follows is assuming that you have the 
 Run tests using `sbt`:
 
 ```
-cd build
-ninja prepare-integration-tests
-cd ../llvm2cpg/tests/integration-tests
-sbt test
+target$ ninja prepare-integration-tests
+tests/integration-tests$ sbt test
 ```
 
 Run tests using `llvm2cpg` build system:
 
 ```
-cd build
-ninja run-integration-tests
+target$ ninja run-integration-tests
 ```
 
 ##### Adding new test
@@ -270,3 +272,7 @@ compile_fixture(
 ```
 
 The fixture names must be unique across the project. Otherwise, you will get an error from CMake.
+
+
+#Viewing generated cpgs
+For easy visualization of the output, we have some scripts in the `devtools` folder. These require python3, graphviz, and the feh image viewer. 
