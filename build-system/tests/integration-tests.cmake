@@ -21,6 +21,9 @@ function(add_integration_test test_name)
     COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
     DEPENDS cpg-proto-writer ${bitcode_dependencies}
     )
+  add_custom_target(generate-${test_name}-CPG ALL
+    DEPENDS ${cpg}
+    )
 
   if (PATH_TO_CODEPROPERTYGRAPH)
     add_custom_target(validation-${test_name}
@@ -61,6 +64,10 @@ function(enable_integration_tests)
   add_custom_target(prepare-integration-tests
     DEPENDS ${cpg_files}
   )
+  # Alias
+  add_custom_target(generate-CPGs
+    DEPENDS ${cpg_files}
+    )
 
   add_custom_target(run-integration-tests
     COMMAND cmake -E echo "Running all integration tests"
