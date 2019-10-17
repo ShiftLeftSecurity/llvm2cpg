@@ -53,7 +53,6 @@ function(enable_integration_tests)
     set (cpg ${output_dir}/cpg.bin.zip)
     set (${test_name} ${cpg})
     set (cpg_files ${cpg_files} ${cpg})
-    set (test_targets ${test_targets} integration-${test_name})
   endforeach()
 
   set (test_path ${CMAKE_SOURCE_DIR}/tests/integration-tests/src/test/scala/io/shiftleft/llvm2cpgintegration)
@@ -64,9 +63,12 @@ function(enable_integration_tests)
 
   add_custom_target(prepare-integration-tests
     DEPENDS ${cpg_files}
-    )
+  )
 
   add_custom_target(run-integration-tests
-    DEPENDS ${test_targets}
+    COMMAND cmake -E echo "Running all integration tests"
+    COMMAND sbt test
+    DEPENDS prepare-integration-tests
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
 endfunction()
