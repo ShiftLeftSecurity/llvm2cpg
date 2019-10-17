@@ -7,11 +7,12 @@ namespace llvm2cpg {
 
 class CPGProtoWriter : public CPGWriter {
 public:
-  explicit CPGProtoWriter(std::string outputDir, bool debug = false);
+  explicit CPGProtoWriter(std::string outputDir, std::string outputName, bool debug = false);
   void writeCpg(const CPG &cpg) override;
 
 private:
   std::string outputDir;
+  std::string outputName;
   bool debug;
 };
 

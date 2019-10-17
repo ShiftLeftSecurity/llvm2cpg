@@ -15,12 +15,10 @@ function(add_integration_test test_name)
     set (bitcode_dependencies ${bitcode_dependencies} build-${fixture_name}-fixture)
   endforeach()
 
-  set (output_dir ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
-  set (cpg ${output_dir}/cpg.bin.zip)
+  set (cpg ${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpg.bin.zip)
 
-  file(MAKE_DIRECTORY ${output_dir})
   add_custom_command(OUTPUT ${cpg}
-    COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${output_dir} ${bitcode_files}
+    COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
     DEPENDS cpg-proto-writer ${bitcode_dependencies}
     )
 
@@ -49,8 +47,7 @@ endfunction()
 function(enable_integration_tests)
   get_property(tests GLOBAL PROPERTY INTEGRATION_TESTS)
   foreach(test_name ${tests})
-    set (output_dir ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
-    set (cpg ${output_dir}/cpg.bin.zip)
+    set (cpg ${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpg.bin.zip)
     set (${test_name} ${cpg})
     set (cpg_files ${cpg_files} ${cpg})
   endforeach()

@@ -16,6 +16,11 @@ llvm::cl::opt<std::string>
                     llvm::cl::desc("Where to store cpg.bin.zip (defaults to '.')"),
                     llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init("."));
 
+llvm::cl::opt<std::string> OutputName("output-name", llvm::cl::Optional,
+                                      llvm::cl::desc("Output filename (defaults to 'cpg.bin.zip')"),
+                                      llvm::cl::cat(CPGProtoWriterCategory),
+                                      llvm::cl::init("cpg.bin.zip"));
+
 int main(int argc, char **argv) {
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
   llvm::cl::ParseCommandLineOptions(argc, argv);
@@ -32,7 +37,7 @@ int main(int argc, char **argv) {
     cpg.addBitcode(bitcode.back().get());
   }
 
-  llvm2cpg::CPGProtoWriter writer(OutputDirectory.getValue());
+  llvm2cpg::CPGProtoWriter writer(OutputDirectory.getValue(), OutputName.getValue(), false);
   writer.writeCpg(cpg);
 
   return 0;

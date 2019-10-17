@@ -5,11 +5,11 @@
 
 using namespace llvm2cpg;
 
-CPGProtoWriter::CPGProtoWriter(std::string outputDir, bool debug)
-    : outputDir(std::move(outputDir)), debug(debug) {}
+CPGProtoWriter::CPGProtoWriter(std::string outputDir, std::string outputName, bool debug)
+    : outputDir(std::move(outputDir)), outputName(std::move(outputName)), debug(debug) {}
 
 void CPGProtoWriter::writeCpg(const llvm2cpg::CPG &cpg) {
-  auto zipPath = outputDir + "/cpg.bin.zip";
+  auto zipPath = outputDir + "/" + outputName;
   CPGProtoAdapter adapter(zipPath, debug);
   adapter.writeCpg(cpg);
 }
