@@ -37,6 +37,8 @@ private:
   CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
   CPGProtoNode *visitBranchInst(llvm::BranchInst &instruction);
   CPGProtoNode *visitSwitchInst(llvm::SwitchInst &instruction);
+  CPGProtoNode *visitFenceInst(llvm::FenceInst &instruction);
+
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
@@ -63,6 +65,7 @@ private:
   CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
   CPGProtoNode *emitNoop();
   CPGProtoNode *emitUnhandled();
+  CPGProtoNode *emitFence(const llvm::FenceInst *instruction);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;

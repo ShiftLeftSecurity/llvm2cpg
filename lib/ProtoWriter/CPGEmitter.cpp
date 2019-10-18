@@ -262,6 +262,10 @@ CPGProtoNode *CPGEmitter::visitSwitchInst(llvm::SwitchInst &instruction) {
   return nullptr;
 }
 
+CPGProtoNode *CPGEmitter::visitFenceInst(llvm::FenceInst &instruction) {
+  return emitFence(&instruction);
+}
+
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
   CPGProtoNode *returnNode = builder.returnNode();
   returnNode->setCode("return");
@@ -775,6 +779,20 @@ CPGProtoNode *CPGEmitter::emitUnhandled() {
   unhandled->setCode("unhandled");
   unhandled->setEntry(unhandled->getID());
   return unhandled;
+}
+
+CPGProtoNode *CPGEmitter::emitFence(const llvm::FenceInst *instruction) {
+  CPGProtoNode *callNode = builder.functionCallNode();
+(*callNode) //
+      .setName("fence")
+      .setCode("fence")
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName("fence")
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+    callNode->setEntry(callNode->getID());
+    resolveConnections(callNode, {});
+return callNode;
 }
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {

@@ -21,5 +21,7 @@ add_integration_test(LLVM_ConstNullTest const_null_ll_bc)
 add_integration_test(LLVM_StoreConstExprTest store_const_expr_ll_bc)
 add_integration_test(LLVM_BranchesTest branches_ll_bc)
 add_integration_test(LLVM_SwitchesTest switches_ll_bc)
+add_integration_test(LLVM_FenceTest fence_ll_bc)
+
 
 enable_integration_tests()
