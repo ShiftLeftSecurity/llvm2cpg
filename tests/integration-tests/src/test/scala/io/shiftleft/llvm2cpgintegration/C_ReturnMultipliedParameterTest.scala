@@ -2,10 +2,8 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.language.types.expressions.Return
-import org.scalatest.{Matchers, WordSpec}
 
-class C_ReturnMultipliedParameterTest extends WordSpec with Matchers {
+class C_ReturnMultipliedParameterTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnMultipliedParameterCPG)
   private val methodName = "basic_c_support"
 
@@ -20,17 +18,7 @@ class C_ReturnMultipliedParameterTest extends WordSpec with Matchers {
   }
 
   "types" in {
-    cpg.types.l.size shouldBe 3
-    cpg.types.name("i32").l.size shouldBe 1
-    cpg.types.name("i32*").l.size shouldBe 1
-    cpg.types.name("void").l.size shouldBe 1
-  }
-
-  "typeDecl" in {
-    cpg.typeDecl.l.size shouldBe 3
-    cpg.typeDecl.name("i32").l.size shouldBe 1
-    cpg.typeDecl.name("i32*").l.size shouldBe 1
-    cpg.typeDecl.name("void").l.size shouldBe 1
+    validateTypes(cpg, Set("ANY", "i32", "i32*"))
   }
 
   "methods" in {

@@ -2,7 +2,6 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   %struct.Point = type { i32, i32 }
@@ -14,9 +13,13 @@ import org.scalatest.{Matchers, WordSpec}
   store i32 15, i32* %y                                               ; 4
   ret void                                                            ; 5
 */
-class LLVM_GEPFlatStructTest extends WordSpec with Matchers {
+class LLVM_GEPFlatStructTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPFlatStructCPG)
   private val methodName = "flat_struct"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "struct.Point", "%struct.Point*", "i32", "i32*", "void"))
+  }
 
   "locals" in {
     val method = cpg.method.name(methodName).head

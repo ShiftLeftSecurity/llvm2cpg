@@ -2,10 +2,13 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class LLVM_FenceTest extends WordSpec with Matchers {
+class LLVM_FenceTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FenceTestCpg)
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "void"))
+  }
 
   "CFG" in {
     // ret i32* null

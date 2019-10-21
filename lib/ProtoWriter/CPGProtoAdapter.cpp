@@ -1,5 +1,6 @@
 #include "CPGProtoAdapter.h"
 #include "CPGEmitter.h"
+#include "CPGTypeEmitter.h"
 #include <google/protobuf/text_format.h>
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
@@ -10,74 +11,46 @@
 
 using namespace llvm2cpg;
 
-static std::string typeToString(llvm::Type *type) {
-  std::string typeName;
-  llvm::raw_string_ostream stream(typeName);
-  type->print(stream);
-  stream.flush();
-  return typeName;
-}
-
 CPGProtoAdapter::CPGProtoAdapter(std::string zipPath, bool debug)
     : debug(debug), zipPath(std::move(zipPath)) {}
 
 void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  auto metadata = builder.metadataNode();
+  CPGProtoNode *metadata = builder.metadataNode();
   (*metadata) //
       .setLanguage(cpg::LANGUAGES::C)
       .setVersion("0");
 
-  std::set<llvm::Type *> types;
+  auto globalNamespaceBlockNode = builder.namespaceBlockNode();
+  (*globalNamespaceBlockNode) //
+      .setName("<global>")
+      .setFullName("<global>")
+      .setOrder(0);
+
+  CPGTypeEmitter typeEmitter(builder);
   for (auto &file : cpg.getFiles()) {
-    std::copy(std::begin(file.getTypes()),
-              std::end(file.getTypes()),
-              std::inserter(types, types.begin()));
-  }
-
-  for (auto type : types) {
-    auto typeName = typeToString(type);
-
-    auto typeDeclNode = builder.typeDeclNode();
-    (*typeDeclNode) //
-        .setName(typeName)
-        .setFullName(typeName)
-        .setIsExternal(false)
-        .setOrder(0)
-        .setASTParentType("DANGLING_AREA")
-        .setASTParentFullName("dangling_area");
-
-    auto typeNode = builder.typeNode();
-    (*typeNode) //
-        .setName(typeName)
-        .setFullName(typeName)
-        .setTypeDeclFullName(typeName);
-  }
-
-  for (auto &file : cpg.getFiles()) {
-
     auto fileNode = builder.fileNode();
     (*fileNode) //
         .setName(file.getName())
         .setOrder(0);
 
-    auto namespaceBlockName = file.getName() + "_global";
     auto namespaceBlockNode = builder.namespaceBlockNode();
     (*namespaceBlockNode) //
-        .setName(namespaceBlockName)
-        .setFullName(namespaceBlockName)
+        .setName(file.getGlobalNamespaceName())
+        .setFullName(file.getGlobalNamespaceName())
         .setOrder(0);
 
     builder.connectAST(fileNode, namespaceBlockNode);
 
-    CPGEmitter emitter(builder);
+    CPGEmitter emitter(builder, typeEmitter, file);
 
     for (auto &method : file.getMethods()) {
       emitter.emitMethod(method);
     }
   }
 
+  typeEmitter.emitRecordedTypes();
   saveToArchive();
 }
 

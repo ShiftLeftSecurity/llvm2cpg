@@ -2,7 +2,6 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
 /*
 Original code:
@@ -47,9 +46,13 @@ cond.end:                                         ; preds = %cond.false, %cond.t
  ret i32 %cond.reload                             ; 6
 */
 
-class LLVM_PHINodeTest extends WordSpec with Matchers {
+class LLVM_PHINodeTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_PHINodeCPG)
   private val methodName = "foobar"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

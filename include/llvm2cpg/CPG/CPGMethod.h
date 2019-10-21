@@ -25,7 +25,6 @@ public:
   CPGMethod(const CPGMethod &) = delete;
   CPGMethod &operator=(const CPGMethod &) = delete;
 
-  const std::set<llvm::Type *> &getTypes() const;
   llvm::Type *getReturnType() const;
   const std::string &getName() const;
   const std::string &getSignature() const;
@@ -40,7 +39,6 @@ public:
 
 private:
   llvm::Function &function;
-  std::set<llvm::Type *> types;
   std::string name;
 
   std::vector<llvm::Value *> arguments;

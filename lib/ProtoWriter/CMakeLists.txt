@@ -4,6 +4,7 @@ set (SOURCES
   CPGProtoAdapter.cpp
   CPGProtoBuilder.cpp
   CPGProtoNode.cpp
+  CPGTypeEmitter.cpp
   )
 
 add_library(CPGProtoWriter ${SOURCES})

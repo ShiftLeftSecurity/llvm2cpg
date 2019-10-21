@@ -2,11 +2,14 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class C_SwitchTest extends WordSpec with Matchers {
+class C_SwitchTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_SwitchCPG)
   private val methodName = "basic_c_support"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+  }
 
   "CFG" in {
     /*

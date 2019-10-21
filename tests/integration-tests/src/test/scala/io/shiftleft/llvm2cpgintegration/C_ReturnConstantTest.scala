@@ -1,11 +1,9 @@
 package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
-import org.scalatest.{Matchers, WordSpec}
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.language.types.expressions.{Literal, Return}
 
-class C_ReturnConstantTest extends WordSpec with Matchers {
+class C_ReturnConstantTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnConstantCPG)
   private val methodName = "basic_c_support"
 
@@ -20,15 +18,7 @@ class C_ReturnConstantTest extends WordSpec with Matchers {
   }
 
   "types" in {
-    cpg.types.l.size shouldBe 2
-    cpg.types.name("i32").l.size shouldBe 1
-    cpg.types.name("void").l.size shouldBe 1
-  }
-
-  "typeDecl" in {
-    cpg.typeDecl.l.size shouldBe 2
-    cpg.typeDecl.name("i32").l.size shouldBe 1
-    cpg.typeDecl.name("void").l.size shouldBe 1
+    validateTypes(cpg, Set("ANY", "i32"))
   }
 
   "methods" in {

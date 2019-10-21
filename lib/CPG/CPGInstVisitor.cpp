@@ -9,11 +9,10 @@ static void setNameIfEmpty(llvm::Value *value, const std::string &name) {
 }
 
 CPGInstVisitor::CPGInstVisitor(std::vector<llvm::Value *> &arguments,
-                               std::vector<llvm::Value *> &variables, std::set<llvm::Type *> &types)
-    : arguments(arguments), variables(variables), types(types) {}
+                               std::vector<llvm::Value *> &variables)
+    : arguments(arguments), variables(variables) {}
 
 void CPGInstVisitor::visitFunction(llvm::Function &function) {
-  types.insert(function.getReturnType());
   for (auto &arg : function.args()) {
     setNameIfEmpty(&arg, "arg");
     arguments.push_back(&arg);
@@ -23,29 +22,15 @@ void CPGInstVisitor::visitFunction(llvm::Function &function) {
 void CPGInstVisitor::visitInstruction(llvm::Instruction &instruction) {
   if (!instruction.getType()->isVoidTy()) {
     addTempVariable(&instruction);
-  }  
-  recordTypes(&instruction);
+  }
 }
 
 void CPGInstVisitor::visitAllocaInst(llvm::AllocaInst &value) {
   addLocalVariable(&value);
-  recordTypes(&value);
 }
 
 void CPGInstVisitor::visitPHINode(llvm::PHINode &instruction) {
   llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
-}
-
-void CPGInstVisitor::recordTypes(llvm::Instruction *instruction) {
-  if (llvm::isa<llvm::BranchInst>(instruction)) {
-    return;
-  }
-  /// TODO: Feels like too much overhead to collect this info here
-  /// It might be better to emit it lazily during CPG generation
-  for (auto &operand : instruction->operands()) {
-    types.insert(operand->getType());
-  }
-  types.insert(instruction->getType());
 }
 
 void CPGInstVisitor::addLocalVariable(llvm::Value *value) {

@@ -2,7 +2,6 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   %struct.RT = type { i8, [10 x [20 x i32]], i8 }
@@ -12,9 +11,13 @@ import org.scalatest.{Matchers, WordSpec}
   ret i32* %index                                                                       ; 2
 */
 
-class LLVM_GEPMixedTest extends WordSpec with Matchers {
+class LLVM_GEPMixedTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPMixedCPG)
   private val methodName = "gep_mixed"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "%struct.ST*", "struct.ST", "struct.RT", "i32", "i32*", "i64", "[20 x i32]", "[10 x [20 x i32]]"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

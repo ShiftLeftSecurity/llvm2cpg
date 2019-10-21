@@ -3,10 +3,13 @@ package io.shiftleft.llvm2cpgintegration
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class LLVM_BranchesTest extends WordSpec with Matchers {
+class LLVM_BranchesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesCPG)
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "void"))
+  }
 
   "empty branches AST" in {
     val method = cpg.method.name("empty_branches").head

@@ -2,8 +2,6 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.language.types.expressions.MethodRef
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   %pointer.addr = alloca void (...)*, align 8
@@ -12,9 +10,13 @@ import org.scalatest.{Matchers, WordSpec}
   call void (...) %0()
   ret void
  */
-class C_CallFunctionPointerTest extends WordSpec with Matchers {
+class C_CallFunctionPointerTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_CallFunctionPointerCPG)
   private val methodName = "basic_c_support"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "void (...)*", "void (...)**", "void"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

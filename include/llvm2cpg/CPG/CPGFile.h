@@ -18,8 +18,8 @@ public:
   CPGFile(CPGFile &&that) noexcept;
 
   const std::string &getName() const;
+  const std::string &getGlobalNamespaceName() const;
   const std::vector<CPGMethod> &getMethods() const;
-  const std::set<llvm::Type *> &getTypes() const;
 
   CPGFile &operator=(CPGFile &&) = delete;
   CPGFile(const CPGFile &) = delete;
@@ -27,8 +27,8 @@ public:
 
 private:
   std::string name;
+  std::string globalNamespaceName;
   std::vector<CPGMethod> methods;
-  std::set<llvm::Type *> types;
 };
 
 } // namespace llvm2cpg

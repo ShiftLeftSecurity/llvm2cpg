@@ -2,11 +2,14 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class LLVM_FnegInstTest extends WordSpec with Matchers {
+class LLVM_FnegInstTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FnegInstCPG)
   private val methodName = "negate"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "float"))
+  }
 
   "AST" in {
   /*

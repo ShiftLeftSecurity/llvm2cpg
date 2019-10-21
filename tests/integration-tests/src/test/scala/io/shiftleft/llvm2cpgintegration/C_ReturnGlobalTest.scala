@@ -2,11 +2,14 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class C_ReturnGlobalTest extends WordSpec with Matchers {
+class C_ReturnGlobalTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnGlobalCPG)
   private val methodName = "basic_c_support"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+  }
 
   "method AST" in {
     /*

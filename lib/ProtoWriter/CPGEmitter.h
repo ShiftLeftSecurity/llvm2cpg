@@ -1,23 +1,28 @@
 #pragma once
 
-#include "CPGProtoBuilder.h"
-#include "CPGProtoNode.h"
 #include <llvm/IR/InstVisitor.h>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace llvm2cpg {
 
 class CPGMethod;
+class CPGFile;
+class CPGProtoBuilder;
 class CPGProtoNode;
+class CPGTypeEmitter;
 
 class CPGEmitter : public llvm::InstVisitor<CPGEmitter, CPGProtoNode *> {
   friend llvm::InstVisitor<CPGEmitter, CPGProtoNode *>;
 
 public:
-  explicit CPGEmitter(CPGProtoBuilder &builder);
+  CPGEmitter(CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter, const CPGFile &file);
   void emitMethod(const CPGMethod &method);
 
 private:
   CPGProtoBuilder &builder;
+  CPGTypeEmitter &typeEmitter;
+  const CPGFile &file;
 
   std::unordered_map<const llvm::Value *, CPGProtoNode *> locals;
   std::unordered_set<const llvm::Value *> globals;
@@ -83,6 +88,8 @@ private:
   void resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
+
+  std::string getTypeName(const llvm::Type *type);
 };
 
 } // namespace llvm2cpg

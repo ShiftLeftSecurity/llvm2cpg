@@ -3,7 +3,6 @@ package io.shiftleft.llvm2cpgintegration
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 import io.shiftleft.semanticcpg.language.types.expressions.MethodRef
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   declare i32 @something(...)
@@ -13,9 +12,13 @@ import org.scalatest.{Matchers, WordSpec}
   %call = call i32 (i8*, ...) bitcast (i32 (...)* @something to i32 (i8*, ...)*)(i8* %tmp)
   ret void
 */
-class C_CallUnknownFunctionTest extends WordSpec with Matchers {
+class C_CallUnknownFunctionTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_CallUnknownFunctionCPG)
   private val methodName = "basic_c_support"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (i8*, ...)*"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

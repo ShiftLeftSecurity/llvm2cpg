@@ -4,18 +4,14 @@
 using namespace llvm2cpg;
 
 CPGMethod::CPGMethod(llvm::Function &function)
-    : function(function), types(), name(function.getName().str()), arguments(), localVariables() {
-  CPGInstVisitor visitor(arguments, localVariables, types);
+    : function(function), name(function.getName().str()), arguments(), localVariables() {
+  CPGInstVisitor visitor(arguments, localVariables);
   visitor.visit(function);
 }
 
 CPGMethod::CPGMethod(CPGMethod &&that) noexcept
-    : function(that.function), types(std::move(that.types)), name(std::move(that.name)),
-      arguments(std::move(that.arguments)), localVariables(std::move(that.localVariables)) {}
-
-const std::set<llvm::Type *> &CPGMethod::getTypes() const {
-  return types;
-}
+    : function(that.function), name(std::move(that.name)), arguments(std::move(that.arguments)),
+      localVariables(std::move(that.localVariables)) {}
 
 llvm::Type *CPGMethod::getReturnType() const {
   assert(function.getFunctionType() != nullptr);

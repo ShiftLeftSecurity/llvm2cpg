@@ -2,15 +2,18 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   %ptr = getelementptr inbounds i32, i32* %x, i64 1  ;  1
   ret i32* %ptr                                      ;  2
 */
-class LLVM_GEPArrayTest extends WordSpec with Matchers {
+class LLVM_GEPArrayTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPArrayCPG)
   private val methodName = "gep_array"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i32*", "i64"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

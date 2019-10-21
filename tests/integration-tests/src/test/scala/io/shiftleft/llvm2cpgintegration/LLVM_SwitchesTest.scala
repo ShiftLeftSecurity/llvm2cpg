@@ -3,11 +3,14 @@ package io.shiftleft.llvm2cpgintegration
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
-class LLVM_SwitchesTest extends WordSpec with Matchers {
+class LLVM_SwitchesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_SwitchesCPG)
   private val methodName = "switches";
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "void"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head

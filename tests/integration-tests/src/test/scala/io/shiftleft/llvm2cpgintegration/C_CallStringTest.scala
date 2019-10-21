@@ -2,7 +2,6 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
 
 /*
   @.str = private unnamed_addr constant [6 x i8] c"hello\00"
@@ -10,9 +9,13 @@ import org.scalatest.{Matchers, WordSpec}
   %call = call i32 @printstuff(i8* getelementptr ([6 x i8], [6 x i8]* @.str, i32 0, i32 0))
   ret void
 */
-class C_CallStringTest extends WordSpec with Matchers {
+class C_CallStringTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_CallStringCPG)
   private val methodName = "basic_c_support"
+
+  "types" in {
+    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "[6 x i8]", "[6 x i8]*"))
+  }
 
   "AST" in {
     val method = cpg.method.name(methodName).head
