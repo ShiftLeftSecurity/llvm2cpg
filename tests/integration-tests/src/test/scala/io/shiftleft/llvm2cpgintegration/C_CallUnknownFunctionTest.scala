@@ -38,6 +38,7 @@ class C_CallUnknownFunctionTest extends WordSpec with Matchers {
     val ptrCall = assignCall.start.astChildren.isCall.head
     ptrCall.name shouldBe "fptr"
     ptrCall.typeFullName shouldBe "i32"
+    ptrCall.dispatchType shouldBe "DYNAMIC"
 
     val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
     ptrCallParam.typeFullName shouldBe "i8*"

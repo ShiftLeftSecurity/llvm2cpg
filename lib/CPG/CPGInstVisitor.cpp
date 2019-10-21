@@ -21,54 +21,15 @@ void CPGInstVisitor::visitFunction(llvm::Function &function) {
 }
 
 void CPGInstVisitor::visitInstruction(llvm::Instruction &instruction) {
+  if (!instruction.getType()->isVoidTy()) {
+    addTempVariable(&instruction);
+  }  
   recordTypes(&instruction);
 }
 
 void CPGInstVisitor::visitAllocaInst(llvm::AllocaInst &value) {
   addLocalVariable(&value);
   recordTypes(&value);
-}
-
-void CPGInstVisitor::visitLoadInst(llvm::LoadInst &value) {
-  addTempVariable(&value);
-  recordTypes(&value);
-}
-
-void CPGInstVisitor::visitBinaryOperator(llvm::BinaryOperator &binaryOperator) {
-  addTempVariable(&binaryOperator);
-  recordTypes(&binaryOperator);
-}
-
-void CPGInstVisitor::visitCmpInst(llvm::CmpInst &comparison) {
-  addTempVariable(&comparison);
-  recordTypes(&comparison);
-}
-
-void CPGInstVisitor::visitCastInst(llvm::CastInst &instruction) {
-  addTempVariable(&instruction);
-  recordTypes(&instruction);
-}
-
-void CPGInstVisitor::visitSelectInst(llvm::SelectInst &instruction) {
-  addTempVariable(&instruction);
-  recordTypes(&instruction);
-}
-
-void CPGInstVisitor::visitGetElementPtrInst(llvm::GetElementPtrInst &instruction) {
-  addTempVariable(&instruction);
-  recordTypes(&instruction);
-}
-
-void CPGInstVisitor::visitUnaryOperator(llvm::UnaryOperator &instruction) {
-  addTempVariable(&instruction);
-  recordTypes(&instruction);
-}
-
-void CPGInstVisitor::visitCallInst(llvm::CallInst &instruction) {
-  if (!instruction.getFunctionType()->getReturnType()->isVoidTy()) {
-    addTempVariable(&instruction);
-  }
-  recordTypes(&instruction);
 }
 
 void CPGInstVisitor::visitPHINode(llvm::PHINode &instruction) {

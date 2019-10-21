@@ -15,16 +15,7 @@ public:
 
   void visitInstruction(llvm::Instruction &instruction);
   void visitAllocaInst(llvm::AllocaInst &value);
-  void visitLoadInst(llvm::LoadInst &value);
-  void visitBinaryOperator(llvm::BinaryOperator &binaryOperator);
-  void visitCmpInst(llvm::CmpInst &comparison);
-  void visitCastInst(llvm::CastInst &instruction);
-  void visitSelectInst(llvm::SelectInst &instruction);
-  void visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
-  void visitUnaryOperator(llvm::UnaryOperator &instruction);
-  void visitCallInst(llvm::CallInst &instruction);
   void visitPHINode(llvm::PHINode &instruction);
-
 private:
   std::vector<llvm::Value *> &arguments;
   std::vector<llvm::Value *> &variables;

@@ -239,6 +239,21 @@ CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitAtomicRMWInst(llvm::AtomicRMWInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitAtomicRMV(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitAtomicCmpXchg(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+
 CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
   llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
   return nullptr;
@@ -731,7 +746,7 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(const llvm::CallInst *instruction) {
         .setTypeFullName(typeToString(instruction->getType()))
         .setMethodInstFullName(name)
         .setSignature("xxx")
-        .setDispatchType("STATIC");
+        .setDispatchType("DYNAMIC");
 
     CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
     builder.connectReceiver(callNode, receiver);
@@ -779,6 +794,44 @@ CPGProtoNode *CPGEmitter::emitUnhandled() {
   unhandled->setCode("unhandled");
   unhandled->setEntry(unhandled->getID());
   return unhandled;
+}
+
+CPGProtoNode *CPGEmitter::emitAtomicRMV(llvm::AtomicRMWInst *instruction) {
+  CPGProtoNode *acall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  name = name + std::string(instruction->getOperationName(instruction->getOperation()));
+
+  (*acall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
+  CPGProtoNode *val = emitRefOrConstant(instruction->getValOperand());
+
+  resolveConnections(acall, {ptr, val});
+  return acall;
+}
+
+CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction) {
+  std::string name(instruction->getOpcodeName());
+  CPGProtoNode *acall = builder.functionCallNode();
+
+  (*acall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(typeToString(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
+  CPGProtoNode *val = emitRefOrConstant(instruction->getCompareOperand());
+  resolveConnections(acall, {ptr, val});
+  return acall;
 }
 
 CPGProtoNode *CPGEmitter::emitFence(const llvm::FenceInst *instruction) {

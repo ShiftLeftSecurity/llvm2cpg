@@ -9,8 +9,8 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/store_const_expr.ll
   ${CMAKE_CURRENT_LIST_DIR}/branches.ll
   ${CMAKE_CURRENT_LIST_DIR}/switches.ll
+  ${CMAKE_CURRENT_LIST_DIR}/atomics.ll
   ${CMAKE_CURRENT_LIST_DIR}/fence.ll
-
   )
 
 foreach(source ${SOURCES})
