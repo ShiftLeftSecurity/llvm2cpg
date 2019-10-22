@@ -11,6 +11,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/switches.ll
   ${CMAKE_CURRENT_LIST_DIR}/atomics.ll
   ${CMAKE_CURRENT_LIST_DIR}/fence.ll
+  ${CMAKE_CURRENT_LIST_DIR}/unreachable.ll
   )
 
 foreach(source ${SOURCES})

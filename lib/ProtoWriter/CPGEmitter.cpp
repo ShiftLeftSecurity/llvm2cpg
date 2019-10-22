@@ -271,6 +271,13 @@ CPGProtoNode *CPGEmitter::visitSwitchInst(llvm::SwitchInst &instruction) {
   return nullptr;
 }
 
+CPGProtoNode *CPGEmitter::visitUnreachableInst(llvm::UnreachableInst &instruction) {
+  CPGProtoNode *node = emitUnhandled();
+  node->setCode("unreachable");
+  resolveConnections(node, {});
+  return node;
+}
+
 CPGProtoNode *CPGEmitter::visitFenceInst(llvm::FenceInst &instruction) {
   return emitFence(&instruction);
 }
