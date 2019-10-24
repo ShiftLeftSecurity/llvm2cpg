@@ -47,6 +47,11 @@ private:
   CPGProtoNode *visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instruction);
   CPGProtoNode *visitFenceInst(llvm::FenceInst &instruction);
 
+  // No support for llvm9 scalable vectors.
+  CPGProtoNode *visitExtractElementInst(llvm::ExtractElementInst &instruction);
+  CPGProtoNode *visitInsertElementInst(llvm::InsertElementInst &instruction);
+  CPGProtoNode *visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction);  
+
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
@@ -72,9 +77,14 @@ private:
   CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
   CPGProtoNode *emitNoop();
   CPGProtoNode *emitUnhandled();
-  CPGProtoNode *emitAtomicRMV(llvm::AtomicRMWInst *instruction);
+  CPGProtoNode *emitAtomicRMW(llvm::AtomicRMWInst *instruction);
   CPGProtoNode *emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction);
   CPGProtoNode *emitFence(const llvm::FenceInst *instruction);
+
+  CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);  
+  CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);  
+  CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);  
+
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;

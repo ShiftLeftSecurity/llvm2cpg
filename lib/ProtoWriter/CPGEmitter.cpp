@@ -155,7 +155,10 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 
 CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {
   llvm::errs() << "Cannot handle: " << instruction << ". Skipping.\n";
-  return nullptr;
+  CPGProtoNode *unhandled = builder.unknownNode();
+  resolveConnections(unhandled, {});
+
+  return unhandled;  
 }
 
 CPGProtoNode *CPGEmitter::visitAllocaInst(llvm::AllocaInst &instruction) {
@@ -238,9 +241,29 @@ CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
 
 CPGProtoNode *CPGEmitter::visitAtomicRMWInst(llvm::AtomicRMWInst &instruction) {
   CPGProtoNode *ref = emitRef(&instruction);
-  CPGProtoNode *call = emitAtomicRMV(&instruction);
+  CPGProtoNode *call = emitAtomicRMW(&instruction);
   CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
   return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::emitAtomicRMW(llvm::AtomicRMWInst *instruction) {
+  CPGProtoNode *acall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  name = name + std::string(instruction->getOperationName(instruction->getOperation()));
+
+  (*acall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
+  CPGProtoNode *val = emitRefOrConstant(instruction->getValOperand());
+
+  resolveConnections(acall, { ptr, val });
+  return acall;
 }
 
 CPGProtoNode *CPGEmitter::visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instruction) {
@@ -249,6 +272,99 @@ CPGProtoNode *CPGEmitter::visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instru
   CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
   return assignCall;
 }
+
+CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction) {
+  std::string name(instruction->getOpcodeName());
+  CPGProtoNode *acall = builder.functionCallNode();
+
+  (*acall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+
+  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
+  CPGProtoNode *val = emitRefOrConstant(instruction->getCompareOperand());
+  resolveConnections(acall, { ptr, val });
+  return acall;
+}
+
+CPGProtoNode *CPGEmitter::visitExtractElementInst(llvm::ExtractElementInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitExtractElement(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::emitExtractElement(llvm::ExtractElementInst *instruction) {
+  CPGProtoNode *acall = builder.functionCallNode();
+  (*acall) //
+      .setName("extractelement")
+      .setCode("extractelement")
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName("extractelement")
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+  CPGProtoNode *vec = emitRefOrConstant(instruction->getVectorOperand());
+  CPGProtoNode *idx = emitRefOrConstant(instruction->getIndexOperand());
+  resolveConnections(acall, { vec, idx });
+  return acall;
+}
+
+CPGProtoNode *CPGEmitter::visitInsertElementInst(llvm::InsertElementInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitInsertElement(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::emitInsertElement(llvm::InsertElementInst *instruction) {
+  CPGProtoNode *acall = builder.functionCallNode();
+  (*acall) //
+      .setName("insertelement")
+      .setCode("insertelement")
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName("insertelement")
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+  //operand ordering cf llvm/IR/Instructions.h
+  //llvm ran out of budget for named accessor functions, hence this.
+  CPGProtoNode *vec = emitRefOrConstant(instruction->getOperand(0));
+  CPGProtoNode *val = emitRefOrConstant(instruction->getOperand(1));
+  CPGProtoNode *idx = emitRefOrConstant(instruction->getOperand(2));
+  resolveConnections(acall, { vec, val, idx });
+  return acall;
+
+}
+
+CPGProtoNode *CPGEmitter::visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitShuffleVector(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::emitShuffleVector(llvm::ShuffleVectorInst *instruction) {
+  CPGProtoNode *acall = builder.functionCallNode();
+  (*acall) //
+      .setName("shufflevector")
+      .setCode("shufflevector")
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName("shufflevector")
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+  //operand ordering cf llvm/IR/Instructions.h
+  //llvm ran out of budget for named accessor functions, hence this.
+  CPGProtoNode *vec1 = emitRefOrConstant(instruction->getOperand(0));
+  CPGProtoNode *vec2 = emitRefOrConstant(instruction->getOperand(1));
+  CPGProtoNode *msk = emitRefOrConstant(instruction->getOperand(2));
+  resolveConnections(acall, { vec1, vec2, msk });
+  return acall;
+}
+
+
 
 CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
   llvm::report_fatal_error("PHI nodes should be destructed before CPG emission");
@@ -282,6 +398,19 @@ CPGProtoNode *CPGEmitter::visitUnreachableInst(llvm::UnreachableInst &instructio
 
 CPGProtoNode *CPGEmitter::visitFenceInst(llvm::FenceInst &instruction) {
   return emitFence(&instruction);
+}
+
+CPGProtoNode *CPGEmitter::emitFence(const llvm::FenceInst *instruction) {
+  CPGProtoNode *callNode = builder.functionCallNode();
+  (*callNode) //
+      .setName("fence")
+      .setCode("fence")
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName("fence")
+      .setSignature("xxx")
+      .setDispatchType("STATIC");
+  resolveConnections(callNode, {});
+  return callNode;
 }
 
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
@@ -361,6 +490,8 @@ CPGProtoNode *CPGEmitter::emitRef(llvm::Value *value) {
   return valueRef;
 }
 
+//ConstantInt, ConstantFP, ConstantAggregateZero, 
+
 // TODO: Think of a better solution
 // At the bitcode level we don't know whether a number is signed or not
 // Also we don't know if it's a boolean, or an arbitrary number
@@ -401,6 +532,8 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return methodRef;
   }
 
+  // TODO: Consider commenting out the following cases and just using the fallback
+
   if (llvm::isa<llvm::ConstantPointerNull>(value)) {
     CPGProtoNode *literalNode = builder.literalNode();
     (*literalNode) //
@@ -429,9 +562,31 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return literalNode;
   }
 
-  llvm::errs() << "Cannot handle constant yet: " << *value << " " << value->getValueID() << "\n";
+  if (auto constVec = llvm::dyn_cast<llvm::ConstantVector>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+      (*literalNode) //
+          .setTypeFullName(getTypeName(value->getType()))
+          .setCode(valueToString(value));
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
 
-  return builder.unknownNode();
+  if (auto undef = llvm::dyn_cast<llvm::UndefValue>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(getTypeName(undef->getType()))
+        .setCode("undef");
+    resolveConnections(literalNode, {});
+    return literalNode;  }
+
+  // look it up in llvm/IR/Value.def
+  llvm::errs() << "Cannot handle constant yet: " << *value << " with ValueID " << value->getValueID();
+  CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(getTypeName(value->getType()))
+        .setCode(valueToString(value));
+  resolveConnections(literalNode, {});
+  return literalNode;
 }
 
 CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
@@ -449,8 +604,10 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
     return emitCmpCall(cmp);
   }
   llvm::errs() << "Cannot handle constant expression yet: " << *constInstruction << "\n";
+  CPGProtoNode *unhandled = builder.unknownNode();
+  resolveConnections(unhandled, {});
 
-  return builder.unknownNode();
+  return unhandled;
 }
 
 CPGProtoNode *CPGEmitter::emitLocalVariable(const llvm::Value *variable, size_t order) {
@@ -630,7 +787,11 @@ static llvm::Type *nextIndexType(llvm::Type *type, llvm::Value *index) {
     return arrayType->getElementType();
   }
 
-  llvm::errs() << *type << " " << *index << "\n";
+  if (auto vectorType = llvm::dyn_cast<llvm::VectorType>(type)) {
+    return vectorType->getElementType();
+  } 
+
+  llvm::errs() << *type << " || " << *index << "\n";
 
   llvm_unreachable("Cannot handle the type above yet");
 }
@@ -802,57 +963,7 @@ CPGProtoNode *CPGEmitter::emitUnhandled() {
   return unhandled;
 }
 
-CPGProtoNode *CPGEmitter::emitAtomicRMV(llvm::AtomicRMWInst *instruction) {
-  CPGProtoNode *acall = builder.functionCallNode();
-  std::string name(instruction->getOpcodeName());
-  name = name + std::string(instruction->getOperationName(instruction->getOperation()));
 
-  (*acall) //
-      .setName(name)
-      .setCode(name)
-      .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName(name)
-      .setSignature("xxx")
-      .setDispatchType("STATIC");
-
-  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
-  CPGProtoNode *val = emitRefOrConstant(instruction->getValOperand());
-
-  resolveConnections(acall, { ptr, val });
-  return acall;
-}
-
-CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction) {
-  std::string name(instruction->getOpcodeName());
-  CPGProtoNode *acall = builder.functionCallNode();
-
-  (*acall) //
-      .setName(name)
-      .setCode(name)
-      .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName(name)
-      .setSignature("xxx")
-      .setDispatchType("STATIC");
-
-  CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
-  CPGProtoNode *val = emitRefOrConstant(instruction->getCompareOperand());
-  resolveConnections(acall, { ptr, val });
-  return acall;
-}
-
-CPGProtoNode *CPGEmitter::emitFence(const llvm::FenceInst *instruction) {
-  CPGProtoNode *callNode = builder.functionCallNode();
-  (*callNode) //
-      .setName("fence")
-      .setCode("fence")
-      .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName("fence")
-      .setSignature("xxx")
-      .setDispatchType("STATIC");
-  callNode->setEntry(callNode->getID());
-  resolveConnections(callNode, {});
-  return callNode;
-}
 
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
   assert(isLocal(value) && "Local was not emitted");
