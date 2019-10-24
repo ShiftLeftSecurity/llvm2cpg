@@ -24,5 +24,6 @@ add_integration_test(LLVM_SwitchesTest switches_ll_bc)
 add_integration_test(LLVM_AtomicsTest atomics_ll_bc)
 add_integration_test(LLVM_FenceTest fence_ll_bc)
 add_integration_test(LLVM_UnreachableTest unreachable_ll_bc)
+add_integration_test(LLVM_NestedConstExprTest nested_const_expr_ll_bc)
 
 enable_integration_tests()

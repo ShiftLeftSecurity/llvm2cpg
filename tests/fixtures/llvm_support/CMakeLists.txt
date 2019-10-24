@@ -12,6 +12,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/atomics.ll
   ${CMAKE_CURRENT_LIST_DIR}/fence.ll
   ${CMAKE_CURRENT_LIST_DIR}/unreachable.ll
+  ${CMAKE_CURRENT_LIST_DIR}/nested_const_expr.ll
   )
 
 foreach(source ${SOURCES})

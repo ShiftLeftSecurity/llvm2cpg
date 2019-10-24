@@ -27,4 +27,5 @@ object TestCpgPaths {
   val LLVM_AtomicsCPG = "@LLVM_AtomicsTest@"
   val LLVM_FenceTestCpg = "@LLVM_FenceTest@"
   val LLVM_UnreachableTestCpg = "@LLVM_UnreachableTest@"
+  val LLVM_NestedConstExprTestCpg = "@LLVM_NestedConstExprTest@"
 }

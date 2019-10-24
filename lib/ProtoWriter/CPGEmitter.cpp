@@ -38,6 +38,8 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     return;
   }
 
+  llvm::errs() << "Emitting " << method.getName() << "\n";
+
   llvm::Module *module = method.getFunction().getParent();
   for (llvm::GlobalVariable &global : module->getGlobalList()) {
     globals.insert(&global);
@@ -442,6 +444,9 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
   }
   if (auto binary = llvm::dyn_cast<llvm::BinaryOperator>(constInstruction)) {
     return emitBinaryCall(binary);
+  }
+  if (auto cmp = llvm::dyn_cast<llvm::CmpInst>(constInstruction)) {
+    return emitCmpCall(cmp);
   }
   llvm::errs() << "Cannot handle constant expression yet: " << *constInstruction << "\n";
 
