@@ -14,6 +14,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/call_function_pointer.c
   ${CMAKE_CURRENT_LIST_DIR}/phi.c
   ${CMAKE_CURRENT_LIST_DIR}/dataflow_caller.c
+  ${CMAKE_CURRENT_LIST_DIR}/dataflow_caller_arguments.c
   )
 
 foreach(source ${SOURCES})

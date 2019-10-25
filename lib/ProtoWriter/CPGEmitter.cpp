@@ -28,7 +28,7 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 
   for (size_t argIndex = 0; argIndex < method.getArguments().size(); argIndex++) {
     llvm::Value *argument = method.getArguments()[argIndex];
-    CPGProtoNode *parameterInNode = emitFunctionArgument(argument, argIndex);
+    CPGProtoNode *parameterInNode = emitFunctionArgument(argument, argIndex + 1);
     builder.connectAST(methodNode, parameterInNode);
     locals.insert(std::make_pair(argument, parameterInNode));
   }

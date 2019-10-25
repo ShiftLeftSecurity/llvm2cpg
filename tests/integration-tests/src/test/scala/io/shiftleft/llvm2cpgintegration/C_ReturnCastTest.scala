@@ -39,7 +39,7 @@ class C_ReturnCastTest extends CPGMatcher {
     method.start.parameter.l.size shouldBe 1
     val param = method.start.parameter.head
     param.name shouldBe "x"
-    param.order shouldBe 0
+    param.order shouldBe 1
     param.typeFullName shouldBe "i8"
   }
 
