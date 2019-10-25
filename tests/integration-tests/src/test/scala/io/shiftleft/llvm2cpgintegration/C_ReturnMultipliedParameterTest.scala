@@ -296,6 +296,7 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
       val lhs = assignCall.start.astChildren.isIdentifier.head
       lhs.name shouldBe "mul"
+      lhs.name shouldBe "mul"
       lhs.typeFullName shouldBe "i32"
       lhs.start.refsTo.l.size shouldBe 1
       lhs.start.refsTo.head shouldBe mul

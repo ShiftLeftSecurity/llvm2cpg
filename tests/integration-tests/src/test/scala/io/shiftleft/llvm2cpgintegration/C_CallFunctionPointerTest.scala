@@ -30,6 +30,7 @@ class C_CallFunctionPointerTest extends CPGMatcher {
 
     val ptrCall = block.start.astChildren.isCall.l.apply(3)
     ptrCall.name shouldBe "fptr"
+    ptrCall.methodFullName shouldBe "fptr"
     ptrCall.typeFullName shouldBe "void"
 
     val receiver = ptrCall.start.receiver.isIdentifier.head

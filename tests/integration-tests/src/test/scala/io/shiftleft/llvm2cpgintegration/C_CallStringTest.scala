@@ -33,11 +33,13 @@ class C_CallStringTest extends CPGMatcher {
 
     val call = assignCall.start.astChildren.isCall.head
     call.name shouldBe "printstuff"
+    call.methodFullName shouldBe "printstuff"
     call.typeFullName shouldBe "i32"
 
     val indexAccess_0 = call.start.astChildren.isCall.head
     indexAccess_0.typeFullName shouldBe "i8*"
     indexAccess_0.name shouldBe "index_access"
+    indexAccess_0.methodFullName shouldBe "index_access"
 
     val indexAccess_0_index = indexAccess_0.start.astChildren.isLiteral.head
     indexAccess_0_index.code shouldBe "0"

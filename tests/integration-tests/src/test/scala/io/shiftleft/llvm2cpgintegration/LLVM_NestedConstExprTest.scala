@@ -24,18 +24,21 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
     ret.start.astChildren.l.size shouldBe 1
     val zext = ret.start.astChildren.isCall.head
     zext.name shouldBe "zext"
+    zext.methodFullName shouldBe "zext"
     zext.start.astChildren.l.size shouldBe 1
 
     val icmp = zext.start.astChildren.isCall.head
     icmp.name shouldBe "icmp_ne"
+    icmp.methodFullName shouldBe "icmp_ne"
     icmp.start.astChildren.l.size shouldBe 2
 
     val icmpBitcast = icmp.start.astChildren.isCall.head
     icmpBitcast.name shouldBe "bitcast"
+    icmpBitcast.methodFullName shouldBe "bitcast"
     icmpBitcast.start.astChildren.l.size shouldBe 1
 
     val bitcastArg = icmpBitcast.start.astChildren.isMethodRef.head
-    bitcastArg.methodInstFullName shouldBe "__pthread_key_create"
+    bitcastArg.methodFullName shouldBe "__pthread_key_create"
 
     val icmpNull = icmp.start.astChildren.isLiteral.head
     icmpNull.code shouldBe "nullptr"

@@ -36,6 +36,7 @@ public:
   CPGProtoNode &setEvaluationStrategy(const std::string &strategy);
   CPGProtoNode &setDispatchType(const std::string &dispatchType);
   CPGProtoNode &setMethodInstFullName(const std::string &name);
+  CPGProtoNode &setMethodFullName(const std::string &name);
   CPGProtoNode &setIsExternal(bool isExternal);
   CPGProtoNode &setOrder(int order);
   CPGProtoNode &setArgumentIndex(int index);

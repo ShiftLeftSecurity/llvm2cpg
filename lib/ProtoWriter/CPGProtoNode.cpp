@@ -78,6 +78,11 @@ CPGProtoNode &CPGProtoNode::setMethodInstFullName(const std::string &name) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setMethodFullName(const std::string &name) {
+  setStringProperty(cpg::NodePropertyName::METHOD_FULL_NAME, name);
+  return *this;
+}
+
 CPGProtoNode &CPGProtoNode::setIsExternal(bool isExternal) {
   setBooleanProperty(cpg::NodePropertyName::IS_EXTERNAL, isExternal);
   return *this;

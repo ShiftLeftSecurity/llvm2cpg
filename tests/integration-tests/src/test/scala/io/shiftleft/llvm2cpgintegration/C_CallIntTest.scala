@@ -31,6 +31,7 @@ class C_CallIntTest extends CPGMatcher {
 
     val call = assignCall.start.astChildren.isCall.head
     call.name shouldBe "dosomething"
+    call.methodFullName shouldBe "dosomething"
     call.typeFullName shouldBe "i32"
 
     val callParam = call.start.astChildren.isLiteral.head

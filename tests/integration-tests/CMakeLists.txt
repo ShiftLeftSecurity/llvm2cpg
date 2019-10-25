@@ -27,4 +27,6 @@ add_integration_test(LLVM_VectorTest vectors_ll_bc)
 add_integration_test(LLVM_UnreachableTest unreachable_ll_bc)
 add_integration_test(LLVM_NestedConstExprTest nested_const_expr_ll_bc)
 
+add_integration_test(DataFlow_CallerTest dataflow_caller_c_bc)
+
 enable_integration_tests()

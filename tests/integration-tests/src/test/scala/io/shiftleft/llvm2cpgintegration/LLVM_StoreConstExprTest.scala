@@ -24,5 +24,6 @@ class LLVM_StoreConstExprTest extends CPGMatcher {
     val store = assignStore.start.astChildren.isCall.head
     val rhs = store.start.astChildren.isCall.head
     rhs.name shouldBe "index_access"
+    rhs.methodFullName shouldBe "index_access"
   }
 }

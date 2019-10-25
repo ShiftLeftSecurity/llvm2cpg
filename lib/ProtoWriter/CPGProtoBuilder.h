@@ -16,6 +16,7 @@ public:
   CPGProtoNode *fileNode();
   CPGProtoNode *namespaceBlockNode();
   CPGProtoNode *methodNode();
+  CPGProtoNode *methodInstNode();
   CPGProtoNode *methodReturnNode();
   CPGProtoNode *typeDeclNode();
   CPGProtoNode *typeNode();

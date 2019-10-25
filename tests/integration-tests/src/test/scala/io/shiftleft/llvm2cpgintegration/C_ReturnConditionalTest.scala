@@ -133,6 +133,7 @@ return:                                           ; preds = %if.end, %if.then
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs = assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "alloca"
+      rhs.methodFullName shouldBe "alloca"
       rhs.typeFullName shouldBe "i32*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
@@ -249,6 +250,7 @@ return:                                           ; preds = %if.end, %if.then
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val icmpCall = assignCall.start.astChildren.isCall.head
       icmpCall.name shouldBe "icmp_ne"
+      icmpCall.methodFullName shouldBe "icmp_ne"
       icmpCall.typeFullName shouldBe "i1"
       icmpCall.order shouldBe 2
       icmpCall.argumentIndex shouldBe 2

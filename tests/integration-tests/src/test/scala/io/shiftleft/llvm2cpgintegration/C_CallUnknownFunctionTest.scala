@@ -40,8 +40,9 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
 
     val ptrCall = assignCall.start.astChildren.isCall.head
     ptrCall.name shouldBe "fptr"
+    ptrCall.methodFullName shouldBe "fptr"
     ptrCall.typeFullName shouldBe "i32"
-    ptrCall.dispatchType shouldBe "DYNAMIC"
+    ptrCall.dispatchType shouldBe "DYNAMIC_DISPATCH"
 
     val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
     ptrCallParam.typeFullName shouldBe "i8*"
@@ -52,7 +53,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     receiver.name shouldBe "bitcast"
     receiver.typeFullName shouldBe "i32 (i8*, ...)*"
     val methodRef = receiver.start.astChildren.isMethodRef.head
-    methodRef.methodInstFullName shouldBe "something"
+    methodRef.methodFullName shouldBe "something"
 
     // TODO: Receiver should not be connected via AST edge
     // But it is for now

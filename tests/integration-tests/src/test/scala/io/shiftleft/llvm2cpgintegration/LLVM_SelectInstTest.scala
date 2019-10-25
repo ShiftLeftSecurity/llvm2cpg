@@ -33,6 +33,7 @@ class LLVM_SelectInstTest extends CPGMatcher {
 
     val selectCall = assignSelect.start.astChildren.isCall.head
     selectCall.name shouldBe "select"
+    selectCall.methodFullName shouldBe "select"
 
     val selectCondition = selectCall.start.astChildren.isLiteral.l.head
     selectCondition.code shouldBe "true"

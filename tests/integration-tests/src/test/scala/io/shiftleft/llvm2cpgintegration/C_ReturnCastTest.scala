@@ -94,6 +94,7 @@ class C_ReturnCastTest extends CPGMatcher {
       // %x.addr = alloca i8
       val assignCall = block.start.astChildren.isCall.l.head
       assignCall.name shouldBe "="
+      assignCall.methodFullName shouldBe "="
       assignCall.order shouldBe 1
       assignCall.argumentIndex shouldBe 1
       assignCall.typeFullName shouldBe "i8*"
@@ -125,6 +126,7 @@ class C_ReturnCastTest extends CPGMatcher {
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val lhs = assignCall.start.astChildren.isCall.l.head
       lhs.name shouldBe "store"
+      lhs.methodFullName shouldBe "store"
       lhs.typeFullName shouldBe "i8"
       lhs.order shouldBe 1
       lhs.argumentIndex shouldBe 1
@@ -168,6 +170,7 @@ class C_ReturnCastTest extends CPGMatcher {
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs =  assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "load"
+      rhs.methodFullName shouldBe "load"
       rhs.typeFullName shouldBe "i8*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
@@ -202,6 +205,7 @@ class C_ReturnCastTest extends CPGMatcher {
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs =  assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "sext"
+      rhs.methodFullName shouldBe "sext"
       rhs.typeFullName shouldBe "i32"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2

@@ -23,6 +23,10 @@ CPGProtoNode *CPGProtoBuilder::methodNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_METHOD);
 }
 
+CPGProtoNode *CPGProtoBuilder::methodInstNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_METHOD_INST);
+}
+
 CPGProtoNode *CPGProtoBuilder::methodReturnNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_METHOD_RETURN);
 }

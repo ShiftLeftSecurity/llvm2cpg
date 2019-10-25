@@ -36,6 +36,7 @@ class LLVM_FnegInstTest extends CPGMatcher {
 
     val fnegCall = assignFneg.start.astChildren.isCall.head
     fnegCall.name shouldBe "fneg"
+    fnegCall.methodFullName shouldBe "fneg"
 
     val fnegArgument = fnegCall.start.astChildren.isIdentifier.l.head
     fnegArgument.code shouldBe "x"
