@@ -19,7 +19,7 @@ function(add_integration_test test_name)
 
   add_custom_command(OUTPUT ${cpg}
     COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
-    DEPENDS cpg-proto-writer ${bitcode_dependencies}
+    DEPENDS cpg-proto-writer ${bitcode_dependencies} ${bitcode_files}
     )
   add_custom_target(generate-${test_name}-CPG ALL
     DEPENDS ${cpg}

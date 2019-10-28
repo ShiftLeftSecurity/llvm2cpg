@@ -44,6 +44,9 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   for (llvm::GlobalVariable &global : module->getGlobalList()) {
     globals.insert(&global);
   }
+  for (llvm::GlobalAlias &alias : module->getAliasList()) {
+    globals.insert(&alias);
+  }
 
   for (size_t localIndex = 0; localIndex < method.getLocalVariables().size(); localIndex++) {
     llvm::Value *variable = method.getLocalVariables()[localIndex];
