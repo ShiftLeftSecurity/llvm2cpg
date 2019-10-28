@@ -31,9 +31,6 @@ public:
   bool isExternal() const;
   llvm::Function &getFunction() const;
 
-  llvm::Instruction *getEntryInstruction() const;
-  std::vector<llvm::Instruction *> getReturnInstructions() const;
-
   const std::vector<llvm::Value *> &getArguments() const;
   const std::vector<llvm::Value *> &getLocalVariables() const;
 

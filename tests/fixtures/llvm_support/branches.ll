@@ -33,3 +33,24 @@ loop:               ; preds = %loop, %entry
 return:             ; No predecessors!
   ret void
 }
+
+define i8 @cfg_conditional(i8 %arg){
+entry:
+  %y = trunc i8 %arg to i1
+  %z = zext i1 %y to i8
+  br i1 %y, label %ret1, label %ret2
+ret1:
+  ret i8 1
+ret2:
+  ret i8 2
+}
+
+define i8 @indirect_branch(i1 %arg){
+entry:
+  %target = select i1 %arg, i8* blockaddress(@indirect_branch, %ret1), i8* blockaddress(@indirect_branch, %ret2)
+  indirectbr i8* %target, [label %ret2, label %ret1]
+ret1:
+  ret i8 1
+ret2:
+  ret i8 2
+}

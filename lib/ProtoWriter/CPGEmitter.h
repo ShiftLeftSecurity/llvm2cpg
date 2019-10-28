@@ -46,6 +46,7 @@ private:
   CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
   CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
   CPGProtoNode *visitBranchInst(llvm::BranchInst &instruction);
+  CPGProtoNode *visitIndirectBrInst(llvm::IndirectBrInst &instruction);
   CPGProtoNode *visitSwitchInst(llvm::SwitchInst &instruction);
   CPGProtoNode *visitUnreachableInst(llvm::UnreachableInst &instruction);
   CPGProtoNode *visitAtomicRMWInst(llvm::AtomicRMWInst &instruction);

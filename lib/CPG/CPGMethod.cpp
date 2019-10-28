@@ -42,20 +42,3 @@ const std::vector<llvm::Value *> &CPGMethod::getLocalVariables() const {
   return localVariables;
 }
 
-llvm::Instruction *CPGMethod::getEntryInstruction() const {
-  assert(!function.isDeclaration() && "Cannot get entry instruction from function declaration");
-  return &function.getEntryBlock().front();
-}
-
-std::vector<llvm::Instruction *> CPGMethod::getReturnInstructions() const {
-  assert(!function.isDeclaration() && "Cannot get return instruction from function declaration");
-  std::vector<llvm::Instruction *> instructions;
-  for (llvm::BasicBlock &block : function.getBasicBlockList()) {
-    llvm::Instruction *terminator = block.getTerminator();
-    assert(terminator && "Malformed basic block");
-    if (llvm::isa<llvm::ReturnInst>(terminator)) {
-      instructions.push_back(terminator);
-    }
-  }
-  return instructions;
-}

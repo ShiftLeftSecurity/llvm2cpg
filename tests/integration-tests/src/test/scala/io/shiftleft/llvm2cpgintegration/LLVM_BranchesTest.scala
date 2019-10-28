@@ -8,7 +8,7 @@ class LLVM_BranchesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesCPG)
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void"))
+    validateTypes(cpg, Set("ANY", "void", "i8", "i1", "i8*"))
   }
 
   "empty branches AST" in {
@@ -108,4 +108,15 @@ class LLVM_BranchesTest extends CPGMatcher {
     ret.start.cfgPrev.l.size shouldBe 0
   }
 
+  "conditional CFG regression" in {
+    val method = cpg.method.name("cfg_conditional").head
+    method.start.ast.isCall.name("trunc").cfgNext.cfgNext.l.size shouldBe 1
+    method.start.ast.isIdentifier.name("z").astParent.isCall.cfgNext.l.size shouldBe 2
+  }
+
+  "indirectbranch" in {
+    val method = cpg.method.name("indirect_branch").head
+    val assign_target = method.start.ast.isIdentifier.name("target").astParent.isCall.head
+    assign_target.start.cfgNext.isLiteral.l.map{_.code}.toSet shouldBe Set[String]("1", "2")
+  }
 }
