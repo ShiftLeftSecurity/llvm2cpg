@@ -9,4 +9,4 @@ set (SOURCES
 
 add_library(CPGProtoWriter ${SOURCES})
 target_compile_options(CPGProtoWriter PRIVATE ${LLVM2CPG_CXX_FLAGS})
-target_link_libraries(CPGProtoWriter CPG CPGProto protobuf zip)
+target_link_libraries(CPGProtoWriter CPG CPGProto CPGLogger protobuf zip)

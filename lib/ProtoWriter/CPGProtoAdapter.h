@@ -5,14 +5,15 @@
 namespace llvm2cpg {
 
 class CPG;
+class CPGLogger;
 
 class CPGProtoAdapter {
 public:
-  CPGProtoAdapter(std::string zipPath, bool debug);
+  CPGProtoAdapter(CPGLogger &logger, std::string zipPath);
   void writeCpg(const llvm2cpg::CPG &cpg);
 
 private:
-  bool debug;
+  CPGLogger &logger;
   std::string zipPath;
   CPGProtoBuilder builder;
 

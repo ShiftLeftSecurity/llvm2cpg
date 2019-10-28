@@ -11,15 +11,18 @@ class CPGFile;
 class CPGProtoBuilder;
 class CPGProtoNode;
 class CPGTypeEmitter;
+class CPGLogger;
 
 class CPGEmitter : public llvm::InstVisitor<CPGEmitter, CPGProtoNode *> {
   friend llvm::InstVisitor<CPGEmitter, CPGProtoNode *>;
 
 public:
-  CPGEmitter(CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter, const CPGFile &file);
+  CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter,
+             const CPGFile &file);
   void emitMethod(const CPGMethod &method);
 
 private:
+  CPGLogger &logger;
   CPGProtoBuilder &builder;
   CPGTypeEmitter &typeEmitter;
   const CPGFile &file;

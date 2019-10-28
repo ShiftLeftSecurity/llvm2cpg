@@ -3,6 +3,7 @@
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/CPG/CPG.h>
 #include <llvm2cpg/CPGWriter/CPGProtoWriter.h>
+#include <llvm2cpg/Logger/CPGLogger.h>
 #include <string>
 
 llvm::cl::OptionCategory CPGProtoWriterCategory("cpg-proto-writer");
@@ -26,18 +27,19 @@ int main(int argc, char **argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
   llvm::LLVMContext context;
+  llvm2cpg::CPGLogger logger;
   llvm2cpg::BitcodeLoader loader;
   llvm2cpg::CPG cpg;
   std::vector<std::unique_ptr<llvm::Module>> bitcode;
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     auto path = BitcodePaths[i];
-    std::cout << "Processing " << path << "\n";
+    logger.info(std::string("Processing " + path));
     auto bc = loader.loadBitcode(path, context);
     bitcode.push_back(std::move(bc));
     cpg.addBitcode(bitcode.back().get());
   }
 
-  llvm2cpg::CPGProtoWriter writer(OutputDirectory.getValue(), OutputName.getValue(), false);
+  llvm2cpg::CPGProtoWriter writer(logger, OutputDirectory.getValue(), OutputName.getValue());
   writer.writeCpg(cpg);
 
   return 0;

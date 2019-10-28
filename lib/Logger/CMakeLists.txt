@@ -1,0 +1,5 @@
+add_library(CPGLogger CPGLogger.cpp)
+target_compile_options(CPGLogger PRIVATE ${LLVM2CPG_CXX_FLAGS})
+target_link_libraries(CPGLogger spdlog)
+target_compile_definitions(CPGLogger PUBLIC SPDLOG_NO_EXCEPTIONS)
+target_include_directories(CPGLogger PUBLIC ${LLVM2CPG_INCLUDE_DIRS})
