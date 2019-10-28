@@ -5,6 +5,7 @@
 #include "llvm2cpg/CPG/CPGFile.h"
 #include "llvm2cpg/CPG/CPGMethod.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
+#include <llvm/IR/InlineAsm.h>
 
 using namespace llvm2cpg;
 
@@ -604,6 +605,15 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     (*literalNode) //
         .setTypeFullName(getTypeName(metadata->getType()))
         .setCode(std::string("metadata ") + valueToString(metadata));
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
+
+  if (auto inlineAsm = llvm::dyn_cast<llvm::InlineAsm>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(getTypeName(inlineAsm->getType()))
+        .setCode(inlineAsm->getAsmString());
     resolveConnections(literalNode, {});
     return literalNode;
   }

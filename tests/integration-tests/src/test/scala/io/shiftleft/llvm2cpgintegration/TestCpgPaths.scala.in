@@ -31,6 +31,7 @@ object TestCpgPaths {
   val LLVM_NestedConstExprTestCpg = "@LLVM_NestedConstExprTest@"
   val LLVM_AggregateTestCpg = "@LLVM_AggregateTest@"
   val LLVM_AliasTestCpg = "@LLVM_AliasTest@"
+  val LLVM_InlineAsmTestCpg = "@LLVM_InlineAsmTest@"
 
   val DataFlow_CallerTestCPG = "@DataFlow_CallerTest@"
   val DataFlow_CallerArgumentsTestCPG = "@DataFlow_CallerArgumentsTest@"

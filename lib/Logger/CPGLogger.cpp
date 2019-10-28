@@ -16,7 +16,7 @@ void CPGLogger::info(const std::string &message) {
 }
 
 void CPGLogger::warning(const std::string &message) {
-  debugLog->warn(message);
+  stdoutLog->warn(message);
 }
 
 void CPGLogger::error(const std::string &message) {

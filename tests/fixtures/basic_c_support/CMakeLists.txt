@@ -15,6 +15,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/phi.c
   ${CMAKE_CURRENT_LIST_DIR}/dataflow_caller.c
   ${CMAKE_CURRENT_LIST_DIR}/dataflow_caller_arguments.c
+  ${CMAKE_CURRENT_LIST_DIR}/inline_asm.c
   )
 
 foreach(source ${SOURCES})
