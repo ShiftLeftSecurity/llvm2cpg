@@ -14,6 +14,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/vectors.ll
   ${CMAKE_CURRENT_LIST_DIR}/unreachable.ll
   ${CMAKE_CURRENT_LIST_DIR}/nested_const_expr.ll
+  ${CMAKE_CURRENT_LIST_DIR}/aggregate_access.ll
   )
 
 foreach(source ${SOURCES})

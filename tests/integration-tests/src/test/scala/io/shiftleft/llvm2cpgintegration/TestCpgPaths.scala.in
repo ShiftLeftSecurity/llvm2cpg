@@ -29,6 +29,7 @@ object TestCpgPaths {
   val LLVM_VectorTestCpg = "@LLVM_VectorTest@"
   val LLVM_UnreachableTestCpg = "@LLVM_UnreachableTest@"
   val LLVM_NestedConstExprTestCpg = "@LLVM_NestedConstExprTest@"
+  val LLVM_AggregateTestCpg = "@LLVM_AggregateTest@"
 
   val DataFlow_CallerTestCPG = "@DataFlow_CallerTest@"
   val DataFlow_CallerArgumentsTestCPG = "@DataFlow_CallerArgumentsTest@"

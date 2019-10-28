@@ -37,6 +37,8 @@ private:
   CPGProtoNode *visitCastInst(llvm::CastInst &instruction);
   CPGProtoNode *visitSelectInst(llvm::SelectInst &instruction);
   CPGProtoNode *visitGetElementPtrInst(llvm::GetElementPtrInst &instruction);
+  CPGProtoNode *visitInsertValueInst(llvm::InsertValueInst &instruction);
+  CPGProtoNode *visitExtractValueInst(llvm::ExtractValueInst &instruction);
   CPGProtoNode *visitUnaryOperator(llvm::UnaryOperator &instruction);
   CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
   CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
@@ -50,7 +52,9 @@ private:
   // No support for llvm9 scalable vectors.
   CPGProtoNode *visitExtractElementInst(llvm::ExtractElementInst &instruction);
   CPGProtoNode *visitInsertElementInst(llvm::InsertElementInst &instruction);
-  CPGProtoNode *visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction);  
+  CPGProtoNode *visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction);
+
+
 
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
@@ -59,6 +63,7 @@ private:
   CPGProtoNode *emitRefOrConstant(llvm::Value *value);
   CPGProtoNode *emitRef(llvm::Value *value);
   CPGProtoNode *emitConstant(llvm::Value *value);
+  CPGProtoNode *emitConstant(unsigned int);
   CPGProtoNode *emitConstantExpr(llvm::ConstantExpr *constantExpr);
   CPGProtoNode *emitLocalVariable(const llvm::Value *variable, size_t order);
   CPGProtoNode *emitFunctionArgument(const llvm::Value *argument, size_t order);
@@ -72,7 +77,12 @@ private:
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
   CPGProtoNode *emitSelect(llvm::SelectInst *instruction);
   CPGProtoNode *emitGEP(const llvm::GetElementPtrInst *instruction);
+  CPGProtoNode *emitInsertValue(llvm::InsertValueInst *instruction);
+  CPGProtoNode *emitExtractValue(llvm::ExtractValueInst *instruction);
+
   CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
+  CPGProtoNode *emitInsertAccess(const llvm::Type *type, unsigned int idx, bool memberAccess);
+  CPGProtoNode *emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
   CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
   CPGProtoNode *emitNoop();

@@ -222,6 +222,20 @@ CPGProtoNode *CPGEmitter::visitGetElementPtrInst(llvm::GetElementPtrInst &instru
   return assignCall;
 }
 
+CPGProtoNode *CPGEmitter::visitInsertValueInst(llvm::InsertValueInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitInsertValue(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
+CPGProtoNode *CPGEmitter::visitExtractValueInst(llvm::ExtractValueInst &instruction) {
+  CPGProtoNode *ref = emitRef(&instruction);
+  CPGProtoNode *call = emitExtractValue(&instruction);
+  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
+  return assignCall;
+}
+
 CPGProtoNode *CPGEmitter::visitUnaryOperator(llvm::UnaryOperator &instruction) {
   CPGProtoNode *ref = emitRef(&instruction);
   CPGProtoNode *call = emitUnaryOperator(&instruction);
@@ -591,6 +605,15 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
   return literalNode;
 }
 
+CPGProtoNode *CPGEmitter::emitConstant(unsigned int c) {
+  CPGProtoNode *literalNode = builder.literalNode();
+  (*literalNode) //
+      .setTypeFullName("i32")
+      .setCode(std::to_string(c));
+  resolveConnections(literalNode, {});
+  return literalNode;
+}
+
 CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
   llvm::Instruction *constInstruction = constantExpr->getAsInstruction();
   if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(constInstruction)) {
@@ -806,6 +829,20 @@ static llvm::Type *nextIndexType(llvm::Type *type, llvm::Value *index) {
   llvm_unreachable("Cannot handle the type above yet");
 }
 
+static llvm::Type *nextIndexType(llvm::Type *type, unsigned int index) {
+  if (auto structType = llvm::dyn_cast<llvm::StructType>(type)) {
+    assert(index < structType->getNumElements());
+    return structType->getElementType(index);
+  }
+  if (auto arrayType = llvm::dyn_cast<llvm::ArrayType>(type)) {
+    return arrayType->getElementType();
+  }
+
+  llvm::errs() << *type << " || " << index << "\n";
+
+  llvm_unreachable("Cannot handle the type above yet");
+}
+
 CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   //
   //  It is highly recommended to read these documents to get better understanding:
@@ -878,11 +915,103 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   return access;
 }
 
+CPGProtoNode *CPGEmitter::emitInsertValue(llvm::InsertValueInst *instruction) {
+  //  cf emitGEP
+
+  llvm::Value *res = instruction->getAggregateOperand();
+  llvm::Value *val = instruction->getInsertedValueOperand();
+  llvm::Type *indexType = res->getType();
+  CPGProtoNode *agg = emitRefOrConstant(res);
+  auto indices = instruction->getIndices();
+
+  for (unsigned int i = 0; i < instruction->getNumIndices(); i++) {
+    unsigned int index = indices[i];
+    CPGProtoNode *idxCpg = emitConstant(index);
+    bool isStruct = indexType->isStructTy();
+    indexType = nextIndexType(indexType, index);
+    CPGProtoNode *access = emitInsertAccess(indexType, index, isStruct);
+    resolveConnections(access, { agg, idxCpg });
+    agg = access;
+  }
+  // We have walked the indexing chain, and now need to emit the final insert.
+  CPGProtoNode *call = builder.functionCallNode();
+  (*call) //
+      .setName("insertValue")
+      .setCode("insertValue")
+      .setTypeFullName(getTypeName(res->getType()))
+      .setMethodInstFullName("insertValue")
+      .setMethodFullName("insertValue")
+      .setSignature("xxx")
+      .setDispatchType("STATIC_DISPATCH");
+
+  CPGProtoNode *inserted = emitRefOrConstant(val);
+  resolveConnections(call, { agg, inserted });
+
+  return call;
+}
+
+CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) {
+  llvm::Value *from = instruction->getAggregateOperand();
+  llvm::Type *indexType = from->getType();
+  CPGProtoNode *agg = emitRefOrConstant(from);
+  auto indices = instruction->getIndices();
+
+  for (unsigned int i = 0; i < instruction->getNumIndices(); i++) {
+    unsigned int index = indices[i];
+    CPGProtoNode *idx_cpg = emitConstant(index);
+    bool isStruct = indexType->isStructTy();
+    indexType = nextIndexType(indexType, index);
+    CPGProtoNode *access = emitExtract(indexType, index, isStruct);
+    resolveConnections(access, { agg, idx_cpg });
+    agg = access;
+  }
+
+  //  cf emitInsertValue
+  return agg;
+}
+
 CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *index,
                                         bool memberAccess) {
   std::string name("index_access");
   if (memberAccess) {
     name = "member_access";
+  }
+  CPGProtoNode *call = builder.functionCallNode();
+  (*call) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(type))
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC_DISPATCH");
+
+  return call;
+}
+
+CPGProtoNode *CPGEmitter::emitInsertAccess(const llvm::Type *type, unsigned int idx,
+                                           bool memberAccess) {
+  std::string name("insertValue_indexShift");
+  if (memberAccess) {
+    name = "insertValue_memberSelect";
+  }
+  CPGProtoNode *call = builder.functionCallNode();
+  (*call) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(type))
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC_DISPATCH");
+
+  return call;
+}
+
+CPGProtoNode *CPGEmitter::emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess) {
+  std::string name("ExtractValue_index");
+  if (memberAccess) {
+    name = "ExtractValue_member";
   }
   CPGProtoNode *call = builder.functionCallNode();
   (*call) //
