@@ -594,6 +594,15 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return literalNode;
   }
 
+  if (auto metadata = llvm::dyn_cast<llvm::MetadataAsValue>(value)) {
+    CPGProtoNode *literalNode = builder.literalNode();
+    (*literalNode) //
+        .setTypeFullName(getTypeName(metadata->getType()))
+        .setCode(std::string("metadata ") + valueToString(metadata));
+    resolveConnections(literalNode, {});
+    return literalNode;
+  }
+
   // look it up in llvm/IR/Value.def
   llvm::errs() << "Cannot handle constant yet: " << *value << " with ValueID "
                << value->getValueID();
