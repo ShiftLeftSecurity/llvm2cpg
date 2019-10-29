@@ -43,7 +43,7 @@ private:
   CPGProtoNode *visitInsertValueInst(llvm::InsertValueInst &instruction);
   CPGProtoNode *visitExtractValueInst(llvm::ExtractValueInst &instruction);
   CPGProtoNode *visitUnaryOperator(llvm::UnaryOperator &instruction);
-  CPGProtoNode *visitCallInst(llvm::CallInst &instruction);
+  CPGProtoNode *visitCallBase(llvm::CallBase &instruction);
   CPGProtoNode *visitPHINode(llvm::PHINode &instruction);
   CPGProtoNode *visitBranchInst(llvm::BranchInst &instruction);
   CPGProtoNode *visitIndirectBrInst(llvm::IndirectBrInst &instruction);
@@ -51,7 +51,6 @@ private:
   CPGProtoNode *visitUnreachableInst(llvm::UnreachableInst &instruction);
   CPGProtoNode *visitAtomicRMWInst(llvm::AtomicRMWInst &instruction);
   CPGProtoNode *visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instruction);
-  CPGProtoNode *visitFenceInst(llvm::FenceInst &instruction);
 
   // No support for llvm9 scalable vectors.
   CPGProtoNode *visitExtractElementInst(llvm::ExtractElementInst &instruction);
@@ -88,12 +87,12 @@ private:
   CPGProtoNode *emitInsertAccess(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
-  CPGProtoNode *emitFunctionCall(const llvm::CallInst *instruction);
+  CPGProtoNode *emitFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitNoop();
   CPGProtoNode *emitUnhandled();
   CPGProtoNode *emitAtomicRMW(llvm::AtomicRMWInst *instruction);
   CPGProtoNode *emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction);
-  CPGProtoNode *emitFence(const llvm::FenceInst *instruction);
+  CPGProtoNode *emitUnhandledCall(llvm::Instruction *instruction);
 
   CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);  
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);  

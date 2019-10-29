@@ -59,7 +59,7 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   }
  
   std::unordered_map<const llvm::BasicBlock *, CPGProtoNode *> entryPoints;
-  std::vector<CPGProtoNode *> exitPoints;;
+  std::vector<CPGProtoNode *> exitPoints;
 
   std::vector<const llvm::Instruction *> unresolvedTerminators;
 
@@ -121,7 +121,10 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
       if(!(llvm::isa<llvm::BranchInst>(instruction) 
         || llvm::isa<llvm::SwitchInst>(instruction) 
         || llvm::isa<llvm::IndirectBrInst>(instruction) 
-        || llvm::isa<llvm::UnreachableInst>(instruction) )){
+        || llvm::isa<llvm::UnreachableInst>(instruction)
+        || llvm::isa<llvm::ResumeInst>(instruction)
+        || llvm::isa<llvm::CallBrInst>(instruction)
+        || llvm::isa<llvm::InvokeInst>(instruction))){
             logger.warning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
                            std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) + "\n") ;
         }
@@ -134,13 +137,45 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 }
 
 CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {
-  logger.warning(std::string("Cannot handle instruction: ") + valueToString(&instruction) +
-                 std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) + "\n");
-  CPGProtoNode *unhandled = builder.unknownNode();
-  resolveConnections(unhandled, {});
-
-  return unhandled;
+  if(!(llvm::isa<llvm::FenceInst>(instruction)
+    || llvm::isa<llvm::LandingPadInst>(instruction)
+    || llvm::isa<llvm::ResumeInst>(instruction)
+    || llvm::isa<llvm::CatchReturnInst>(instruction)
+    || llvm::isa<llvm::CatchSwitchInst>(instruction)
+    || llvm::isa<llvm::CatchPadInst>(instruction)
+    || llvm::isa<llvm::CleanupPadInst>(instruction)
+    || llvm::isa<llvm::CleanupReturnInst>(instruction)
+    )){ /*llvm::VAArgInst*/
+    logger.warning(std::string("Cannot handle instruction: ") + valueToString(&instruction) +
+                  std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) + "\n");
+  }
+  if(instruction.getType()->isVoidTy()){
+    CPGProtoNode *unhandled = emitUnhandledCall(&instruction);
+    resolveConnections(unhandled, {});
+    return unhandled;
+  } else{
+    CPGProtoNode *retval = emitRef(&instruction);
+    CPGProtoNode *unhandled = emitUnhandledCall(&instruction);
+    CPGProtoNode *assignCall = emitAssignCall(&instruction, retval, unhandled);
+    return assignCall;
+  }
 }
+
+CPGProtoNode *CPGEmitter::emitUnhandledCall(llvm::Instruction *instruction) {
+  CPGProtoNode *aCall = builder.functionCallNode();
+  std::string name(instruction->getOpcodeName());
+  (*aCall) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
+      .setSignature("xxx")
+      .setDispatchType("STATIC_DISPATCH");
+  resolveConnections(aCall, {});
+  return aCall;
+}
+
 
 CPGProtoNode *CPGEmitter::visitAllocaInst(llvm::AllocaInst &instruction) {
   CPGProtoNode *localRef = emitRef(&instruction);
@@ -224,7 +259,7 @@ CPGProtoNode *CPGEmitter::visitUnaryOperator(llvm::UnaryOperator &instruction) {
   return assignCall;
 }
 
-CPGProtoNode *CPGEmitter::visitCallInst(llvm::CallInst &instruction) {
+CPGProtoNode *CPGEmitter::visitCallBase(llvm::CallBase &instruction) {
   if (instruction.getFunctionType()->getReturnType()->isVoidTy()) {
     return emitFunctionCall(&instruction);
   }
@@ -376,23 +411,6 @@ CPGProtoNode *CPGEmitter::visitUnreachableInst(llvm::UnreachableInst &instructio
   node->setCode("unreachable");
   resolveConnections(node, {});
   return node;
-}
-
-CPGProtoNode *CPGEmitter::visitFenceInst(llvm::FenceInst &instruction) {
-  return emitFence(&instruction);
-}
-
-CPGProtoNode *CPGEmitter::emitFence(const llvm::FenceInst *instruction) {
-  CPGProtoNode *callNode = builder.functionCallNode();
-  (*callNode) //
-      .setName("fence")
-      .setCode("fence")
-      .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName("fence")
-      .setSignature("xxx")
-      .setDispatchType("STATIC_DISPATCH");
-  resolveConnections(callNode, {});
-  return callNode;
 }
 
 CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
@@ -1041,7 +1059,7 @@ CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instructi
   return fnegCall;
 }
 
-CPGProtoNode *CPGEmitter::emitFunctionCall(const llvm::CallInst *instruction) {
+CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
   if (!instruction->getCalledFunction()) {
     CPGProtoNode *callNode = builder.functionCallNode();
     std::string name("fptr");
