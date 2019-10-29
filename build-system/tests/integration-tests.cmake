@@ -27,7 +27,7 @@ function(add_integration_test test_name)
 
   if (PATH_TO_CODEPROPERTYGRAPH)
     add_custom_target(validation-${test_name}
-      COMMAND cmake -E echo "Running validation test: ${cpg}"
+      COMMAND ${CMAKE_COMMAND} -E echo "Running validation test: ${cpg}"
       COMMAND ${PATH_TO_CODEPROPERTYGRAPH}/cpgvalidator.sh ${cpg}
       DEPENDS ${cpg}
       WORKING_DIRECTORY ${PATH_TO_CODEPROPERTYGRAPH}
@@ -36,7 +36,7 @@ function(add_integration_test test_name)
   endif()
 
   add_custom_target(integration-${test_name}
-    COMMAND cmake -E echo "Running integration test: ${cpg}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Running integration test: ${cpg}"
     COMMAND sbt "testOnly io.shiftleft.llvm2cpgintegration.${test_name}"
     DEPENDS ${cpg}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
@@ -70,7 +70,7 @@ function(enable_integration_tests)
     )
 
   add_custom_target(run-integration-tests
-    COMMAND cmake -E echo "Running all integration tests"
+    COMMAND ${CMAKE_COMMAND} -E echo "Running all integration tests"
     COMMAND sbt test
     DEPENDS prepare-integration-tests
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}

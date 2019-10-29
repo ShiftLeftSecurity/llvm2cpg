@@ -13,3 +13,4 @@ add_custom_command(OUTPUT ${PROTO_OUTPUT_SOURCES}
 add_library(CPGProto ${PROTO_OUTPUT_SOURCES})
 target_link_libraries(CPGProto protobuf)
 target_include_directories(CPGProto PUBLIC ${PROTO_OUTPUT_DIR})
+target_include_directories(CPGProto SYSTEM PRIVATE /usr/local/include)
