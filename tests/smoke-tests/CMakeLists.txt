@@ -1,0 +1,6 @@
+add_smoke_test(ExtractBitcodeTest_ll bitcode_extraction_c_ll)
+add_smoke_test(ExtractBitcodeTest_bc bitcode_extraction_c_bc)
+add_smoke_test(ExtractBitcodeTest_lto bitcode_extraction_c_lto_bc)
+add_smoke_test(ExtractBitcodeTest_embedBitcode bitcode_extraction_c_bin)
+
+enable_smoke_tests()

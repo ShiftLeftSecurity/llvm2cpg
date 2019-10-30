@@ -123,7 +123,9 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
         || llvm::isa<llvm::IndirectBrInst>(instruction) 
         || llvm::isa<llvm::UnreachableInst>(instruction)
         || llvm::isa<llvm::ResumeInst>(instruction)
+#if LLVM_VERSION_MAJOR >= 9
         || llvm::isa<llvm::CallBrInst>(instruction)
+#endif
         || llvm::isa<llvm::InvokeInst>(instruction))){
             logger.warning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
                            std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) + "\n") ;
@@ -175,7 +177,6 @@ CPGProtoNode *CPGEmitter::emitUnhandledCall(llvm::Instruction *instruction) {
   resolveConnections(aCall, {});
   return aCall;
 }
-
 
 CPGProtoNode *CPGEmitter::visitAllocaInst(llvm::AllocaInst &instruction) {
   CPGProtoNode *localRef = emitRef(&instruction);
