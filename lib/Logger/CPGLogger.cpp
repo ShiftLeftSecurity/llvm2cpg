@@ -4,9 +4,17 @@
 
 using namespace llvm2cpg;
 
+static std::shared_ptr<spdlog::sinks::sink> stdoutSink() {
+  return std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+}
+
+static std::shared_ptr<spdlog::sinks::sink> fileSink() {
+  return std::make_shared<spdlog::sinks::basic_file_sink_mt>("llvm2cpg.debug.log");
+}
+
 CPGLogger::CPGLogger()
-    : stdoutLog(spdlog::stdout_color_mt("llvm2cpg")),
-      debugLog(spdlog::basic_logger_mt("file", "llvm2cpg.debug.log")) {
+    : stdoutLog(std::make_shared<spdlog::logger>("llvm2cpg", stdoutSink())),
+      debugLog(std::make_shared<spdlog::logger>("file", fileSink())) {
   debugLog->set_level(spdlog::level::debug);
   debugLog->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
 }

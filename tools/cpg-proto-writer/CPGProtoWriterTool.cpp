@@ -1,4 +1,4 @@
-#include <iostream>
+#include "FileType.h"
 #include <llvm/Support/CommandLine.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/CPG/CPG.h>
@@ -28,15 +28,40 @@ int main(int argc, char **argv) {
 
   llvm::LLVMContext context;
   llvm2cpg::CPGLogger logger;
-  llvm2cpg::BitcodeLoader loader;
+  llvm2cpg::BitcodeLoader loader(logger);
   llvm2cpg::CPG cpg;
   std::vector<std::unique_ptr<llvm::Module>> bitcode;
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
-    auto path = BitcodePaths[i];
-    logger.info(std::string("Processing " + path));
-    auto bc = loader.loadBitcode(path, context);
-    bitcode.push_back(std::move(bc));
-    cpg.addBitcode(bitcode.back().get());
+    std::string path = BitcodePaths[i];
+    llvm2cpg::FileType type = getFileType(logger, path);
+    switch (type) {
+    case llvm2cpg::FileType::Unsupported: {
+      logger.warning(std::string("Skipping unsupported file ") + path);
+    } break;
+    case llvm2cpg::FileType::Bitcode: {
+      logger.info(std::string("Parsing bitcode file ") + path);
+      std::unique_ptr<llvm::Module> module = loader.loadBitcode(path, context);
+      if (module) {
+        bitcode.push_back(std::move(module));
+        cpg.addBitcode(bitcode.back().get());
+      }
+    } break;
+    case llvm2cpg::FileType::Binary: {
+      logger.info(std::string("Attempting to extract bitcode from ") + path);
+      for (std::unique_ptr<llvm::Module> &module : loader.extractBitcode(path, context)) {
+        bitcode.push_back(std::move(module));
+        cpg.addBitcode(bitcode.back().get());
+      }
+    } break;
+    case llvm2cpg::FileType::LLVM_IR: {
+      logger.info(std::string("Parsing IR file ") + path);
+      std::unique_ptr<llvm::Module> module = loader.loadIR(path, context);
+      if (module) {
+        bitcode.push_back(std::move(module));
+        cpg.addBitcode(bitcode.back().get());
+      }
+    } break;
+    }
   }
 
   llvm2cpg::CPGProtoWriter writer(logger, OutputDirectory.getValue(), OutputName.getValue());

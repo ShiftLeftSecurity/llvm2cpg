@@ -16,13 +16,9 @@ function(add_smoke_test test_name)
   endforeach()
 
   set (cpg ${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpg.bin.zip)
-
-  add_custom_command(OUTPUT ${cpg}
+  add_custom_target(smoke-${test_name} ALL
     COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
     DEPENDS cpg-proto-writer ${bitcode_dependencies} ${bitcode_files}
-  )
-  add_custom_target(smoke-${test_name} ALL
-    DEPENDS ${cpg}
   )
 endfunction()
 

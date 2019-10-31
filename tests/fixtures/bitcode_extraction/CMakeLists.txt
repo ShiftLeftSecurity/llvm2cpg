@@ -24,3 +24,9 @@ compile_fixture(
   OUTPUT_EXTENSION bin
   FLAGS -fembed-bitcode -fno-discard-value-names
 )
+compile_fixture(
+  COMPILER ${CMAKE_C_COMPILER}
+  INPUT ${source}
+  OUTPUT_EXTENSION o
+  FLAGS -c
+)

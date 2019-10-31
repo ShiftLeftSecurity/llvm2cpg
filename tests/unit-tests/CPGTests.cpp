@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/CPG/CPG.h>
+#include <llvm2cpg/Logger/CPGLogger.h>
 
 #include "FixturePaths.h"
 
@@ -13,7 +14,8 @@ TEST(CPG, empty) {
 
 TEST(CPG, addBitcode) {
   llvm::LLVMContext context;
-  BitcodeLoader loader;
+  CPGLogger logger;
+  BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path(), context);
   ASSERT_NE(bitcode.get(), nullptr);
 

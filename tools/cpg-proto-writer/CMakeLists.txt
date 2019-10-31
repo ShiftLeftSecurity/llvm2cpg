@@ -1,6 +1,6 @@
 set (SOURCES
   CPGProtoWriterTool.cpp
-  )
+        FileType.cpp FileType.h)
 
 add_executable(cpg-proto-writer ${SOURCES})
 target_link_libraries(cpg-proto-writer CPG CPGProtoWriter LLVMSupport)
