@@ -53,6 +53,10 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
     }
     for (std::unique_ptr<ebc::EmbeddedFile> &file : info.bitcodeContainer->GetRawEmbeddedFiles()) {
       std::pair<const char *, size_t> rawBuffer = file->GetRawBuffer();
+      if (rawBuffer.first == nullptr || rawBuffer.second == 0) {
+        continue;
+      }
+
       /// This is a dirty hack, but we should check that the bitcode file is not a Bitcode Wrapper
       /// Which happens whenever we get the bitcode from Xcode's version of Clang
       char *data = const_cast<char *>(rawBuffer.first);
@@ -63,8 +67,8 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
         continue;
       }
 
-      std::unique_ptr<llvm::MemoryBuffer> buffer =
-          llvm::MemoryBuffer::getMemBuffer(llvm::StringRef(rawBuffer.first, rawBuffer.second));
+      std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBuffer(
+          llvm::StringRef(rawBuffer.first, rawBuffer.second), "", false);
       if (!buffer) {
         logger.error(std::string("Cannot create memory buffer"));
         continue;

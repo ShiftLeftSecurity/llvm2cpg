@@ -61,6 +61,14 @@ const char *magicName(llvm::file_magic &magic) {
     return "wasm_object";
   case llvm::file_magic::pdb:
     return "pdb";
+#if LLVM_VERSION_MAJOR >= 9
+  case llvm::file_magic::minidump:
+    return "minidump";
+  case llvm::file_magic::xcoff_object_32:
+    return "xcoff_object_32";
+  case llvm::file_magic::xcoff_object_64:
+    return "xcoff_object_64";
+#endif
   }
 }
 
@@ -114,6 +122,11 @@ FileType llvm2cpg::getFileType(llvm2cpg::CPGLogger &logger, const std::string &p
   case llvm::file_magic::windows_resource:
   case llvm::file_magic::wasm_object:
   case llvm::file_magic::pdb:
+#if LLVM_VERSION_MAJOR >= 9
+  case llvm::file_magic::minidump:
+  case llvm::file_magic::xcoff_object_32:
+  case llvm::file_magic::xcoff_object_64:
+#endif
     return FileType::Unsupported;
   }
 }
