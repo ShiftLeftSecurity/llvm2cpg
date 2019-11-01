@@ -53,7 +53,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 }
 
 void CPGProtoAdapter::saveToArchive() {
-  logger.info("Saving CPG on disk");
+  logger.info("Serializing CPG");
   cpg::CpgStruct *graph = builder.getGraph();
   int zipError = 0;
   auto archive = zip_open(zipPath.c_str(), ZIP_CREATE | ZIP_TRUNCATE, &zipError);
@@ -69,6 +69,8 @@ void CPGProtoAdapter::saveToArchive() {
     logger.error("Cannot serialize CPG into protobuf\n");
     return;
   }
+
+  logger.info("Saving CPG on disk");
 
   auto str = stream.str();
   auto source = zip_source_buffer(archive, str.c_str(), str.size(), 0);

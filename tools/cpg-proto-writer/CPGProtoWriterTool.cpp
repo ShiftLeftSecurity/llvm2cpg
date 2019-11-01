@@ -67,5 +67,6 @@ int main(int argc, char **argv) {
   llvm2cpg::CPGProtoWriter writer(logger, OutputDirectory.getValue(), OutputName.getValue());
   writer.writeCpg(cpg);
 
+  logger.info("Shutting down");
   return 0;
 }

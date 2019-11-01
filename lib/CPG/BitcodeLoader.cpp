@@ -51,6 +51,7 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
       logger.warning(std::string("No bitcode found for ") + info.arch);
       continue;
     }
+    logger.warning(std::string("Extracting bitcode (") + info.arch + ")");
     for (std::unique_ptr<ebc::EmbeddedFile> &file : info.bitcodeContainer->GetRawEmbeddedFiles()) {
       std::pair<const char *, size_t> rawBuffer = file->GetRawBuffer();
       if (rawBuffer.first == nullptr || rawBuffer.second == 0) {
@@ -62,8 +63,14 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
       char *data = const_cast<char *>(rawBuffer.first);
       ebc::BitcodeType bitcodeType =
           ebc::util::bitcode::GetBitcodeType(*reinterpret_cast<std::uint64_t *>(data));
-      assert(bitcodeType != ebc::BitcodeType::Unknown);
-      if (bitcodeType == ebc::BitcodeType::BitcodeWrapper) {
+
+      /// There is a case on macOS when -fembed-bitcode emits a Bitcode Wrapper of size 20
+      /// LLVM cannot parse this bitcode and errors. We better skip this case.
+      if (bitcodeType == ebc::BitcodeType::BitcodeWrapper && rawBuffer.second == 20) {
+        continue;
+      }
+
+      if (bitcodeType == ebc::BitcodeType::Unknown) {
         continue;
       }
 
@@ -91,8 +98,10 @@ std::unique_ptr<llvm::Module> BitcodeLoader::loadBitcode(llvm::MemoryBuffer &buf
   if (!module) {
     std::string message;
     llvm::raw_string_ostream stream(message);
-    diagnostic.print("llvm2cpg", stream);
+    diagnostic.print("Cannot load bitcode", stream, false, false);
     stream.flush();
+    /// Trim newline
+    message[message.size() - 1] = '\0';
     logger.error(message);
   }
   return module;
