@@ -57,12 +57,11 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     builder.connectAST(methodBlock, local);
     locals.insert(std::make_pair(variable, local));
   }
- 
+
   std::unordered_map<const llvm::BasicBlock *, CPGProtoNode *> entryPoints;
   std::vector<CPGProtoNode *> exitPoints;
 
   std::vector<const llvm::Instruction *> unresolvedTerminators;
-
 
   size_t topLevelOrder = 1;
   for (llvm::BasicBlock &basicBlock : method.getFunction()) {
@@ -107,30 +106,31 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
   }
 
   // Connect CFG: method -> method body
-  builder.connectCFG(methodNode->getID(), entryPoints.at(&(method.getFunction().getEntryBlock()))->getEntry());
-  
-  //Connect terminators in second pass
+  builder.connectCFG(methodNode->getID(),
+                     entryPoints.at(&(method.getFunction().getEntryBlock()))->getEntry());
+
+  // Connect terminators in second pass
   int i = 0;
   for (llvm::BasicBlock &basicBlock : method.getFunction()) {
     llvm::Instruction *instruction = basicBlock.getTerminator();
     CPGProtoNode *node = exitPoints.at(i);
-    if (llvm::dyn_cast<llvm::ReturnInst>(instruction)){
+    if (llvm::dyn_cast<llvm::ReturnInst>(instruction)) {
       builder.connectCFG(node->getID(), methodReturnNode->getID());
-    } else{
+    } else {
       int numSuccs = instruction->getNumSuccessors();
-      if(!(llvm::isa<llvm::BranchInst>(instruction) 
-        || llvm::isa<llvm::SwitchInst>(instruction) 
-        || llvm::isa<llvm::IndirectBrInst>(instruction) 
-        || llvm::isa<llvm::UnreachableInst>(instruction)
-        || llvm::isa<llvm::ResumeInst>(instruction)
+      if (!(llvm::isa<llvm::BranchInst>(instruction) || llvm::isa<llvm::SwitchInst>(instruction) ||
+            llvm::isa<llvm::IndirectBrInst>(instruction) ||
+            llvm::isa<llvm::UnreachableInst>(instruction) ||
+            llvm::isa<llvm::ResumeInst>(instruction)
 #if LLVM_VERSION_MAJOR >= 9
-        || llvm::isa<llvm::CallBrInst>(instruction)
+            || llvm::isa<llvm::CallBrInst>(instruction)
 #endif
-        || llvm::isa<llvm::InvokeInst>(instruction))){
-            logger.warning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
-                           std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) + "\n") ;
-        }
-      for (unsigned int j = 0; j < numSuccs; j++){
+            || llvm::isa<llvm::InvokeInst>(instruction))) {
+        logger.warning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
+                       std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) +
+                       "\n");
+      }
+      for (unsigned int j = 0; j < numSuccs; j++) {
         builder.connectCFG(node->getID(), entryPoints.at(instruction->getSuccessor(j))->getEntry());
       }
     }
@@ -139,23 +139,20 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 }
 
 CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {
-  if(!(llvm::isa<llvm::FenceInst>(instruction)
-    || llvm::isa<llvm::LandingPadInst>(instruction)
-    || llvm::isa<llvm::ResumeInst>(instruction)
-    || llvm::isa<llvm::CatchReturnInst>(instruction)
-    || llvm::isa<llvm::CatchSwitchInst>(instruction)
-    || llvm::isa<llvm::CatchPadInst>(instruction)
-    || llvm::isa<llvm::CleanupPadInst>(instruction)
-    || llvm::isa<llvm::CleanupReturnInst>(instruction)
-    )){ /*llvm::VAArgInst*/
+  if (!(llvm::isa<llvm::FenceInst>(instruction) || llvm::isa<llvm::LandingPadInst>(instruction) ||
+        llvm::isa<llvm::ResumeInst>(instruction) || llvm::isa<llvm::CatchReturnInst>(instruction) ||
+        llvm::isa<llvm::CatchSwitchInst>(instruction) ||
+        llvm::isa<llvm::CatchPadInst>(instruction) ||
+        llvm::isa<llvm::CleanupPadInst>(instruction) ||
+        llvm::isa<llvm::CleanupReturnInst>(instruction))) { /*llvm::VAArgInst*/
     logger.warning(std::string("Cannot handle instruction: ") + valueToString(&instruction) +
-                  std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) + "\n");
+                   std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) + "\n");
   }
-  if(instruction.getType()->isVoidTy()){
+  if (instruction.getType()->isVoidTy()) {
     CPGProtoNode *unhandled = emitUnhandledCall(&instruction);
     resolveConnections(unhandled, {});
     return unhandled;
-  } else{
+  } else {
     CPGProtoNode *retval = emitRef(&instruction);
     CPGProtoNode *unhandled = emitUnhandledCall(&instruction);
     CPGProtoNode *assignCall = emitAssignCall(&instruction, retval, unhandled);
@@ -401,11 +398,17 @@ CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
   return nullptr;
 }
 
-CPGProtoNode *CPGEmitter::visitBranchInst(llvm::BranchInst &instruction) {return nullptr;}
+CPGProtoNode *CPGEmitter::visitBranchInst(llvm::BranchInst &instruction) {
+  return nullptr;
+}
 
-CPGProtoNode *CPGEmitter::visitSwitchInst(llvm::SwitchInst &instruction) {return nullptr;}
+CPGProtoNode *CPGEmitter::visitSwitchInst(llvm::SwitchInst &instruction) {
+  return nullptr;
+}
 
-CPGProtoNode *CPGEmitter::visitIndirectBrInst(llvm::IndirectBrInst &instruction) {return nullptr;}
+CPGProtoNode *CPGEmitter::visitIndirectBrInst(llvm::IndirectBrInst &instruction) {
+  return nullptr;
+}
 
 CPGProtoNode *CPGEmitter::visitUnreachableInst(llvm::UnreachableInst &instruction) {
   CPGProtoNode *node = emitUnhandled();
@@ -631,24 +634,25 @@ CPGProtoNode *CPGEmitter::emitConstant(unsigned int c) {
 
 CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
   llvm::Instruction *constInstruction = constantExpr->getAsInstruction();
+  ValGuard guard(constInstruction);
   if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(constInstruction)) {
     return emitGEP(gep);
-  }
-  if (auto cast = llvm::dyn_cast<llvm::CastInst>(constInstruction)) {
+  } else if (auto cast = llvm::dyn_cast<llvm::CastInst>(constInstruction)) {
     return emitCast(cast);
-  }
-  if (auto binary = llvm::dyn_cast<llvm::BinaryOperator>(constInstruction)) {
+  } else if (auto binary = llvm::dyn_cast<llvm::BinaryOperator>(constInstruction)) {
     return emitBinaryCall(binary);
-  }
-  if (auto cmp = llvm::dyn_cast<llvm::CmpInst>(constInstruction)) {
+  } else if (auto cmp = llvm::dyn_cast<llvm::CmpInst>(constInstruction)) {
     return emitCmpCall(cmp);
-  }
-  logger.warning(std::string("Cannot handle constant expression yet: ") + valueToString(constInstruction) + 
-                 std::string(" of ValueID ") + std::to_string(constInstruction->getValueID()) + "\n");
-  CPGProtoNode *unhandled = builder.unknownNode();
-  resolveConnections(unhandled, {});
+  } else {
+    logger.warning(std::string("Cannot handle constant expression yet: ") +
+                   valueToString(constInstruction) + std::string(" of ValueID ") +
+                   std::to_string(constInstruction->getValueID()) + "\n");
 
-  return unhandled;
+    CPGProtoNode *unhandled = builder.unknownNode();
+    resolveConnections(unhandled, {});
+
+    return unhandled;
+  }
 }
 
 CPGProtoNode *CPGEmitter::emitLocalVariable(const llvm::Value *variable, size_t order) {

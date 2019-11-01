@@ -6,7 +6,7 @@ using namespace llvm2cpg;
 CPGMethod::CPGMethod(llvm::Function &function)
     : function(function), name(function.getName().str()), arguments(), localVariables() {
   CPGInstVisitor visitor(arguments, localVariables);
-  visitor.visit(function);
+  visitor.run(function);
 }
 
 CPGMethod::CPGMethod(CPGMethod &&that) noexcept

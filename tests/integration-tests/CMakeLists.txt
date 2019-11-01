@@ -11,6 +11,9 @@ add_integration_test(C_CallStringTest call_string_c_bc)
 add_integration_test(C_CallUnknownFunctionTest call_unknown_function_c_bc)
 add_integration_test(C_CallFunctionPointerTest call_function_pointer_c_bc)
 
+add_integration_test(C_DbgVectorfindTest vectorfind_c_dbg_bc)
+add_integration_test(C_DbgVectorfindOptTest vectorfind_c_o3_dbg_bc)
+
 add_integration_test(LLVM_SelectInstTest select_inst_ll_bc)
 add_integration_test(LLVM_GEPFlatStructTest gep_flat_struct_ll_bc)
 add_integration_test(LLVM_GEPArrayTest gep_array_ll_bc)

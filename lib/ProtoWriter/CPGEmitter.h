@@ -57,8 +57,6 @@ private:
   CPGProtoNode *visitInsertElementInst(llvm::InsertElementInst &instruction);
   CPGProtoNode *visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction);
 
-
-
   CPGProtoNode *emitMethodNode(const CPGMethod &method);
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
@@ -94,10 +92,9 @@ private:
   CPGProtoNode *emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction);
   CPGProtoNode *emitUnhandledCall(llvm::Instruction *instruction);
 
-  CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);  
-  CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);  
-  CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);  
-
+  CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);
+  CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);
+  CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
@@ -114,6 +111,15 @@ private:
   void resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
 
   std::string getTypeName(const llvm::Type *type);
+};
+
+struct ValGuard {
+public:
+  ValGuard(llvm::Value *val) : val(val) {}
+  llvm::Value *val;
+  ~ValGuard() {
+    val->deleteValue();
+  }
 };
 
 } // namespace llvm2cpg

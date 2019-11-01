@@ -8,6 +8,9 @@ object TestCpgPaths {
   val C_ReturnGlobalCPG = "@C_ReturnGlobalTest@"
   val C_ReturnCastCPG = "@C_ReturnCastTest@"
   val C_SwitchCPG = "@C_SwitchTest@"
+  
+  val C_DbgVectorfindCPG = "@C_DbgVectorfindTest@"
+  val C_DbgVectorfindOptCPG = "@C_DbgVectorfindOptTest@"  
 
   val C_CallIntCPG = "@C_CallIntTest@"
   val C_CallStringCPG = "@C_CallStringTest@"
@@ -32,6 +35,7 @@ object TestCpgPaths {
   val LLVM_AggregateTestCpg = "@LLVM_AggregateTest@"
   val LLVM_AliasTestCpg = "@LLVM_AliasTest@"
   val LLVM_InlineAsmTestCpg = "@LLVM_InlineAsmTest@"
+
 
   val DataFlow_CallerTestCPG = "@DataFlow_CallerTest@"
   val DataFlow_CallerArgumentsTestCPG = "@DataFlow_CallerArgumentsTest@"

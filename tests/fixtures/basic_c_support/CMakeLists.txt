@@ -18,6 +18,15 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/inline_asm.c
   )
 
+set (SOURCES_DBG
+  ${CMAKE_CURRENT_LIST_DIR}/vectorfind.c
+)
+
+set (SOURCES_DBG_OPT
+  ${CMAKE_CURRENT_LIST_DIR}/vectorfind.c
+)
+
+
 foreach(source ${SOURCES})
   compile_fixture(
     COMPILER ${CMAKE_C_COMPILER}
@@ -30,5 +39,37 @@ foreach(source ${SOURCES})
     INPUT ${source}
     OUTPUT_EXTENSION ll
     FLAGS -c -emit-llvm -S -fno-discard-value-names
+  )
+endforeach()
+
+
+foreach(source ${SOURCES_DBG})
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION dbg.bc
+    FLAGS -c -emit-llvm -g
+  )
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION dbg.ll
+    FLAGS -c -emit-llvm -S -g
+  )
+endforeach()
+
+
+foreach(source ${SOURCES_DBG_OPT})
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION o3.dbg.bc
+    FLAGS -c -emit-llvm -gfull -gdwarf-5 -O3 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
+  )
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION o3.dbg.ll
+    FLAGS -c -emit-llvm -S -gfull -gdwarf-5 -O3 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
   )
 endforeach()

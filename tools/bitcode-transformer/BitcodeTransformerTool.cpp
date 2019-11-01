@@ -4,6 +4,7 @@
 #include <llvm/Support/Path.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/Transforms/Transforms.h>
+#include <llvm2cpg/Logger/CPGLogger.h>
 
 llvm::cl::OptionCategory BitcodeTransformerCategory("bitcode-transformer");
 
@@ -32,7 +33,8 @@ int main(int argc, char **argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
   llvm::LLVMContext context;
-  llvm2cpg::BitcodeLoader loader;
+  llvm2cpg::CPGLogger log = llvm2cpg::CPGLogger();
+  llvm2cpg::BitcodeLoader loader(log);
   llvm2cpg::Transforms transforms;
 
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
