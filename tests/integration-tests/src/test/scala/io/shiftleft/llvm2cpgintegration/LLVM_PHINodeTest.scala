@@ -72,7 +72,7 @@ class LLVM_PHINodeTest extends CPGMatcher {
 
     val assignAlloca = block.start.astChildren.isCall.head
     val allocaCall = assignAlloca.start.astChildren.isCall.head
-    allocaCall.name shouldBe "alloca"
+    allocaCall.name shouldBe "<operator>.alloca"
 
     val store1 = block.start.astChildren.isCall.l.apply(2)
     val store1_ref = store1.start.astChildren.isIdentifier.head

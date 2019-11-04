@@ -50,7 +50,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     ptrCallParam.start.refsTo.head shouldBe tmpValue
 
     val receiver = ptrCall.start.receiver.isCall.head
-    receiver.name shouldBe "bitcast"
+    receiver.name shouldBe "<operator>.cast"
     receiver.typeFullName shouldBe "i32 (i8*, ...)*"
     val methodRef = receiver.start.astChildren.isMethodRef.head
     methodRef.methodFullName shouldBe "something"

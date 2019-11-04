@@ -86,7 +86,7 @@ class C_ReturnParameterTest extends CPGMatcher {
     {
       // %x.addr = alloca i32
       val assignCall = block.start.astChildren.isCall.l.head
-      assignCall.name shouldBe "="
+      assignCall.name shouldBe "<operator>.assignment"
       assignCall.order shouldBe 1
       assignCall.argumentIndex shouldBe 1
       assignCall.typeFullName shouldBe "i32*"
@@ -101,7 +101,7 @@ class C_ReturnParameterTest extends CPGMatcher {
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs = assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "alloca"
+      rhs.name shouldBe "<operator>.alloca"
       rhs.typeFullName shouldBe "i32*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
@@ -110,14 +110,14 @@ class C_ReturnParameterTest extends CPGMatcher {
     {
       // store i32 %x, i32* %x.addr
       val assignCall = block.start.astChildren.isCall.l.apply(1)
-      assignCall.name shouldBe "="
+      assignCall.name shouldBe "<operator>.assignment"
       assignCall.order shouldBe 2
       assignCall.argumentIndex shouldBe 2
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val lhs = assignCall.start.astChildren.isCall.l.head
-      lhs.name shouldBe "store"
+      lhs.name shouldBe "<operator>.indirection"
       lhs.typeFullName shouldBe "i32"
       lhs.order shouldBe 1
       lhs.argumentIndex shouldBe 1
@@ -144,7 +144,7 @@ class C_ReturnParameterTest extends CPGMatcher {
     {
       // %0 = load i32, i32* %x.addr
       val assignCall = block.start.astChildren.isCall.l.apply(2)
-      assignCall.name shouldBe "="
+      assignCall.name shouldBe "<operator>.assignment"
       assignCall.order shouldBe 3
       assignCall.argumentIndex shouldBe 3
       assignCall.start.astChildren.l.size shouldBe 2
@@ -160,7 +160,7 @@ class C_ReturnParameterTest extends CPGMatcher {
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs =  assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "load"
+      rhs.name shouldBe "<operator>.indirection"
       rhs.typeFullName shouldBe "i32*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2

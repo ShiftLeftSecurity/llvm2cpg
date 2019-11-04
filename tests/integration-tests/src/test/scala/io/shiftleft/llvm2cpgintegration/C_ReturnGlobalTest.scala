@@ -28,7 +28,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
     {
       // %0 = load i32, i32* %x.addr
       val assignCall = block.start.astChildren.isCall.l.head
-      assignCall.name shouldBe "="
+      assignCall.name shouldBe "<operator>.assignment"
       assignCall.order shouldBe 1
       assignCall.argumentIndex shouldBe 1
       assignCall.start.astChildren.l.size shouldBe 2
@@ -44,7 +44,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs =  assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "load"
+      rhs.name shouldBe "<operator>.indirection"
       rhs.typeFullName shouldBe "i32*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2

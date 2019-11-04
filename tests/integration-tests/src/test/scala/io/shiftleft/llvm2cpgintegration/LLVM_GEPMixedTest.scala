@@ -35,35 +35,35 @@ class LLVM_GEPMixedTest extends CPGMatcher {
 
     // i64 13
     val indexAccessGEP_13 = assignGEP.start.astChildren.isCall.head
-    indexAccessGEP_13.name shouldBe "index_access"
+    indexAccessGEP_13.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP_13.typeFullName shouldBe "i32*"
     val indexAccessGEP_13_index = indexAccessGEP_13.start.astChildren.isLiteral.head
     indexAccessGEP_13_index.code shouldBe "13"
 
     // i64 5
     val indexAccessGEP_5 = indexAccessGEP_13.start.astChildren.isCall.head
-    indexAccessGEP_5.name shouldBe "index_access"
+    indexAccessGEP_5.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP_5.typeFullName shouldBe "[20 x i32]"
     val indexAccessGEP_5_index = indexAccessGEP_5.start.astChildren.isLiteral.head
     indexAccessGEP_5_index.code shouldBe "5"
 
     // i32 1
     val indexAccessGEP_1 = indexAccessGEP_5.start.astChildren.isCall.head
-    indexAccessGEP_1.name shouldBe "member_access"
+    indexAccessGEP_1.name shouldBe "<operator>.memberAccess"
     indexAccessGEP_1.typeFullName shouldBe "[10 x [20 x i32]]"
     val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isLiteral.head
     indexAccessGEP_1_index.code shouldBe "1"
 
     // i32 2
     val indexAccessGEP_2 = indexAccessGEP_1.start.astChildren.isCall.head
-    indexAccessGEP_2.name shouldBe "member_access"
+    indexAccessGEP_2.name shouldBe "<operator>.memberAccess"
     indexAccessGEP_2.typeFullName shouldBe "struct.RT"
     val indexAccessGEP_2_index = indexAccessGEP_2.start.astChildren.isLiteral.head
     indexAccessGEP_2_index.code shouldBe "2"
 
     // i64 4
     val indexAccessGEP_4 = indexAccessGEP_2.start.astChildren.isCall.head
-    indexAccessGEP_4.name shouldBe "index_access"
+    indexAccessGEP_4.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP_4.typeFullName shouldBe "struct.ST"
     val indexAccessGEP_4_index = indexAccessGEP_4.start.astChildren.isLiteral.head
     indexAccessGEP_4_index.code shouldBe "4"

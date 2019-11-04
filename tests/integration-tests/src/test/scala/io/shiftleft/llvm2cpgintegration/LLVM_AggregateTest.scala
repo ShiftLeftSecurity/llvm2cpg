@@ -31,7 +31,7 @@ class LLVM_AggregateTest extends CPGMatcher {
 
     "CFG" in {
         val extractBParent = cpg.method.name("extract").ast.isIdentifier.name("B").astParent.isCall.l.head
-        extractBParent.name shouldBe "="
+        extractBParent.name shouldBe "<operator>.assignment"
         val P1 = extractBParent.start.cfgPrev.isCall.head
         P1.code shouldBe "ExtractValue_index"
         P1.typeFullName shouldBe "i8"
@@ -48,7 +48,7 @@ class LLVM_AggregateTest extends CPGMatcher {
         val extract_B = cpg.method.name("extract").ast.isIdentifier.name("B").astParent.head
         treeDump(extract_B) shouldBe (
             "CALL",
-            "=",
+            "<operator>.assignment",
             "i8",
             List(
                 (1, ("IDENTIFIER", "B", "i8")),
@@ -110,7 +110,7 @@ class LLVM_AggregateTest extends CPGMatcher {
         val insert_agg3 = cpg.method.name("insert").ast.isIdentifier.name("agg3").astParent.head
         treeDump(insert_agg3) shouldBe (
             "CALL",
-            "=",
+            "<operator>.assignment",
             "{ i32, { [1 x float] } }",
             List(
                 (1, ("IDENTIFIER", "agg3", "{ i32, { [1 x float] } }")),

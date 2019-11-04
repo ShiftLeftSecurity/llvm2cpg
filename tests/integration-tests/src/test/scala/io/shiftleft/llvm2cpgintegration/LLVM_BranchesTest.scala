@@ -110,7 +110,8 @@ class LLVM_BranchesTest extends CPGMatcher {
 
   "conditional CFG regression" in {
     val method = cpg.method.name("cfg_conditional").head
-    method.start.ast.isCall.name("trunc").cfgNext.cfgNext.l.size shouldBe 1
+    val trunc = method.start.ast.isCall.name("<operator>.cast").head
+    trunc.start.cfgNext.cfgNext.l.size shouldBe 1
     method.start.ast.isIdentifier.name("z").astParent.isCall.cfgNext.l.size shouldBe 2
   }
 

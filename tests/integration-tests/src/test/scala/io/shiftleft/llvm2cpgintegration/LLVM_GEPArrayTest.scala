@@ -30,7 +30,7 @@ class LLVM_GEPArrayTest extends CPGMatcher {
     xRef.start.refsTo.head shouldBe ptr
 
     val indexAccessGEP = assignGEP.start.astChildren.isCall.head
-    indexAccessGEP.name shouldBe "index_access"
+    indexAccessGEP.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP.typeFullName shouldBe "i32*"
 
     val indexAccessGEP_index = indexAccessGEP.start.astChildren.isLiteral.head

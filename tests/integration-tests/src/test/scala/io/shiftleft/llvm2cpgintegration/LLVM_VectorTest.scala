@@ -38,9 +38,9 @@ class LLVM_VectorTest extends CPGMatcher {
     val shuffle = cpg.method.name("findbyte").ast.isCall.name("shufflevector").l.head
     val extract = cpg.method.name("extract").ast.isCall.name("extractelement").l.head
 
-    val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("index_access").head
-    val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("index_access").head
-    val gep3 = cpg.method.name("vectorGEP").ast.isIdentifier.name("C").astParent.isCall.argument.isCall.name("index_access").head
+    val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
+    val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
+    val gep3 = cpg.method.name("vectorGEP").ast.isIdentifier.name("C").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
 
     //Todo: use treedump-like?
     argSummary(insert) shouldBe Set[Any]((1, "undef", "<2 x float>"), (2, "x", "float"), (3, "1", "i8"))

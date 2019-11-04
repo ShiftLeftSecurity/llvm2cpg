@@ -4,6 +4,7 @@
 #include "CPGTypeEmitter.h"
 #include "llvm2cpg/CPG/CPGFile.h"
 #include "llvm2cpg/CPG/CPGMethod.h"
+#include "llvm2cpg/CPG/CPGOperatorNames.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
 #include <llvm/IR/InlineAsm.h>
 
@@ -276,9 +277,7 @@ CPGProtoNode *CPGEmitter::visitAtomicRMWInst(llvm::AtomicRMWInst &instruction) {
 
 CPGProtoNode *CPGEmitter::emitAtomicRMW(llvm::AtomicRMWInst *instruction) {
   CPGProtoNode *acall = builder.functionCallNode();
-  std::string name(instruction->getOpcodeName());
-  name = name + std::string(instruction->getOperationName(instruction->getOperation()));
-
+  std::string name(atomicOperatorName(instruction));
   (*acall) //
       .setName(name)
       .setCode(name)
@@ -303,7 +302,7 @@ CPGProtoNode *CPGEmitter::visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instru
 }
 
 CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction) {
-  std::string name(instruction->getOpcodeName());
+  std::string name("<operator>.cmpxchg");
   CPGProtoNode *acall = builder.functionCallNode();
 
   (*acall) //
@@ -679,12 +678,13 @@ CPGProtoNode *CPGEmitter::emitFunctionArgument(const llvm::Value *argument, size
 CPGProtoNode *CPGEmitter::emitAssignCall(const llvm::Value *value, CPGProtoNode *lhs,
                                          CPGProtoNode *rhs) {
   CPGProtoNode *assignCall = builder.functionCallNode();
+  std::string name("<operator>.assignment");
   (*assignCall) //
-      .setName("=")
-      .setCode("=")
+      .setName(name)
+      .setCode(name)
       .setTypeFullName(getTypeName(value->getType()))
-      .setMethodInstFullName("=")
-      .setMethodFullName("=")
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
       .setSignature("xxx")
       .setDispatchType("STATIC_DISPATCH");
 
@@ -694,12 +694,13 @@ CPGProtoNode *CPGEmitter::emitAssignCall(const llvm::Value *value, CPGProtoNode 
 
 CPGProtoNode *CPGEmitter::emitAllocaCall(const llvm::Value *value) {
   CPGProtoNode *allocaCall = builder.functionCallNode();
+  std::string name("<operator>.alloca");
   (*allocaCall) //
-      .setName("alloca")
+      .setName(name)
       .setCode(valueToString(value))
       .setTypeFullName(getTypeName(value->getType()))
-      .setMethodInstFullName("alloca")
-      .setMethodFullName("alloca")
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
       .setSignature("xxx")
       .setDispatchType("STATIC_DISPATCH");
 
@@ -709,12 +710,13 @@ CPGProtoNode *CPGEmitter::emitAllocaCall(const llvm::Value *value) {
 
 CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Value *value, CPGProtoNode *pointerRef) {
   CPGProtoNode *indirectionCall = builder.functionCallNode();
+  std::string name("<operator>.indirection");
   (*indirectionCall) //
-      .setName("store")
-      .setCode("store")
+      .setName(name)
+      .setCode(name)
       .setTypeFullName(getTypeName(value->getType()))
-      .setMethodInstFullName("store")
-      .setMethodFullName("store")
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
       .setSignature("xxx")
       .setDispatchType("STATIC_DISPATCH");
   resolveConnections(indirectionCall, { pointerRef });
@@ -725,11 +727,12 @@ CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
   CPGProtoNode *addressRef = emitRef(value);
   addressRef->setOrder(1).setArgumentIndex(1);
   CPGProtoNode *dereferenceCall = builder.functionCallNode();
+  std::string name("<operator>.indirection");
   (*dereferenceCall) //
-      .setName("load")
-      .setCode("load")
-      .setMethodInstFullName("load")
-      .setMethodFullName("load")
+      .setName(name)
+      .setCode(name)
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
       .setSignature("xxx")
       .setDispatchType("STATIC_DISPATCH")
       .setTypeFullName(getTypeName(value->getType()));
@@ -740,12 +743,13 @@ CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
 
 CPGProtoNode *CPGEmitter::emitBinaryCall(const llvm::BinaryOperator *binary) {
   CPGProtoNode *binCall = builder.functionCallNode();
+  std::string name(binaryOperatorName(binary));
   (*binCall) //
-      .setName(binary->getOpcodeName())
-      .setCode(binary->getOpcodeName())
+      .setName(name)
+      .setCode(name)
       .setTypeFullName(getTypeName(binary->getType()))
-      .setMethodInstFullName(binary->getOpcodeName())
-      .setMethodFullName(binary->getOpcodeName())
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
       .setSignature("xxx")
       .setDispatchType("STATIC_DISPATCH");
 
@@ -759,9 +763,7 @@ CPGProtoNode *CPGEmitter::emitBinaryCall(const llvm::BinaryOperator *binary) {
 
 CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
   auto cmpCall = builder.functionCallNode();
-  std::string name(comparison->getOpcodeName());
-  name += '_';
-  name += llvm::CmpInst::getPredicateName(comparison->getPredicate());
+  std::string name(comparisonOperatorName(comparison));
   (*cmpCall) //
       .setName(name)
       .setCode(name)
@@ -781,7 +783,7 @@ CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
 
 CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
   CPGProtoNode *castCall = builder.functionCallNode();
-  std::string name(instruction->getOpcodeName());
+  std::string name(castOperatorName(instruction));
   (*castCall) //
       .setName(name)
       .setCode(name)
@@ -799,7 +801,7 @@ CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
 
 CPGProtoNode *CPGEmitter::emitSelect(llvm::SelectInst *instruction) {
   CPGProtoNode *selectCall = builder.functionCallNode();
-  std::string name(instruction->getOpcodeName());
+  std::string name("<operator>.select");
   (*selectCall) //
       .setName(name)
       .setCode(name)
@@ -992,9 +994,9 @@ CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) 
 
 CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *index,
                                         bool memberAccess) {
-  std::string name("index_access");
+  std::string name("<operator>.computedMemberAccess");
   if (memberAccess) {
-    name = "member_access";
+    name = "<operator>.memberAccess";
   }
   CPGProtoNode *call = builder.functionCallNode();
   (*call) //
@@ -1048,7 +1050,7 @@ CPGProtoNode *CPGEmitter::emitExtract(const llvm::Type *type, unsigned int idx, 
 
 CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instruction) {
   CPGProtoNode *fnegCall = builder.functionCallNode();
-  std::string name(instruction->getOpcodeName());
+  std::string name(unaryOperatorName(instruction));
   (*fnegCall) //
       .setName(name)
       .setCode(name)

@@ -4,6 +4,7 @@ set (SOURCES
   CPGMethod.cpp
   CPG.cpp
   CPGInstVisitor.cpp
+  CPGOperatorNames.cpp
   )
 
 add_library(CPG ${SOURCES})

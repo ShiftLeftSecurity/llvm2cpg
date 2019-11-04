@@ -38,8 +38,8 @@ class C_CallStringTest extends CPGMatcher {
 
     val indexAccess_0 = call.start.astChildren.isCall.head
     indexAccess_0.typeFullName shouldBe "i8*"
-    indexAccess_0.name shouldBe "index_access"
-    indexAccess_0.methodFullName shouldBe "index_access"
+    indexAccess_0.name shouldBe "<operator>.computedMemberAccess"
+    indexAccess_0.methodFullName shouldBe "<operator>.computedMemberAccess"
 
     val indexAccess_0_index = indexAccess_0.start.astChildren.isLiteral.head
     indexAccess_0_index.code shouldBe "0"
@@ -47,7 +47,7 @@ class C_CallStringTest extends CPGMatcher {
 
     val indexAccess_1 = indexAccess_0.start.astChildren.isCall.head
     indexAccess_1.typeFullName shouldBe "[6 x i8]"
-    indexAccess_1.name shouldBe "index_access"
+    indexAccess_1.name shouldBe "<operator>.computedMemberAccess"
 
     val indexAccess_1_ref = indexAccess_1.start.astChildren.isIdentifier.head
     indexAccess_1_ref.typeFullName shouldBe "[6 x i8]*"
