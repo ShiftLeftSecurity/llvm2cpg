@@ -9,7 +9,7 @@ class LLVM_UnreachableTest extends CPGMatcher {
   private val methodName = "unreachable"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void"))
+    validateTypes(cpg, Set("ANY", "void", "void ()"))
   }
 
   "AST" in {

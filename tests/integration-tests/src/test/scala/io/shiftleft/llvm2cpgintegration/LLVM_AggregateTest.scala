@@ -24,7 +24,9 @@ class LLVM_AggregateTest extends CPGMatcher {
             "{ [3 x { i8, i8, i8, [4 x i8] }] }",
             "i32",
             "{ i32, float }",
-            "void"
+            "void",
+            "void ()",
+            "{ i32, float } (float)"
             )
         )
     }

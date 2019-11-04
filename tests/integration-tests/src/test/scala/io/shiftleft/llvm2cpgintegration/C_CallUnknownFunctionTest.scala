@@ -17,7 +17,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (i8*, ...)*"))
+    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (i8*, ...)*", "i32 (...)", "void ()"))
   }
 
   "AST" in {
@@ -43,6 +43,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     ptrCall.methodFullName shouldBe "fptr"
     ptrCall.typeFullName shouldBe "i32"
     ptrCall.dispatchType shouldBe "DYNAMIC_DISPATCH"
+    ptrCall.signature shouldBe "i32 (i8*, ...)*"
 
     val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
     ptrCallParam.typeFullName shouldBe "i8*"

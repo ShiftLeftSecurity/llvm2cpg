@@ -9,7 +9,7 @@ class LLVM_SwitchesTest extends CPGMatcher {
   private val methodName = "switches";
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void"))
+    validateTypes(cpg, Set("ANY", "void", "void ()"))
   }
 
   "AST" in {

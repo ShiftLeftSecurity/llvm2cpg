@@ -8,7 +8,7 @@ class LLVM_BranchesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesCPG)
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void", "i8", "i1", "i8*"))
+    validateTypes(cpg, Set("ANY", "void", "i8", "i1", "i8*", "void ()", "i8 (i1)", "i8 (i8)"))
   }
 
   "empty branches AST" in {

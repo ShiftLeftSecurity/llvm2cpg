@@ -8,7 +8,7 @@ class LLVM_FnegInstTest extends CPGMatcher {
   private val methodName = "negate"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "float"))
+    validateTypes(cpg, Set("ANY", "float", "float (float)"))
   }
 
   "AST" in {
@@ -37,6 +37,7 @@ class LLVM_FnegInstTest extends CPGMatcher {
     val fnegCall = assignFneg.start.astChildren.isCall.head
     fnegCall.name shouldBe "<operator>.fneg"
     fnegCall.methodFullName shouldBe "<operator>.fneg"
+    fnegCall.signature shouldBe "ANY (ANY)"
 
     val fnegArgument = fnegCall.start.astChildren.isIdentifier.l.head
     fnegArgument.code shouldBe "x"

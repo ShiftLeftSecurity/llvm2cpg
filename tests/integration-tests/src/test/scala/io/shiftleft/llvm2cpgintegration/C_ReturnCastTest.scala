@@ -18,7 +18,7 @@ class C_ReturnCastTest extends CPGMatcher {
   }
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8", "i32", "i8*"))
+    validateTypes(cpg, Set("ANY", "i8", "i32", "i8*", "i32 (i8)"))
   }
 
   "methods" in {
@@ -206,6 +206,7 @@ class C_ReturnCastTest extends CPGMatcher {
       val rhs =  assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "<operator>.cast"
       rhs.methodFullName shouldBe "<operator>.cast"
+      rhs.signature shouldBe "ANY (ANY)"
       rhs.typeFullName shouldBe "i32"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2

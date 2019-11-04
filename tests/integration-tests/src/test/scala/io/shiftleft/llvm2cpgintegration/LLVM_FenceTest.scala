@@ -7,7 +7,7 @@ class LLVM_FenceTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FenceTestCpg)
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void"))
+    validateTypes(cpg, Set("ANY", "void", "void ()"))
   }
 
   "CFG" in {

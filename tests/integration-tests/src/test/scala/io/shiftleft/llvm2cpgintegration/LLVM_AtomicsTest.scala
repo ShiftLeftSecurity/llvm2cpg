@@ -8,7 +8,7 @@ class LLVM_AtomicsTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AtomicsCPG)
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "{ i32, i1 }", "i32", "i32*", "void"))
+    validateTypes(cpg, Set("ANY", "{ i32, i1 }", "i32", "i32*", "void", "void (i32*)", "i32 (i32*)"))
   }
 
   "AST" in {

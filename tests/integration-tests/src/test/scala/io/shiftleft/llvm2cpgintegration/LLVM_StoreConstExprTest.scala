@@ -8,7 +8,7 @@ class LLVM_StoreConstExprTest extends CPGMatcher {
   private val methodName = "store_const"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8", "i8*", "[11 x i8]", "[11 x i8]*", "i64", "void"))
+    validateTypes(cpg, Set("ANY", "i8", "i8*", "[11 x i8]", "[11 x i8]*", "i64", "void", "void ()"))
   }
 
   "AST" in {

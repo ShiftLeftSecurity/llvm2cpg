@@ -27,7 +27,6 @@ public:
 
   llvm::Type *getReturnType() const;
   const std::string &getName() const;
-  const std::string &getSignature() const;
   bool isExternal() const;
   llvm::Function &getFunction() const;
 

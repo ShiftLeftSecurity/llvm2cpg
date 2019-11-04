@@ -170,7 +170,7 @@ CPGProtoNode *CPGEmitter::emitUnhandledCall(llvm::Instruction *instruction) {
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY")
       .setDispatchType("STATIC_DISPATCH");
   resolveConnections(aCall, {});
   return aCall;
@@ -284,7 +284,7 @@ CPGProtoNode *CPGEmitter::emitAtomicRMW(llvm::AtomicRMWInst *instruction) {
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
@@ -311,7 +311,7 @@ CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setName(name)
-      .setSignature("xxx")
+      .setSignature("{ANY, i1} (ANY, ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   CPGProtoNode *ptr = emitRefOrConstant(instruction->getPointerOperand());
@@ -437,7 +437,7 @@ CPGProtoNode *CPGEmitter::emitMethodNode(const CPGMethod &method) {
       .setASTParentType("NAMESPACE_BLOCK")
       .setASTParentFullName(file.getGlobalNamespaceName())
       .setIsExternal(method.isExternal())
-      .setSignature(method.getSignature())
+      .setSignature(getTypeName(method.getFunction().getFunctionType()))
       .setOrder(0);
   return methodNode;
 }
@@ -685,7 +685,7 @@ CPGProtoNode *CPGEmitter::emitAssignCall(const llvm::Value *value, CPGProtoNode 
       .setTypeFullName(getTypeName(value->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   resolveConnections(assignCall, { lhs, rhs });
@@ -701,7 +701,7 @@ CPGProtoNode *CPGEmitter::emitAllocaCall(const llvm::Value *value) {
       .setTypeFullName(getTypeName(value->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY ()")
       .setDispatchType("STATIC_DISPATCH");
 
   resolveConnections(allocaCall, {});
@@ -717,7 +717,7 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Value *value, CPGProto
       .setTypeFullName(getTypeName(value->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
   resolveConnections(indirectionCall, { pointerRef });
   return indirectionCall;
@@ -733,7 +733,7 @@ CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
       .setCode(name)
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH")
       .setTypeFullName(getTypeName(value->getType()));
 
@@ -750,7 +750,7 @@ CPGProtoNode *CPGEmitter::emitBinaryCall(const llvm::BinaryOperator *binary) {
       .setTypeFullName(getTypeName(binary->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   assert(binary->getNumOperands() == 2);
@@ -770,7 +770,7 @@ CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
       .setTypeFullName(getTypeName(comparison->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("i1 (ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   assert(comparison->getNumOperands() == 2);
@@ -790,7 +790,7 @@ CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
       .setTypeFullName(getTypeName(instruction->getDestTy()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   CPGProtoNode *cast = emitRefOrConstant(instruction->getOperand(0));
@@ -808,7 +808,7 @@ CPGProtoNode *CPGEmitter::emitSelect(llvm::SelectInst *instruction) {
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (i1, ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   // TODO: at a first glance it is unclear if on these can by null or not
@@ -1005,7 +1005,7 @@ CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *ind
       .setTypeFullName(getTypeName(type))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   return call;
@@ -1057,7 +1057,7 @@ CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instructi
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   CPGProtoNode *argument = emitRefOrConstant(instruction->getOperand(0));
@@ -1076,7 +1076,7 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
         .setTypeFullName(getTypeName(instruction->getType()))
         .setMethodInstFullName(name)
         .setMethodFullName(name)
-        .setSignature("xxx")
+        .setSignature(getTypeName(instruction->getCalledOperand()->getType()))
         .setDispatchType("DYNAMIC_DISPATCH");
 
     CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
@@ -1101,7 +1101,7 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature(getTypeName(instruction->getCalledFunction()->getFunctionType()))
       .setDispatchType("STATIC_DISPATCH");
 
   std::vector<CPGProtoNode *> children;

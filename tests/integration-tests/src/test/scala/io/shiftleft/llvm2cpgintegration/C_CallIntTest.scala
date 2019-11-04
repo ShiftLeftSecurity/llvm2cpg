@@ -12,7 +12,7 @@ class C_CallIntTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void", "i32"))
+    validateTypes(cpg, Set("ANY", "void", "i32", "void ()", "i32 (i32)"))
   }
 
   "AST" in {
@@ -33,6 +33,7 @@ class C_CallIntTest extends CPGMatcher {
     call.name shouldBe "dosomething"
     call.methodFullName shouldBe "dosomething"
     call.typeFullName shouldBe "i32"
+    call.signature shouldBe "i32 (i32)"
 
     val callParam = call.start.astChildren.isLiteral.head
     callParam.typeFullName shouldBe "i32"

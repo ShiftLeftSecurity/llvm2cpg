@@ -8,7 +8,7 @@ class LLVM_AliasTest extends CPGMatcher {
   private val methodName = "aliases"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32*"))
+    validateTypes(cpg, Set("ANY", "i32*", "i32* ()"))
   }
 
   "AST" in {

@@ -27,7 +27,12 @@ class LLVM_VectorTest extends CPGMatcher {
         "<16 x i8>",
         "i8*",
         "i32",
-        "<1 x i8>"
+        "<1 x i8>",
+        "float (<2 x float>, i32)",
+        "<2 x float> (float, float)",
+        "<5 x float> (<2 x float>, <2 x float>)",
+        "i32 (i8*, i8)",
+        "void (<4 x i8*>, <4 x i32>)"
         )
     )
   }

@@ -18,7 +18,7 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
   }
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+    validateTypes(cpg, Set("ANY", "i32", "i32*", "i32 (i32)"))
   }
 
   "methods" in {
@@ -311,6 +311,7 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
       mulCall.argumentIndex shouldBe 2
       mulCall.start.astChildren.l.size shouldBe 2
       mulCall.start.astChildren.isIdentifier.l.size shouldBe 2
+      mulCall.signature shouldBe "ANY (ANY, ANY)"
 
       val mulLhs = mulCall.start.astChildren.isIdentifier.l.head
       mulLhs.name shouldBe "tmp"

@@ -12,7 +12,7 @@ class LLVM_GEPArrayTest extends CPGMatcher {
   private val methodName = "gep_array"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32*", "i64"))
+    validateTypes(cpg, Set("ANY", "i32*", "i64", "i32* (i32*)"))
   }
 
   "AST" in {
@@ -32,6 +32,7 @@ class LLVM_GEPArrayTest extends CPGMatcher {
     val indexAccessGEP = assignGEP.start.astChildren.isCall.head
     indexAccessGEP.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP.typeFullName shouldBe "i32*"
+    indexAccessGEP.signature shouldBe "ANY (ANY)"
 
     val indexAccessGEP_index = indexAccessGEP.start.astChildren.isLiteral.head
     indexAccessGEP_index.code shouldBe "1"

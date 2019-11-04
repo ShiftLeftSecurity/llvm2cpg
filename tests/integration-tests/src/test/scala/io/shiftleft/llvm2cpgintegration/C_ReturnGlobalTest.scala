@@ -8,7 +8,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+    validateTypes(cpg, Set("ANY", "i32", "i32*", "i32 ()"))
   }
 
   "method AST" in {

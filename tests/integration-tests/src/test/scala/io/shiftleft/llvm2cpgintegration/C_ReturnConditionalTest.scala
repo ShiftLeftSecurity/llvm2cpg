@@ -18,7 +18,7 @@ class C_ReturnConditionalTest extends CPGMatcher {
   }
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*", "i1"))
+    validateTypes(cpg, Set("ANY", "i32", "i32*", "i1", "i32 (i32)"))
   }
 
   "methods" in {
@@ -121,6 +121,7 @@ return:                                           ; preds = %if.end, %if.then
       assignCall.order shouldBe 1
       assignCall.argumentIndex shouldBe 1
       assignCall.typeFullName shouldBe "i32*"
+      assignCall.signature shouldBe "ANY (ANY)"
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
       val lhs = assignCall.start.astChildren.isIdentifier.head
@@ -134,6 +135,7 @@ return:                                           ; preds = %if.end, %if.then
       val rhs = assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "<operator>.alloca"
       rhs.methodFullName shouldBe "<operator>.alloca"
+      rhs.signature shouldBe "ANY ()"
       rhs.typeFullName shouldBe "i32*"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
@@ -177,6 +179,7 @@ return:                                           ; preds = %if.end, %if.then
       lhs.typeFullName shouldBe "i32"
       lhs.order shouldBe 1
       lhs.argumentIndex shouldBe 1
+      lhs.signature shouldBe "ANY (ANY)"
 
       lhs.start.astChildren.l.size shouldBe 1
       lhs.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -255,6 +258,7 @@ return:                                           ; preds = %if.end, %if.then
       icmpCall.order shouldBe 2
       icmpCall.argumentIndex shouldBe 2
       icmpCall.start.astChildren.l.size shouldBe 2
+      icmpCall.signature shouldBe "i1 (ANY, ANY)"
 
       val icmpLhs = icmpCall.start.astChildren.isIdentifier.l.head
       icmpLhs.name shouldBe "tmp"

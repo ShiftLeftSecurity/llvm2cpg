@@ -18,7 +18,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
   private val methodName = "flat_struct"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "struct.Point", "%struct.Point*", "i32", "i32*", "void"))
+    validateTypes(cpg, Set("ANY", "struct.Point", "%struct.Point*", "i32", "i32*", "void", "void ()"))
   }
 
   "locals" in {
@@ -67,6 +67,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     memberAccessGEP_X.name shouldBe "<operator>.memberAccess"
     memberAccessGEP_X.methodFullName shouldBe "<operator>.memberAccess"
     memberAccessGEP_X.typeFullName shouldBe "i32*"
+    memberAccessGEP_X.signature shouldBe "ANY (ANY)"
 
     val memberAccessGEP_X_memberRef = memberAccessGEP_X.start.astChildren.isLiteral.head
     memberAccessGEP_X_memberRef.code shouldBe "0"
@@ -74,6 +75,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val indexAccessGEP_X = memberAccessGEP_X.start.astChildren.isCall.head
     indexAccessGEP_X.name shouldBe "<operator>.computedMemberAccess"
     indexAccessGEP_X.typeFullName shouldBe "struct.Point"
+    indexAccessGEP_X.signature shouldBe "ANY (ANY)"
 
     val indexAccessGEP_X_index = indexAccessGEP_X.start.astChildren.isLiteral.head
     indexAccessGEP_X_index.code shouldBe "0"

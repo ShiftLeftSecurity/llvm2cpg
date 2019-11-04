@@ -16,7 +16,7 @@ class LLVM_GEPMixedTest extends CPGMatcher {
   private val methodName = "gep_mixed"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "%struct.ST*", "struct.ST", "struct.RT", "i32", "i32*", "i64", "[20 x i32]", "[10 x [20 x i32]]"))
+    validateTypes(cpg, Set("ANY", "%struct.ST*", "struct.ST", "struct.RT", "i32", "i32*", "i64", "[20 x i32]", "[10 x [20 x i32]]", "i32* (%struct.ST*)"))
   }
 
   "AST" in {

@@ -18,7 +18,7 @@ class C_ReturnParameterTest extends CPGMatcher {
   }
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*"))
+    validateTypes(cpg, Set("ANY", "i32", "i32*", "i32 (i32)"))
   }
 
   "methods" in {

@@ -22,10 +22,6 @@ const std::string &CPGMethod::getName() const {
   return name;
 }
 
-const std::string &CPGMethod::getSignature() const {
-  return getName();
-}
-
 bool CPGMethod::isExternal() const {
   return function.isDeclaration();
 }
