@@ -449,7 +449,7 @@ CPGProtoNode *CPGEmitter::emitMethodReturnNode(const CPGMethod &method) {
       .setOrder(0)
       .setTypeFullName(methodReturnType)
       .setCode(methodReturnType)
-      .setEvaluationStrategy("EVAL");
+      .setEvaluationStrategy("BY_VALUE");
   return methodReturnNode;
 }
 
@@ -670,7 +670,7 @@ CPGProtoNode *CPGEmitter::emitFunctionArgument(const llvm::Value *argument, size
       .setName(argument->getName())
       .setCode(argument->getName())
       .setTypeFullName(getTypeName(argument->getType()))
-      .setEvaluationStrategy("EVAL")
+      .setEvaluationStrategy("BY_VALUE")
       .setOrder(order);
   return parameterInNode;
 }
