@@ -15,3 +15,5 @@ set (LLVM2CPG_CXX_FLAGS
   -Werror
   -fno-exceptions
   )
+
+include(${CMAKE_CURRENT_LIST_DIR}/version.cmake)

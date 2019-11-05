@@ -2,6 +2,7 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/CPG/CPG.h>
+#include <llvm2cpg/CPG/Version.h>
 #include <llvm2cpg/CPGWriter/CPGProtoWriter.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
 #include <string>
@@ -23,6 +24,7 @@ llvm::cl::opt<std::string> OutputName("output-name", llvm::cl::Optional,
                                       llvm::cl::init("cpg.bin.zip"));
 
 int main(int argc, char **argv) {
+  llvm::cl::SetVersionPrinter(llvm2cpg::printVersionInformationStream);
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
