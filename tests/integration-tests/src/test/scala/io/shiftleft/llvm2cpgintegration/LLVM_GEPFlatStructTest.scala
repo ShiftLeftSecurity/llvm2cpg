@@ -64,8 +64,11 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     xRef.start.refsTo.head shouldBe x
 
     val memberAccessGEP_X = assignGEP_X.start.astChildren.isCall.head
-    memberAccessGEP_X.name shouldBe "<operator>.memberAccess"
-    memberAccessGEP_X.methodFullName shouldBe "<operator>.memberAccess"
+    // TODO: Switch to memberAccess
+//    memberAccessGEP_X.name shouldBe "<operator>.memberAccess"
+//    memberAccessGEP_X.methodFullName shouldBe "<operator>.memberAccess"
+    memberAccessGEP_X.name shouldBe "<operator>.computedMemberAccess"
+    memberAccessGEP_X.methodFullName shouldBe "<operator>.computedMemberAccess"
     memberAccessGEP_X.typeFullName shouldBe "i32*"
     memberAccessGEP_X.signature shouldBe "ANY (ANY)"
 
@@ -92,7 +95,8 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     yRef.start.refsTo.head shouldBe y
 
     val memberAccessGEP_Y = assignGEP_Y.start.astChildren.isCall.head
-    memberAccessGEP_Y.name shouldBe "<operator>.memberAccess"
+//    memberAccessGEP_Y.name shouldBe "<operator>.memberAccess"
+    memberAccessGEP_Y.name shouldBe "<operator>.computedMemberAccess"
 
     val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.astChildren.isLiteral.head
     memberAccessGEP_Y_memberRef.code shouldBe "1"

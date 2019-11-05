@@ -921,7 +921,6 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
 
   // Skipping the pointer operand and the first index
   for (size_t i = 2; i < instruction->getNumOperands(); i++) {
-    bool isStruct = indexType->isStructTy();
     index = instruction->getOperand(i);
     indexType = nextIndexType(indexType, index);
     if (i == instruction->getNumOperands() - 1) {
@@ -930,6 +929,9 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
 
     lhs = access;
     rhs = emitRefOrConstant(index);
+
+    // TODO: Emit proper member access as soon as we have struct types properly emitted
+    bool isStruct = false; // indexType->isStructTy();
     access = emitGEPAccess(indexType, index, isStruct);
     resolveConnections(access, { lhs, rhs });
   }
