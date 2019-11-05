@@ -679,12 +679,27 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
     return emitBinaryCall(binary);
   } else if (auto cmp = llvm::dyn_cast<llvm::CmpInst>(constInstruction)) {
     return emitCmpCall(cmp);
+  } else if (auto select = llvm::dyn_cast<llvm::SelectInst>(constInstruction)) {
+    return emitSelect(select);
+  } else if (auto extractValue = llvm::dyn_cast<llvm::ExtractValueInst>(constInstruction)) {
+    return emitExtractValue(extractValue);
+  } else if (auto insertValue = llvm::dyn_cast<llvm::InsertValueInst>(constInstruction)) {
+    return emitInsertValue(insertValue);
+  } else if (auto extractElement = llvm::dyn_cast<llvm::ExtractElementInst>(constInstruction)) {
+    return emitExtractElement(extractElement);
+  } else if (auto insertElement = llvm::dyn_cast<llvm::InsertElementInst>(constInstruction)) {
+    return emitInsertElement(insertElement);
+  } else if (auto shuffleVector = llvm::dyn_cast<llvm::ShuffleVectorInst>(constInstruction)) {
+    return emitShuffleVector(shuffleVector);
+  } else if (auto unary = llvm::dyn_cast<llvm::UnaryOperator>(constInstruction)) {
+    return emitUnaryOperator(unary);
   } else {
     logger.logWarning(std::string("Cannot handle constant expression yet: ") +
                       valueToString(constInstruction) + std::string(" of ValueID ") +
                       std::to_string(constInstruction->getValueID()) + "\n");
 
     CPGProtoNode *unhandled = builder.unknownNode();
+    unhandled->setCode(valueToString(constInstruction));
     resolveConnections(unhandled, {});
     setLineInfo(unhandled);
 
