@@ -13,3 +13,7 @@ endif()
 
 target_link_directories(cpg-proto-writer PRIVATE /usr/local/lib)
 target_compile_options(cpg-proto-writer PRIVATE ${LLVM2CPG_CXX_FLAGS} -fno-rtti)
+
+install(TARGETS cpg-proto-writer
+  RUNTIME DESTINATION .
+)
