@@ -109,6 +109,11 @@ CPGProtoNode &CPGProtoNode::setLineNumber(int line) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setColumnNumber(int column) {
+  setIntProperty(cpg::NodePropertyName::COLUMN_NUMBER, column);
+  return *this;
+}
+
 #pragma mark - Properties
 
 /// Note on memory management and ownership:

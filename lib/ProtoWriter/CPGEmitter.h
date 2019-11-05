@@ -26,6 +26,8 @@ private:
   CPGProtoBuilder &builder;
   CPGTypeEmitter &typeEmitter;
   const CPGFile &file;
+  unsigned int lineNumber;
+  unsigned int columnNumber;
 
   std::unordered_map<const llvm::Value *, CPGProtoNode *> locals;
   std::unordered_set<const llvm::Value *> globals;
@@ -95,6 +97,12 @@ private:
   CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);
   CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);
+  
+  //sets lineInfo from instruction
+  void updateLineInfo(const llvm::Instruction *inst);
+  //writes lineInfo into node
+  void setLineInfo(CPGProtoNode *node);
+
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
@@ -121,5 +129,4 @@ public:
     val->deleteValue();
   }
 };
-
 } // namespace llvm2cpg

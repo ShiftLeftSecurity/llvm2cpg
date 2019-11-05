@@ -19,4 +19,20 @@ class C_DbgVectorfindOptTest extends CPGMatcher {
       or equal (Set("bogus", "haystackv.derived"))
     )
   }
+
+  "Line numbers" in {
+    cpg.method.name("findbyte").lineNumber.l shouldBe List(5)
+    cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.map{_.columnNumber}.toSet shouldBe Set(Some(22), Some(48))
+
+    cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(22)).map{_.name}.toSet  shouldBe Set(
+      "<operator>.assignment",
+      "<operator>.equals"
+    )
+
+    cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(48)).map{_.name}.toSet shouldBe Set(
+      "<operator>.assignment",
+      "insertelement",
+      "shufflevector"
+    )
+  }
 }

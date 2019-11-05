@@ -42,6 +42,7 @@ public:
   CPGProtoNode &setArgumentIndex(int index);
   CPGProtoNode &setOrderAndIndex(int order);
   CPGProtoNode &setLineNumber(int line);
+  CPGProtoNode &setColumnNumber(int column);
 
 private:
   cpg::CpgStruct_Node *cpgNode;
