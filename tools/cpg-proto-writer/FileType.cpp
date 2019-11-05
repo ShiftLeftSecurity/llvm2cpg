@@ -77,11 +77,11 @@ FileType llvm2cpg::getFileType(llvm2cpg::CPGLogger &logger, const std::string &p
 
   std::error_code error = llvm::identify_magic(path, magic);
   if (error) {
-    logger.error(std::string("Cannot identify file type: ") + error.message());
+    logger.uiWarning(std::string("Cannot identify file type: ") + error.message());
     return FileType::Unsupported;
   }
 
-  logger.info(std::string("Detected file type ") + magicName(magic));
+  logger.logInfo(std::string("Detected file type ") + magicName(magic));
 
   switch (magic) {
   case llvm::file_magic::elf:

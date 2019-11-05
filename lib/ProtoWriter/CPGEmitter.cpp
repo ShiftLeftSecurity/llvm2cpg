@@ -44,7 +44,7 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     return;
   }
 
-  logger.info(std::string("Emitting ") + method.getName());
+  logger.logInfo(std::string("Emitting ") + method.getName());
 
   llvm::Module *module = method.getFunction().getParent();
   for (llvm::GlobalVariable &global : module->getGlobalList()) {
@@ -130,9 +130,9 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
             || llvm::isa<llvm::CallBrInst>(instruction)
 #endif
             || llvm::isa<llvm::InvokeInst>(instruction))) {
-        logger.warning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
-                       std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) +
-                       "\n");
+        logger.logWarning(std::string("Cannot handle terminator: ") + valueToString(instruction) +
+                          std::string(" of ValueID: ") + std::to_string(instruction->getValueID()) +
+                          "\n");
       }
       for (unsigned int j = 0; j < numSuccs; j++) {
         builder.connectCFG(node->getID(), entryPoints.at(instruction->getSuccessor(j))->getEntry());
@@ -149,8 +149,9 @@ CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {
         llvm::isa<llvm::CatchPadInst>(instruction) ||
         llvm::isa<llvm::CleanupPadInst>(instruction) ||
         llvm::isa<llvm::CleanupReturnInst>(instruction))) { /*llvm::VAArgInst*/
-    logger.warning(std::string("Cannot handle instruction: ") + valueToString(&instruction) +
-                   std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) + "\n");
+    logger.logWarning(std::string("Cannot handle instruction: ") + valueToString(&instruction) +
+                      std::string(" of ValueID: ") + std::to_string(instruction.getValueID()) +
+                      "\n");
   }
   if (instruction.getType()->isVoidTy()) {
     CPGProtoNode *unhandled = emitUnhandledCall(&instruction);
@@ -405,7 +406,7 @@ CPGProtoNode *CPGEmitter::emitShuffleVector(llvm::ShuffleVectorInst *instruction
 }
 
 CPGProtoNode *CPGEmitter::visitPHINode(llvm::PHINode &instruction) {
-  logger.fatal("PHI nodes should be destructed before CPG emission");
+  logger.uiFatal("PHI nodes should be destructed before CPG emission");
   return nullptr;
 }
 
@@ -645,8 +646,8 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
   }
 
   // look it up in llvm/IR/Value.def
-  logger.warning(std::string("Cannot handle constant: ") + valueToString(value) +
-                 std::string(" of ValueID ") + std::to_string(value->getValueID()) + "\n");
+  logger.logWarning(std::string("Cannot handle constant: ") + valueToString(value) +
+                    std::string(" of ValueID ") + std::to_string(value->getValueID()) + "\n");
 
   CPGProtoNode *literalNode = builder.literalNode();
   (*literalNode) //
@@ -679,9 +680,9 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
   } else if (auto cmp = llvm::dyn_cast<llvm::CmpInst>(constInstruction)) {
     return emitCmpCall(cmp);
   } else {
-    logger.warning(std::string("Cannot handle constant expression yet: ") +
-                   valueToString(constInstruction) + std::string(" of ValueID ") +
-                   std::to_string(constInstruction->getValueID()) + "\n");
+    logger.logWarning(std::string("Cannot handle constant expression yet: ") +
+                      valueToString(constInstruction) + std::string(" of ValueID ") +
+                      std::to_string(constInstruction->getValueID()) + "\n");
 
     CPGProtoNode *unhandled = builder.unknownNode();
     resolveConnections(unhandled, {});

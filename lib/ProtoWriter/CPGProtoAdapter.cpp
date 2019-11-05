@@ -27,7 +27,10 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       .setOrder(0);
 
   CPGTypeEmitter typeEmitter(builder);
-  for (auto &file : cpg.getFiles()) {
+  for (size_t index = 0; index < cpg.getFiles().size(); index++) {
+    logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
+                  std::to_string(cpg.getFiles().size()));
+    const CPGFile &file = cpg.getFiles()[index];
     auto fileNode = builder.fileNode();
     (*fileNode) //
         .setName(file.getName())
@@ -53,30 +56,30 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 }
 
 void CPGProtoAdapter::saveToArchive() {
-  logger.info("Serializing CPG");
+  logger.uiInfo("Serializing CPG");
   cpg::CpgStruct *graph = builder.getGraph();
   int zipError = 0;
   auto archive = zip_open(zipPath.c_str(), ZIP_CREATE | ZIP_TRUNCATE, &zipError);
   if (!archive) {
     zip_error_t error;
     zip_error_init_with_code(&error, zipError);
-    logger.error(std::string("zip_open: ") + zip_error_strerror(&error) + "\n");
+    logger.uiFatal(std::string("zip_open: ") + zip_error_strerror(&error) + "\n");
     return;
   }
 
   std::stringstream stream;
   if (!graph->SerializeToOstream(&stream)) {
-    logger.error("Cannot serialize CPG into protobuf\n");
+    logger.uiFatal("Cannot serialize CPG into protobuf\n");
     return;
   }
 
-  logger.info("Saving CPG on disk");
+  logger.uiInfo("Saving CPG on disk");
 
   auto str = stream.str();
   auto source = zip_source_buffer(archive, str.c_str(), str.size(), 0);
   if (!source) {
     auto error = zip_get_error(archive);
-    logger.error(std::string("zip_source_buffer_create: ") + zip_error_strerror(error) + "\n");
+    logger.uiFatal(std::string("zip_source_buffer_create: ") + zip_error_strerror(error) + "\n");
     zip_discard(archive);
     return;
   }
@@ -85,7 +88,7 @@ void CPGProtoAdapter::saveToArchive() {
 
   if (fileIndex == -1) {
     auto error = zip_get_error(archive);
-    logger.error(std::string("zip_file_add: ") + zip_error_strerror(error) + "\n");
+    logger.uiFatal(std::string("zip_file_add: ") + zip_error_strerror(error) + "\n");
     zip_source_free(source);
     zip_discard(archive);
     return;
@@ -93,10 +96,10 @@ void CPGProtoAdapter::saveToArchive() {
 
   if (zip_close(archive) == -1) {
     auto error = zip_get_error(archive);
-    logger.error(std::string("zip_close: ") + zip_error_strerror(error) + "\n");
+    logger.uiFatal(std::string("zip_close: ") + zip_error_strerror(error) + "\n");
     zip_discard(archive);
     return;
   }
 
-  logger.info(std::string("CPG is successfully saved on disk: ") + zipPath);
+  logger.uiInfo(std::string("CPG is successfully saved on disk: ") + zipPath);
 }

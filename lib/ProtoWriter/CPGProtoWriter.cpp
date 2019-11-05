@@ -14,10 +14,10 @@ CPGProtoWriter::CPGProtoWriter(CPGLogger &logger, std::string outputDir, std::st
 void CPGProtoWriter::writeCpg(const llvm2cpg::CPG &cpg) {
   const std::vector<CPGFile> &files = cpg.getFiles();
   if (files.empty()) {
-    logger.warning("No files found. Shutting down.");
+    logger.uiWarning("No bitcode files found.");
     return;
   }
-  logger.info(std::string("Emitting CPG for ") + std::to_string(files.size()) + " files");
+  logger.logInfo(std::string("Emitting CPG for ") + std::to_string(files.size()) + " file(s)");
   auto zipPath = outputDir + "/" + outputName;
   CPGProtoAdapter adapter(logger, zipPath);
   adapter.writeCpg(cpg);
