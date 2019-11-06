@@ -536,22 +536,10 @@ static std::string constantIntToString(const llvm::APInt &constant) {
 }
 
 CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
-  if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
-    const llvm::APInt &constant = constantInt->getValue();
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(constantInt->getType()))
-        .setCode(constantIntToString(constant));
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
 
   if (auto constantExpr = llvm::dyn_cast<llvm::ConstantExpr>(value)) {
     return emitConstantExpr(constantExpr);
-  }
-
-  if (auto function = llvm::dyn_cast<llvm::Function>(value)) {
+  } else if (auto function = llvm::dyn_cast<llvm::Function>(value)) {
     // TODO: handle functions without a name
     CPGProtoNode *methodRef = builder.methodRef();
     (*methodRef) //
@@ -563,98 +551,74 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return methodRef;
   }
 
-  // TODO: Consider commenting out the following cases and just using the fallback
-
-  if (llvm::isa<llvm::ConstantPointerNull>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(value->getType()))
-        .setCode("nullptr");
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
-    const llvm::APFloat &constant = constantFP->getValueAPF();
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(constantFP->getType()))
-        .setCode(std::to_string(constant.convertToDouble()));
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto constantAggregateZero = llvm::dyn_cast<llvm::ConstantAggregateZero>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(constantAggregateZero->getType()))
-        .setCode("zero initialized");
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto constVec = llvm::dyn_cast<llvm::ConstantVector>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(value->getType()))
-        .setCode(valueToString(value));
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto undef = llvm::dyn_cast<llvm::UndefValue>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(undef->getType()))
-        .setCode("undef");
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto metadata = llvm::dyn_cast<llvm::MetadataAsValue>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(metadata->getType()))
-        .setCode(std::string("metadata ") + valueToString(metadata));
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  if (auto inlineAsm = llvm::dyn_cast<llvm::InlineAsm>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(inlineAsm->getType()))
-        .setCode(inlineAsm->getAsmString());
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-  if (auto blockaddr = llvm::dyn_cast<llvm::BlockAddress>(value)) {
-    CPGProtoNode *literalNode = builder.literalNode();
-    (*literalNode) //
-        .setTypeFullName(getTypeName(blockaddr->getType()))
-        .setCode(valueToString(value));
-    resolveConnections(literalNode, {});
-    setLineInfo(literalNode);
-    return literalNode;
-  }
-
-  // look it up in llvm/IR/Value.def
-  logger.logWarning(std::string("Cannot handle constant: ") + valueToString(value) +
-                    std::string(" of ValueID ") + std::to_string(value->getValueID()) + "\n");
-
   CPGProtoNode *literalNode = builder.literalNode();
-  (*literalNode) //
-      .setTypeFullName(getTypeName(value->getType()))
-      .setCode(valueToString(value));
+  literalNode->setTypeFullName(getTypeName(value->getType()));
   resolveConnections(literalNode, {});
   setLineInfo(literalNode);
+
+  switch (value->getValueID()) {
+  case llvm::Value::ValueTy::ConstantIntVal:
+    literalNode->setCode(constantIntToString(llvm::dyn_cast<llvm::ConstantInt>(value)->getValue()));
+    break;
+  case llvm::Value::ValueTy::ConstantPointerNullVal:
+    literalNode->setCode("nullptr");
+    break;
+  case llvm::Value::ValueTy::ConstantFPVal:
+    literalNode->setCode(
+        std::to_string(llvm::dyn_cast<llvm::ConstantFP>(value)->getValueAPF().convertToDouble()));
+    break;
+  case llvm::Value::ValueTy::ConstantAggregateZeroVal:
+    literalNode->setCode("zero initialized");
+    break;
+  case llvm::Value::ValueTy::UndefValueVal:
+    literalNode->setCode("undef");
+    break;
+  case llvm::Value::ValueTy::MetadataAsValueVal:
+    literalNode->setCode(std::string("metadata ") + valueToString(value));
+    break;
+  case llvm::Value::ValueTy::InlineAsmVal:
+    literalNode->setCode(llvm::dyn_cast<llvm::InlineAsm>(value)->getAsmString());
+    break;
+
+  case llvm::Value::ValueTy::ConstantDataArrayVal: {
+    auto cda = llvm::dyn_cast<llvm::ConstantDataArray>(value);
+    if (cda->isCString()) {
+      auto str = cda->getAsCString();
+      /* TODO: We need to do something about constants that are not UTF8. For example:
+      
+      for (unsigned char c : str) {
+        if (c > 127) {
+          goto invalid_string;
+        }
+      }
+      */
+      literalNode->setCode(str);
+      break;
+    } // else fall through
+  }
+  case llvm::Value::ValueTy::ConstantStructVal:
+  case llvm::Value::ValueTy::BlockAddressVal:
+  case llvm::Value::ValueTy::ConstantVectorVal:
+  case llvm::Value::ValueTy::ConstantArrayVal:
+  case llvm::Value::ValueTy::ConstantDataVectorVal:
+    literalNode->setCode(valueToString(value));
+    break;
+
+  case llvm::Value::ValueTy::GlobalVariableVal:
+  case llvm::Value::ValueTy::GlobalAliasVal:
+
+  case llvm::Value::ValueTy::ConstantExprVal:
+  case llvm::Value::ValueTy::FunctionVal:
+  case llvm::Value::ValueTy::GlobalIFuncVal:
+    // unreachable: We already did these in front.
+    logger.logWarning(std::string("Unreachable reached when processing constant."));
+
+  default:
+    logger.logWarning(std::string("Cannot handle constant: ") + valueToString(value) +
+                      std::string(" of ValueID ") + std::to_string(value->getValueID()) + "\n");
+    literalNode->setCode(valueToString(value));
+  }
+
   return literalNode;
 }
 

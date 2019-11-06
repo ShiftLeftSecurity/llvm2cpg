@@ -17,6 +17,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/aggregate_access.ll
   ${CMAKE_CURRENT_LIST_DIR}/alias.ll
   ${CMAKE_CURRENT_LIST_DIR}/inline_asm.ll
+  ${CMAKE_CURRENT_LIST_DIR}/constants.ll
   )
 
 foreach(source ${SOURCES})
