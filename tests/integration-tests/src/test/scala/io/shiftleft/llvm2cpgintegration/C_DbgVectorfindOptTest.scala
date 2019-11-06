@@ -11,6 +11,8 @@ class C_DbgVectorfindOptTest extends CPGMatcher {
   "Parameter Names" in {
     val params = cpg.method.name("findbyte").parameter.l
     params.map{p=>(p.name, p.order)}.toSet[Any] shouldBe Set(("haystack.arg", 1), ("needle.arg", 2), ("bogus.arg", 3))
+    cpg.method.name("fooSingleton").parameter.l shouldBe List()
+    cpg.method.name("extractX").parameter.name.l shouldBe List("point.arg", "arg1")
   }
 
   "Local Names" in {

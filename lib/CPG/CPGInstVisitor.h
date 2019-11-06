@@ -1,5 +1,6 @@
 #pragma once
 
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/InstVisitor.h>
 #include <set>
 #include <vector>
@@ -18,6 +19,7 @@ public:
 private:
   std::vector<llvm::Value *> &arguments;
   std::vector<llvm::Value *> &variables;
+  std::vector<llvm::DILocalVariable *> formalArguments;
 
   void addLocalVariable(llvm::Value *value);
   void addTempVariable(llvm::Value *value);

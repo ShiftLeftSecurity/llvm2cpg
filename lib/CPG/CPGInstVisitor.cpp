@@ -13,7 +13,7 @@ static void setNameIfEmpty(llvm::Value *value, const std::string &name) {
 
 CPGInstVisitor::CPGInstVisitor(std::vector<llvm::Value *> &arguments,
                                std::vector<llvm::Value *> &variables)
-    : arguments(arguments), variables(variables) {}
+    : arguments(arguments), variables(variables), formalArguments() {}
 
 /*
 Sets the names of locals / temps and function arguments, and collects arguments.
@@ -42,11 +42,27 @@ void CPGInstVisitor::run(llvm::Function &function) {
     for (llvm::DINode *node : nodes) {
       if (llvm::DILocalVariable *local = llvm::dyn_cast<llvm::DILocalVariable>(node)) {
         if (local->isParameter()) {
-          unsigned int argidx = local->getArg() - 1;
-          assert(argidx < arguments.size());
-          arguments[argidx]->setName(local->getName() + ".arg");
+          formalArguments.push_back(local);
         }
       }
+    }
+    for (auto formalArg : formalArguments) {
+      if (!formalArg->getArg() || formalArg->getArg() > arguments.size()) {
+        /* LLVM and debug info disagree about the number of arguments to the function.
+          This means that we cannot reasonably attach names to the llvm-argument.
+
+          This can happen in cases where arguments have non-trivial type: Then, clang tends to
+          rewrite into a normalized ABI-dependent form.
+
+          Most important example is singleton arguments (zero-size struct).
+
+          TODO: log this fact?
+        */
+        return;
+      }
+    }
+    for (auto formalArg : formalArguments) {
+      arguments[formalArg->getArg() - 1]->setName(formalArg->getName() + ".arg");
     }
   }
 }
@@ -61,10 +77,8 @@ void CPGInstVisitor::visitDbgVariableIntrinsic(llvm::DbgVariableIntrinsic &instr
     return;
   }
   if (local->isParameter()) {
-    unsigned int argidx = local->getArg() - 1;
-    assert(argidx < arguments.size());
-    arguments[argidx]->setName(local->getName() + ".arg");
-    if (ref == arguments[argidx]) {
+    formalArguments.push_back(local);
+    if (llvm::isa<llvm::Argument>(ref)) {
       return;
     }
   }
