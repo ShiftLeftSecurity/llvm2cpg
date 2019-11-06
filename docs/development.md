@@ -40,7 +40,7 @@ We then want to build everything we need:
 ```
 target$ ninja unit-tests
 target$ ./tests/unit-tests/unit-tests
-target$ ninja cpg-proto-writer
+target$ ninja llvm2cpg
 
 ```
 #### Build and run tests:
@@ -50,20 +50,20 @@ target$ ninja unit-tests
 target$ ./tests/unit-tests/unit-tests
 ```
 
-#### Build and run `cpg-proto-writer`
+#### Build and run `llvm2cpg`
 
 ```
-target$ ninja cpg-proto-writer
-target$ ./tools/cpg-proto-writer/cpg-proto-writer ./tests/fixtures/basic_c_support/return_constant.bc
+target$ ninja llvm2cpg
+target$ ./tools/llvm2cpg/llvm2cpg ./tests/fixtures/basic_c_support/return_constant.bc
 Processing ./tests/fixtures/basic_c_support/return_constant.bc
 CPG is successfully save on disk: ./cpg.bin.zip
 ```
 
-Getting help from `cpg-proto-writer`:
+Getting help from `llvm2cpg`:
 
 ```
-target$ ./tools/cpg-proto-writer/cpg-proto-writer --help-hidden
-USAGE: cpg-proto-writer [options] Bitcode files
+target$ ./tools/llvm2cpg/llvm2cpg --help-hidden
+USAGE: llvm2cpg [options] Bitcode files
 ...
 ```
 We can validate the file by
@@ -91,7 +91,7 @@ TODO: Fix validation tests.
 
 Validation tests should be run via ninja
 
-There is a shortcut for the fast iterations over `cpg-proto-writer`: validation tests. This only works if `-DPATH_TO_CODEPROPERTYGRAPH` was set.
+There is a shortcut for the fast iterations over `llvm2cpg`: validation tests. This only works if `-DPATH_TO_CODEPROPERTYGRAPH` was set.
 
 You should specify CPG for which bitcode file you want to validate in the `tests/validation-tests/CMakeLists.txt`.
 Example:
@@ -108,7 +108,7 @@ Call to `validate_cpg` will generate a target you can use within the build syste
 [ 35%] Built target CPG
 [ 57%] Built target CPGProto
 [ 78%] Built target CPGProtoWriter
-[ 92%] Built target cpg-proto-writer
+[ 92%] Built target llvm2cpg
 Validating /opt/llvm2cpg/cmake-build-debug/tests/validation-tests/hello_world_c_bc/cpg.bin.zip
 on-disk overflow file: /tmp/mvstore4648208665182620618.bin
 CPG construction finished in 301ms.

@@ -1,2 +1,2 @@
-add_subdirectory(cpg-proto-writer)
+add_subdirectory(llvm2cpg)
 add_subdirectory(bitcode-transformer)

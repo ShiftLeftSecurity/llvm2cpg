@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 
-llvm::cl::OptionCategory CPGProtoWriterCategory("cpg-proto-writer");
+llvm::cl::OptionCategory CPGProtoWriterCategory("llvm2cpg");
 
 llvm::cl::list<std::string> BitcodePaths(llvm::cl::Positional, llvm::cl::OneOrMore,
                                          llvm::cl::desc("Bitcode files"),

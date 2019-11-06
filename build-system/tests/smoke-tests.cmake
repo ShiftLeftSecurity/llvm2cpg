@@ -17,8 +17,8 @@ function(add_smoke_test test_name)
 
   set (cpg ${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpg.bin.zip)
   add_custom_target(smoke-${test_name} ALL
-    COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
-    DEPENDS cpg-proto-writer ${bitcode_dependencies} ${bitcode_files}
+    COMMAND $<TARGET_FILE:llvm2cpg> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
+    DEPENDS llvm2cpg ${bitcode_dependencies} ${bitcode_files}
   )
 endfunction()
 

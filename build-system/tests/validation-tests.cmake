@@ -14,8 +14,8 @@ function(validate_cpg fixture_name)
 
   set (cpg ${output_dir}/cpg.bin.zip)
   add_custom_command(OUTPUT ${cpg}
-    COMMAND $<TARGET_FILE:cpg-proto-writer> -output-dir=${output_dir} ${bitcode}
-    DEPENDS ${bitcode} build-${fixture_name}-fixture cpg-proto-writer
+    COMMAND $<TARGET_FILE:llvm2cpg> -output-dir=${output_dir} ${bitcode}
+    DEPENDS ${bitcode} build-${fixture_name}-fixture llvm2cpg
     )
 
   add_custom_target(validate-${fixture_name}
