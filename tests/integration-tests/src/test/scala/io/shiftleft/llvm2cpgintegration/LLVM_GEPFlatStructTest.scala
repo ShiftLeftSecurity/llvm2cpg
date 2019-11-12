@@ -18,7 +18,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
   private val methodName = "flat_struct"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "struct.Point", "%struct.Point*", "i32", "i32*", "void", "void ()"))
+    validateTypes(cpg, Set("ANY", "struct.Point", "struct.Point*", "i32", "i32*", "void", "void ()"))
   }
 
   "locals" in {
@@ -29,7 +29,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
 
     val p = block.start.local.head
     p.name shouldBe "p"
-    p.typeFullName shouldBe "%struct.Point*"
+    p.typeFullName shouldBe "struct.Point*"
 
     val x = block.start.local.l.apply(1)
     x.name shouldBe "x"
@@ -48,7 +48,6 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val p = block.start.local.head
     val x = block.start.local.l.apply(1)
     val y = block.start.local.l.apply(2)
-
 
     // %x = getelementptr %struct.Point, %struct.Point* %p, i32 0, i32 0
     val assignGEP_X = calls.apply(0)
