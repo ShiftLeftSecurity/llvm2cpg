@@ -70,11 +70,7 @@ class LLVM_PHINodeTest extends CPGMatcher {
     val condReload = block.start.local.l.apply(3)
     condReload.name shouldBe "cond.reload"
 
-    val assignAlloca = block.start.astChildren.isCall.head
-    val allocaCall = assignAlloca.start.astChildren.isCall.head
-    allocaCall.name shouldBe "<operator>.alloca"
-
-    val store1 = block.start.astChildren.isCall.l.apply(2)
+    val store1 = block.start.astChildren.isCall.l.apply(1)
     val store1_ref = store1.start.astChildren.isIdentifier.head
     store1_ref.name shouldBe "call"
     store1_ref.start.refsTo.head shouldBe call
@@ -83,7 +79,7 @@ class LLVM_PHINodeTest extends CPGMatcher {
     store1_indirectionRef.name shouldBe "cond.reg2mem"
     store1_indirectionRef.start.refsTo.head shouldBe condReg2Mem
 
-    val store2 = block.start.astChildren.isCall.l.apply(4)
+    val store2 = block.start.astChildren.isCall.l.apply(3)
     val store2_ref = store2.start.astChildren.isIdentifier.head
     store2_ref.name shouldBe "call1"
     store2_ref.start.refsTo.head shouldBe call1

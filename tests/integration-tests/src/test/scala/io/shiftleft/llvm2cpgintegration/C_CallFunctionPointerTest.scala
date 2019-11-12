@@ -28,7 +28,7 @@ class C_CallFunctionPointerTest extends CPGMatcher {
     tmpValue.name shouldBe "tmp"
     tmpValue.typeFullName shouldBe "void (...)*"
 
-    val ptrCall = block.start.astChildren.isCall.l.apply(3)
+    val ptrCall = block.start.astChildren.isCall.l.apply(2)
     ptrCall.name shouldBe "fptr"
     ptrCall.methodFullName shouldBe "fptr"
     ptrCall.typeFullName shouldBe "void"
@@ -43,8 +43,8 @@ class C_CallFunctionPointerTest extends CPGMatcher {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
-    val assignLoadCall = block.start.astChildren.isCall.l.apply(2)
-    val ptrCall = block.start.astChildren.isCall.l.apply(3)
+    val assignLoadCall = block.start.astChildren.isCall.l.apply(1)
+    val ptrCall = block.start.astChildren.isCall.l.apply(2)
     val receiver = ptrCall.start.receiver.isIdentifier.head
     val ret = block.start.astChildren.isReturnNode.head
 

@@ -102,8 +102,8 @@ return:                                           ; preds = %if.end, %if.then
   "method AST" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
-    block.start.astChildren.l.size shouldBe 14
-    block.start.astChildren.isCall.l.size shouldBe 8
+    block.start.astChildren.l.size shouldBe 12
+    block.start.astChildren.isCall.l.size shouldBe 6
     block.start.astChildren.isReturnNode.l.size shouldBe 1
 
     val param = method.start.parameter.head
@@ -114,63 +114,13 @@ return:                                           ; preds = %if.end, %if.then
     val tobool = locals.apply(3)
     val tmp1 = locals.apply(4)
 
-    {
-      // %retval = alloca i32, align 4
-      val assignCall = block.start.astChildren.isCall.l.head
-      assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 1
-      assignCall.argumentIndex shouldBe 1
-      assignCall.typeFullName shouldBe "i32*"
-      assignCall.signature shouldBe "ANY (ANY)"
-
-      assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
-      val lhs = assignCall.start.astChildren.isIdentifier.head
-      lhs.name shouldBe "retval"
-      lhs.start.refsTo.l.size shouldBe 1
-      lhs.start.refsTo.head shouldBe retval
-      lhs.order shouldBe 1
-      lhs.argumentIndex shouldBe 1
-
-      assignCall.start.astChildren.isCall.l.size shouldBe 1
-      val rhs = assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "<operator>.alloca"
-      rhs.methodFullName shouldBe "<operator>.alloca"
-      rhs.signature shouldBe "ANY ()"
-      rhs.typeFullName shouldBe "i32*"
-      rhs.order shouldBe 2
-      rhs.argumentIndex shouldBe 2
-    }
-
-    {
-      // %x.addr = alloca i32
-      val assignCall = block.start.astChildren.isCall.l.apply(1)
-      assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 2
-      assignCall.argumentIndex shouldBe 2
-      assignCall.typeFullName shouldBe "i32*"
-
-      assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
-      val lhs = assignCall.start.astChildren.isIdentifier.head
-      lhs.name shouldBe "x.addr"
-      lhs.start.refsTo.l.size shouldBe 1
-      lhs.start.refsTo.head shouldBe xaddr
-      lhs.order shouldBe 1
-      lhs.argumentIndex shouldBe 1
-
-      assignCall.start.astChildren.isCall.l.size shouldBe 1
-      val rhs = assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "<operator>.alloca"
-      rhs.typeFullName shouldBe "i32*"
-      rhs.order shouldBe 2
-      rhs.argumentIndex shouldBe 2
-    }
 
     {
       // store i32 %x, i32* %x.addr
-      val assignCall = block.start.astChildren.isCall.l.apply(2)
+      val assignCall = block.start.astChildren.isCall.l.apply(0)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 3
-      assignCall.argumentIndex shouldBe 3
+      assignCall.order shouldBe 1
+      assignCall.argumentIndex shouldBe 1
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
@@ -201,10 +151,10 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       // %0 = load i32, i32* %x.addr
-      val assignCall = block.start.astChildren.isCall.l.apply(3)
+      val assignCall = block.start.astChildren.isCall.l.apply(1)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 4
-      assignCall.argumentIndex shouldBe 4
+      assignCall.order shouldBe 2
+      assignCall.argumentIndex shouldBe 2
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -235,10 +185,10 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       //  %tobool = icmp ne i32 %0, 0
-      val assignCall = block.start.astChildren.isCall.l.apply(4)
+      val assignCall = block.start.astChildren.isCall.l.apply(2)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 5
-      assignCall.argumentIndex shouldBe 5
+      assignCall.order shouldBe 3
+      assignCall.argumentIndex shouldBe 3
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -277,10 +227,10 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       // store i32 42, i32* %retval
-      val assignCall = block.start.astChildren.isCall.l.apply(5)
+      val assignCall = block.start.astChildren.isCall.l.apply(3)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 6
-      assignCall.argumentIndex shouldBe 6
+      assignCall.order shouldBe 4
+      assignCall.argumentIndex shouldBe 4
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
@@ -308,10 +258,10 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       // store i32 36, i32* %retval
-      val assignCall = block.start.astChildren.isCall.l.apply(6)
+      val assignCall = block.start.astChildren.isCall.l.apply(4)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 7
-      assignCall.argumentIndex shouldBe 7
+      assignCall.order shouldBe 5
+      assignCall.argumentIndex shouldBe 5
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
@@ -339,10 +289,10 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       //  %1 = load i32, i32* %retval
-      val assignCall = block.start.astChildren.isCall.l.apply(7)
+      val assignCall = block.start.astChildren.isCall.l.apply(5)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 8
-      assignCall.argumentIndex shouldBe 8
+      assignCall.order shouldBe 6
+      assignCall.argumentIndex shouldBe 6
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -375,8 +325,8 @@ return:                                           ; preds = %if.end, %if.then
       // ret i32 %0
       val ret = block.start.astChildren.isReturnNode.l.last
       ret.code shouldBe "return"
-      ret.order shouldBe 9
-      ret.argumentIndex shouldBe 9
+      ret.order shouldBe 7
+      ret.argumentIndex shouldBe 7
 
       ret.start.astChildren.l.size shouldBe 1
       ret.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -395,34 +345,14 @@ return:                                           ; preds = %if.end, %if.then
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
-    val assignRetvalAlloca = block.start.astChildren.isCall.l.head
-    val assignXaddrAlloca = block.start.astChildren.isCall.l.apply(1)
-    val assignXaddrX = block.start.astChildren.isCall.l.apply(2)
-    val assignLoadXaddr = block.start.astChildren.isCall.l.apply(3)
-    val assignIcmp = block.start.astChildren.isCall.l.apply(4)
-    val assignStoreRetval42 = block.start.astChildren.isCall.l.apply(5)
-    val assignStoreRetval36 = block.start.astChildren.isCall.l.apply(6)
-    val assignLoadRetval = block.start.astChildren.isCall.l.apply(7)
+    val assignXaddrX = block.start.astChildren.isCall.l.apply(0)
+    val assignLoadXaddr = block.start.astChildren.isCall.l.apply(1)
+    val assignIcmp = block.start.astChildren.isCall.l.apply(2)
+    val assignStoreRetval42 = block.start.astChildren.isCall.l.apply(3)
+    val assignStoreRetval36 = block.start.astChildren.isCall.l.apply(4)
+    val assignLoadRetval = block.start.astChildren.isCall.l.apply(5)
     val ret = block.start.astChildren.isReturnNode.l.last
 
-    {
-      // %retval = alloca i32, align 4
-      val lhs = assignRetvalAlloca.start.astChildren.isIdentifier.head
-      val rhs = assignRetvalAlloca.start.astChildren.isCall.head
-
-      lhs.start.cfgNext.head shouldBe rhs
-      rhs.start.cfgNext.head shouldBe assignRetvalAlloca
-    }
-
-    {
-      // %x.addr = alloca i32
-      val lhs = assignXaddrAlloca.start.astChildren.isIdentifier.head
-      val rhs = assignXaddrAlloca.start.astChildren.isCall.head
-
-      lhs.start.cfgNext.head shouldBe rhs
-      rhs.start.cfgNext.head shouldBe assignXaddrAlloca
-      assignRetvalAlloca.start.cfgNext.head shouldBe lhs
-    }
 
     {
       // store i32 %x, i32* %x.addr
@@ -433,7 +363,6 @@ return:                                           ; preds = %if.end, %if.then
       ref.start.cfgNext.head shouldBe lhs
       lhs.start.cfgNext.head shouldBe rhs
       rhs.start.cfgNext.head shouldBe assignXaddrX
-      assignXaddrAlloca.start.cfgNext.head shouldBe ref
     }
 
     {

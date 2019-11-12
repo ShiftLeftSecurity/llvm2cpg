@@ -93,8 +93,8 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
   "method AST" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
-    block.start.astChildren.l.size shouldBe 13
-    block.start.astChildren.isCall.l.size shouldBe 7
+    block.start.astChildren.l.size shouldBe 11
+    block.start.astChildren.isCall.l.size shouldBe 5
     block.start.astChildren.isReturnNode.l.size shouldBe 1
 
     val param = method.start.parameter.head
@@ -105,60 +105,13 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
     val tmp1 = locals.apply(3)
     val mul = locals.apply(4)
 
-    {
-      // %x.addr = alloca i32
-      val assignCall = block.start.astChildren.isCall.l.head
-      assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 1
-      assignCall.argumentIndex shouldBe 1
-      assignCall.typeFullName shouldBe "i32*"
-
-      assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
-      val lhs = assignCall.start.astChildren.isIdentifier.head
-      lhs.name shouldBe "x.addr"
-      lhs.start.refsTo.l.size shouldBe 1
-      lhs.start.refsTo.head shouldBe xaddr
-      lhs.order shouldBe 1
-      lhs.argumentIndex shouldBe 1
-
-      assignCall.start.astChildren.isCall.l.size shouldBe 1
-      val rhs = assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "<operator>.alloca"
-      rhs.typeFullName shouldBe "i32*"
-      rhs.order shouldBe 2
-      rhs.argumentIndex shouldBe 2
-    }
-
-    {
-      // %m = alloca i32
-      val assignCall = block.start.astChildren.isCall.l.apply(1)
-      assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 2
-      assignCall.argumentIndex shouldBe 2
-      assignCall.typeFullName shouldBe "i32*"
-
-      assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
-      val lhs = assignCall.start.astChildren.isIdentifier.head
-      lhs.name shouldBe "m"
-      lhs.start.refsTo.l.size shouldBe 1
-      lhs.start.refsTo.head shouldBe m
-      lhs.order shouldBe 1
-      lhs.argumentIndex shouldBe 1
-
-      assignCall.start.astChildren.isCall.l.size shouldBe 1
-      val rhs = assignCall.start.astChildren.isCall.head
-      rhs.name shouldBe "<operator>.alloca"
-      rhs.typeFullName shouldBe "i32*"
-      rhs.order shouldBe 2
-      rhs.argumentIndex shouldBe 2
-    }
 
     {
       // store i32 %x, i32* %x.addr
-      val assignCall = block.start.astChildren.isCall.l.apply(2)
+      val assignCall = block.start.astChildren.isCall.l.apply(0)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 3
-      assignCall.argumentIndex shouldBe 3
+      assignCall.order shouldBe 1
+      assignCall.argumentIndex shouldBe 1
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
@@ -188,10 +141,10 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
 
     {
       //  store i32 42, i32* %m, align 4
-      val assignCall = block.start.astChildren.isCall.l.apply(3)
+      val assignCall = block.start.astChildren.isCall.l.apply(1)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 4
-      assignCall.argumentIndex shouldBe 4
+      assignCall.order shouldBe 2
+      assignCall.argumentIndex shouldBe 2
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isCall.l.size shouldBe 1
@@ -219,10 +172,10 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
 
     {
       // %0 = load i32, i32* %m
-      val assignCall = block.start.astChildren.isCall.l.apply(4)
+      val assignCall = block.start.astChildren.isCall.l.apply(2)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 5
-      assignCall.argumentIndex shouldBe 5
+      assignCall.order shouldBe 3
+      assignCall.argumentIndex shouldBe 3
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -253,10 +206,10 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
 
     {
       // %1 = load i32, i32* %x.addr
-      val assignCall = block.start.astChildren.isCall.l.apply(5)
+      val assignCall = block.start.astChildren.isCall.l.apply(3)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 6
-      assignCall.argumentIndex shouldBe 6
+      assignCall.order shouldBe 4
+      assignCall.argumentIndex shouldBe 4
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -287,10 +240,10 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
 
     {
       //  %mul = mul nsw i32 %0, %1
-      val assignCall = block.start.astChildren.isCall.l.apply(6)
+      val assignCall = block.start.astChildren.isCall.l.apply(4)
       assignCall.name shouldBe "<operator>.assignment"
-      assignCall.order shouldBe 7
-      assignCall.argumentIndex shouldBe 7
+      assignCall.order shouldBe 5
+      assignCall.argumentIndex shouldBe 5
       assignCall.start.astChildren.l.size shouldBe 2
 
       assignCall.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -334,8 +287,8 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
       // ret i32 %0
       val ret = block.start.astChildren.isReturnNode.l.last
       ret.code shouldBe "return"
-      ret.order shouldBe 8
-      ret.argumentIndex shouldBe 8
+      ret.order shouldBe 6
+      ret.argumentIndex shouldBe 6
 
       ret.start.astChildren.l.size shouldBe 1
       ret.start.astChildren.isIdentifier.l.size shouldBe 1
@@ -354,31 +307,12 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
-    val assignAllocaCall_0 = block.start.astChildren.isCall.l.head
-    val assignAllocaCall_1 = block.start.astChildren.isCall.l.apply(1)
-    val assignStoreCall_0 = block.start.astChildren.isCall.l.apply(2)
-    val assignStoreCall_1 = block.start.astChildren.isCall.l.apply(3)
-    val assignLoadCall_0 = block.start.astChildren.isCall.l.apply(4)
-    val assignLoadCall_1 = block.start.astChildren.isCall.l.apply(5)
-    val assignMulCall = block.start.astChildren.isCall.l.apply(6)
+    val assignStoreCall_0 = block.start.astChildren.isCall.l.apply(0)
+    val assignStoreCall_1 = block.start.astChildren.isCall.l.apply(1)
+    val assignLoadCall_0 = block.start.astChildren.isCall.l.apply(2)
+    val assignLoadCall_1 = block.start.astChildren.isCall.l.apply(3)
+    val assignMulCall = block.start.astChildren.isCall.l.apply(4)
 
-    {
-      val lhs = assignAllocaCall_0.start.astChildren.isIdentifier.head
-      val rhs = assignAllocaCall_0.start.astChildren.isCall.head
-
-      lhs.start.cfgNext.head shouldBe rhs
-      rhs.start.cfgNext.head shouldBe assignAllocaCall_0
-      method.start.cfgFirst.head shouldBe lhs
-    }
-
-    {
-      val lhs = assignAllocaCall_1.start.astChildren.isIdentifier.head
-      val rhs = assignAllocaCall_1.start.astChildren.isCall.head
-
-      lhs.start.cfgNext.head shouldBe rhs
-      rhs.start.cfgNext.head shouldBe assignAllocaCall_1
-      assignAllocaCall_0.start.cfgNext.head shouldBe lhs
-    }
 
     {
       // store i32 %x, i32* %x.addr
@@ -389,7 +323,6 @@ class C_ReturnMultipliedParameterTest extends CPGMatcher {
       ref.start.cfgNext.head shouldBe lhs
       lhs.start.cfgNext.head shouldBe rhs
       rhs.start.cfgNext.head shouldBe assignStoreCall_0
-      assignAllocaCall_1.start.cfgNext.head shouldBe ref
     }
 
     {

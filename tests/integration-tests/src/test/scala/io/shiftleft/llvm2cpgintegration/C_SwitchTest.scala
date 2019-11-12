@@ -43,21 +43,21 @@ class C_SwitchTest extends CPGMatcher {
     val block = method.start.block.head
 
     val calls = block.start.astChildren.isCall.l
-    val loadParam = calls.apply(3)
+    val loadParam = calls.apply(1)
 
-    val assignStore42 = calls.apply(4)
+    val assignStore42 = calls.apply(2)
     val assignStore42Lhs = assignStore42.start.astChildren.isCall.l.head
     val assignStore42Ref = assignStore42Lhs.start.astChildren.isIdentifier.l.head
 
-    val assignStore36 = calls.apply(5)
+    val assignStore36 = calls.apply(3)
     val assignStore36Lhs = assignStore36.start.astChildren.isCall.l.head
     val assignStore36Ref = assignStore36Lhs.start.astChildren.isIdentifier.l.head
 
-    val assignStore17 = calls.apply(6)
+    val assignStore17 = calls.apply(4)
     val assignStore17Lhs = assignStore17.start.astChildren.isCall.l.head
     val assignStore17Ref = assignStore17Lhs.start.astChildren.isIdentifier.l.head
 
-    val loadRetVal = calls.apply(7)
+    val loadRetVal = calls.apply(5)
     val loadRetValLhs =  loadRetVal.start.astChildren.isIdentifier.head
 
     loadParam.start.cfgNext.toSet shouldBe Set(assignStore42Ref, assignStore36Ref, assignStore17Ref)

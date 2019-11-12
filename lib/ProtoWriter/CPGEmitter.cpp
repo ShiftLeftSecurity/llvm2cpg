@@ -182,10 +182,7 @@ CPGProtoNode *CPGEmitter::emitUnhandledCall(llvm::Instruction *instruction) {
 }
 
 CPGProtoNode *CPGEmitter::visitAllocaInst(llvm::AllocaInst &instruction) {
-  CPGProtoNode *localRef = emitRef(&instruction);
-  CPGProtoNode *allocaCall = emitAllocaCall(&instruction);
-  CPGProtoNode *assignCall = emitAssignCall(&instruction, localRef, allocaCall);
-  return assignCall;
+  return nullptr;
 }
 
 CPGProtoNode *CPGEmitter::visitStoreInst(llvm::StoreInst &instruction) {

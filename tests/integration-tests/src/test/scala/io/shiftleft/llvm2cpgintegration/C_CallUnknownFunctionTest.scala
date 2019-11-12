@@ -32,7 +32,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     callValue.name shouldBe "call"
     callValue.typeFullName shouldBe "i32"
 
-    val assignCall = block.start.astChildren.isCall.l.apply(2)
+    val assignCall = block.start.astChildren.isCall.l.apply(1)
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     callValueRef.name shouldBe "call"
     callValueRef.typeFullName shouldBe "i32"
@@ -67,8 +67,8 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
-    val assignLoadCall = block.start.astChildren.isCall.l.apply(1)
-    val assignCall = block.start.astChildren.isCall.l.apply(2)
+    val assignLoadCall = block.start.astChildren.isCall.l.apply(0)
+    val assignCall = block.start.astChildren.isCall.l.apply(1)
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     val ptrCall = assignCall.start.astChildren.isCall.head
     val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
