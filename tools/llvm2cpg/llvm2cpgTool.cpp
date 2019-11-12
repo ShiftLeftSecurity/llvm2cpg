@@ -5,6 +5,7 @@
 #include <llvm2cpg/CPG/Version.h>
 #include <llvm2cpg/CPGWriter/CPGProtoWriter.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
+#include <llvm/Linker/Linker.h>
 #include <sstream>
 #include <string>
 
@@ -38,9 +39,11 @@ int main(int argc, char **argv) {
   logger.logInfo(logIntro.str());
 
   llvm::LLVMContext context;
+  llvm::Module globalModule("global module", context);
+  llvm::Linker linker(globalModule);
+
   llvm2cpg::BitcodeLoader loader(logger);
   llvm2cpg::CPG cpg;
-  std::vector<std::unique_ptr<llvm::Module>> bitcode;
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string path = BitcodePaths[i];
     logger.uiInfo(std::string("Loading ") + path);
@@ -52,28 +55,24 @@ int main(int argc, char **argv) {
     case llvm2cpg::FileType::Bitcode: {
       logger.logInfo(std::string("Parsing bitcode file ") + path);
       std::unique_ptr<llvm::Module> module = loader.loadBitcode(path, context);
-      if (module) {
-        bitcode.push_back(std::move(module));
-        cpg.addBitcode(bitcode.back().get());
-      }
+      linker.linkInModule(std::move(module));
     } break;
     case llvm2cpg::FileType::Binary: {
       logger.logInfo(std::string("Attempting to extract bitcode from ") + path);
       for (std::unique_ptr<llvm::Module> &module : loader.extractBitcode(path, context)) {
-        bitcode.push_back(std::move(module));
-        cpg.addBitcode(bitcode.back().get());
+        linker.linkInModule(std::move(module));
       }
     } break;
     case llvm2cpg::FileType::LLVM_IR: {
       logger.logInfo(std::string("Parsing IR file ") + path);
       std::unique_ptr<llvm::Module> module = loader.loadIR(path, context);
       if (module) {
-        bitcode.push_back(std::move(module));
-        cpg.addBitcode(bitcode.back().get());
+        linker.linkInModule(std::move(module));
       }
     } break;
     }
   }
+  cpg.addBitcode(&globalModule);
 
   llvm2cpg::CPGProtoWriter writer(logger, OutputDirectory.getValue(), OutputName.getValue());
   writer.writeCpg(cpg);

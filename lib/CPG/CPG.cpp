@@ -1,5 +1,4 @@
 #include "llvm2cpg/CPG/CPG.h"
-#include <llvm/IR/Module.h>
 
 using namespace llvm2cpg;
 

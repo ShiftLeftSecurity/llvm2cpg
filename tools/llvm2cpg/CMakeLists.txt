@@ -9,7 +9,7 @@ add_executable(llvm2cpg ${SOURCES})
 if (LLVM IN_LIST LLVM_AVAILABLE_LIBS)
   target_link_libraries(llvm2cpg CPG CPGProtoWriter LLVM)
 else()
-  target_link_libraries(llvm2cpg CPG CPGProtoWriter LLVMSupport)
+  target_link_libraries(llvm2cpg CPG CPGProtoWriter LLVMSupport LLVMLinker)
 endif()
 
 
