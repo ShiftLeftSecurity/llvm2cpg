@@ -30,7 +30,6 @@ class C_DbgVectorfindTest extends CPGMatcher {
       Some(62)
     )
     cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(13)).map{_.name}.toSet shouldBe Set[String](
-      "llvm.dbg.declare",
       "<operator>.assignment",
       "<operator>.indirection"
     )
@@ -47,7 +46,7 @@ class C_DbgVectorfindTest extends CPGMatcher {
     cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(48)).map{_.name}.toSet shouldBe Set(
       "<operator>.assignment",
       "<operator>.indirection",
-      "insertelement",
+      "<operator>.insertElement",
       "<operator>.cast"
     )
     cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(62)).map{_.name}.toSet shouldBe Set(

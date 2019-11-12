@@ -33,8 +33,8 @@ class C_DbgVectorfindOptTest extends CPGMatcher {
 
     cpg.method.name("findbyte").ast.isCall.lineNumber(9).l.filter(_.columnNumber == Some(48)).map{_.name}.toSet shouldBe Set(
       "<operator>.assignment",
-      "insertelement",
-      "shufflevector"
+      "<operator>.insertElement",
+      "<operator>.shufflevector"
     )
   }
 }

@@ -35,6 +35,8 @@ private:
   CPGProtoNode *visitInstruction(llvm::Instruction &instruction);
   CPGProtoNode *visitReturnInst(llvm::ReturnInst &instruction);
   CPGProtoNode *visitAllocaInst(llvm::AllocaInst &instruction);
+  CPGProtoNode *visitDbgVariableIntrinsic(llvm::DbgVariableIntrinsic &instruction);
+
   CPGProtoNode *visitStoreInst(llvm::StoreInst &instruction);
   CPGProtoNode *visitLoadInst(llvm::LoadInst &instruction);
   CPGProtoNode *visitBinaryOperator(llvm::BinaryOperator &instruction);
@@ -73,6 +75,7 @@ private:
 
   CPGProtoNode *emitAllocaCall(const llvm::Value *value);
   CPGProtoNode *emitAssignCall(const llvm::Value *value, CPGProtoNode *lhs, CPGProtoNode *rhs);
+  CPGProtoNode *emitAssignCall(const llvm::Type *type, CPGProtoNode *lhs, CPGProtoNode *rhs);
   CPGProtoNode *emitIndirectionCall(const llvm::Value *value, CPGProtoNode *pointerRef);
   CPGProtoNode *emitDereference(llvm::Value *value);
   CPGProtoNode *emitBinaryCall(const llvm::BinaryOperator *binary);
@@ -80,11 +83,13 @@ private:
   CPGProtoNode *emitCast(const llvm::CastInst *instruction);
   CPGProtoNode *emitSelect(llvm::SelectInst *instruction);
   CPGProtoNode *emitGEP(const llvm::GetElementPtrInst *instruction);
+
   CPGProtoNode *emitInsertValue(llvm::InsertValueInst *instruction);
   CPGProtoNode *emitExtractValue(llvm::ExtractValueInst *instruction);
+  CPGProtoNode *emitGenericOp(const std::string &fullname, const std::string &code,
+                              const std::string &returnType, const std::string &signature);
 
   CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
-  CPGProtoNode *emitInsertAccess(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
   CPGProtoNode *emitFunctionCall(llvm::CallBase *instruction);
@@ -114,7 +119,7 @@ private:
   const CPGProtoNode *getLocal(const llvm::Value *value) const;
 
   // Sets the right CFG/AST connections
-  void resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
+  CPGProtoNode *resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
 

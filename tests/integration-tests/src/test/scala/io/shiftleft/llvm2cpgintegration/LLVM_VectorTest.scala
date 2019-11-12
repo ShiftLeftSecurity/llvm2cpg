@@ -39,16 +39,16 @@ class LLVM_VectorTest extends CPGMatcher {
 
 
   "AST" in {
-    val insert = cpg.method.name("insert").ast.literal.code("undef").astParent.isCall.name("insertelement").l.head
-    val shuffle = cpg.method.name("findbyte").ast.isCall.name("shufflevector").l.head
-    val extract = cpg.method.name("extract").ast.isCall.name("extractelement").l.head
+    val insertv =  cpg.method.name("insert").ast.isLiteral.code("undef").astParent.isCall.head
+    val shuffle = cpg.method.name("findbyte").ast.isCall.name("<operator>.shufflevector").l.head
+    val extract = cpg.method.name("extract").ast.isCall.code("extractelement").l.head
 
     val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
     val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
     val gep3 = cpg.method.name("vectorGEP").ast.isIdentifier.name("C").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
 
     //Todo: use treedump-like?
-    argSummary(insert) shouldBe Set[Any]((1, "undef", "<2 x float>"), (2, "x", "float"), (3, "1", "i8"))
+    argSummary(insertv) shouldBe Set((1,"undef","<2 x float>"), (2,"x","float"), (3,"1","i8"))
     argSummary(shuffle) shouldBe Set[Any]((1, "tmp", "<1 x i8>"), (2, "undef", "<1 x i8>"), (3, "zero initialized", "<16 x i32>"))
     argSummary(extract) shouldBe Set[Any]((1, "x", "<2 x float>"), (2, "idx", "i32"))
 

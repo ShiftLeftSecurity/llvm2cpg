@@ -185,6 +185,10 @@ CPGProtoNode *CPGEmitter::visitAllocaInst(llvm::AllocaInst &instruction) {
   return nullptr;
 }
 
+CPGProtoNode *CPGEmitter::visitDbgVariableIntrinsic(llvm::DbgVariableIntrinsic &instruction) {
+  return nullptr;
+}
+
 CPGProtoNode *CPGEmitter::visitStoreInst(llvm::StoreInst &instruction) {
   llvm::Value *value = instruction.getValueOperand();
   llvm::Value *pointer = instruction.getPointerOperand();
@@ -235,13 +239,6 @@ CPGProtoNode *CPGEmitter::visitSelectInst(llvm::SelectInst &instruction) {
 CPGProtoNode *CPGEmitter::visitGetElementPtrInst(llvm::GetElementPtrInst &instruction) {
   CPGProtoNode *ref = emitRef(&instruction);
   CPGProtoNode *call = emitGEP(&instruction);
-  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
-  return assignCall;
-}
-
-CPGProtoNode *CPGEmitter::visitInsertValueInst(llvm::InsertValueInst &instruction) {
-  CPGProtoNode *ref = emitRef(&instruction);
-  CPGProtoNode *call = emitInsertValue(&instruction);
   CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
   return assignCall;
 }
@@ -313,7 +310,7 @@ CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction
       .setCode(name)
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
-      .setName(name)
+      .setMethodFullName(name)
       .setSignature("{ANY, i1} (ANY, ANY, ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
@@ -333,12 +330,16 @@ CPGProtoNode *CPGEmitter::visitExtractElementInst(llvm::ExtractElementInst &inst
 
 CPGProtoNode *CPGEmitter::emitExtractElement(llvm::ExtractElementInst *instruction) {
   CPGProtoNode *acall = builder.functionCallNode();
+  std::string name("<operator>.computedMemberAccess");
+
   (*acall) //
-      .setName("extractelement")
+      .setName(name)
       .setCode("extractelement")
+      .setMethodFullName(name)
+      .setMethodFullName(name)
       .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName("extractelement")
-      .setSignature("xxx")
+      .setMethodInstFullName(name)
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   setLineInfo(acall);
@@ -349,30 +350,11 @@ CPGProtoNode *CPGEmitter::emitExtractElement(llvm::ExtractElementInst *instructi
 }
 
 CPGProtoNode *CPGEmitter::visitInsertElementInst(llvm::InsertElementInst &instruction) {
-  CPGProtoNode *ref = emitRef(&instruction);
-  CPGProtoNode *call = emitInsertElement(&instruction);
-  CPGProtoNode *assignCall = emitAssignCall(&instruction, ref, call);
-  return assignCall;
+  return emitAssignCall(&instruction, emitRef(&instruction), emitInsertElement(&instruction));
 }
 
-CPGProtoNode *CPGEmitter::emitInsertElement(llvm::InsertElementInst *instruction) {
-  CPGProtoNode *acall = builder.functionCallNode();
-  (*acall) //
-      .setName("insertelement")
-      .setCode("insertelement")
-      .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName("insertelement")
-      .setSignature("xxx")
-      .setDispatchType("STATIC_DISPATCH");
-
-  setLineInfo(acall);
-  // operand ordering cf llvm/IR/Instructions.h
-  // llvm ran out of budget for named accessor functions, hence this.
-  CPGProtoNode *vec = emitRefOrConstant(instruction->getOperand(0));
-  CPGProtoNode *val = emitRefOrConstant(instruction->getOperand(1));
-  CPGProtoNode *idx = emitRefOrConstant(instruction->getOperand(2));
-  resolveConnections(acall, { vec, val, idx });
-  return acall;
+CPGProtoNode *CPGEmitter::visitInsertValueInst(llvm::InsertValueInst &instruction) {
+  return emitAssignCall(&instruction, emitRef(&instruction), emitInsertValue(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction) {
@@ -385,11 +367,11 @@ CPGProtoNode *CPGEmitter::visitShuffleVectorInst(llvm::ShuffleVectorInst &instru
 CPGProtoNode *CPGEmitter::emitShuffleVector(llvm::ShuffleVectorInst *instruction) {
   CPGProtoNode *acall = builder.functionCallNode();
   (*acall) //
-      .setName("shufflevector")
-      .setCode("shufflevector")
+      .setName("<operator>.shufflevector")
+      .setCode("<operator>.shufflevector")
       .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName("shufflevector")
-      .setSignature("xxx")
+      .setMethodInstFullName("<operator>.shufflevector")
+      .setSignature("ANY (ANY ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   setLineInfo(acall);
@@ -691,12 +673,17 @@ CPGProtoNode *CPGEmitter::emitFunctionArgument(const llvm::Value *argument, size
 
 CPGProtoNode *CPGEmitter::emitAssignCall(const llvm::Value *value, CPGProtoNode *lhs,
                                          CPGProtoNode *rhs) {
+  return emitAssignCall(value->getType(), lhs, rhs);
+}
+
+CPGProtoNode *CPGEmitter::emitAssignCall(const llvm::Type *type, CPGProtoNode *lhs,
+                                         CPGProtoNode *rhs) {
   CPGProtoNode *assignCall = builder.functionCallNode();
   std::string name("<operator>.assignment");
   (*assignCall) //
       .setName(name)
       .setCode(name)
-      .setTypeFullName(getTypeName(value->getType()))
+      .setTypeFullName(getTypeName(type))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
       .setSignature("ANY (ANY)")
@@ -729,7 +716,7 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Value *value, CPGProto
   std::string name("<operator>.indirection");
   (*indirectionCall) //
       .setName(name)
-      .setCode(name)
+      .setCode("store")
       .setTypeFullName(getTypeName(value->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
@@ -748,7 +735,7 @@ CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
   std::string name("<operator>.indirection");
   (*dereferenceCall) //
       .setName(name)
-      .setCode(name)
+      .setCode("load")
       .setMethodInstFullName(name)
       .setMethodFullName(name)
       .setSignature("ANY (ANY)")
@@ -963,39 +950,33 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
 }
 
 CPGProtoNode *CPGEmitter::emitInsertValue(llvm::InsertValueInst *instruction) {
-  //  cf emitGEP
-
-  llvm::Value *res = instruction->getAggregateOperand();
-  llvm::Value *val = instruction->getInsertedValueOperand();
-  llvm::Type *indexType = res->getType();
-  CPGProtoNode *agg = emitRefOrConstant(res);
+  /*
+    We have an issue: We would need an extra temp to get dataflow semantics correctly.
+    So we just push out the function as it appears in llvm?
+  */
+  std::vector<CPGProtoNode *> children;
+  children.push_back(emitRefOrConstant(instruction->getAggregateOperand()));
+  children.push_back(emitRefOrConstant(instruction->getInsertedValueOperand()));
   auto indices = instruction->getIndices();
-
   for (unsigned int i = 0; i < instruction->getNumIndices(); i++) {
-    unsigned int index = indices[i];
-    CPGProtoNode *idxCpg = emitConstant(index);
-    bool isStruct = indexType->isStructTy();
-    indexType = nextIndexType(indexType, index);
-    CPGProtoNode *access = emitInsertAccess(indexType, index, isStruct);
-    resolveConnections(access, { agg, idxCpg });
-    agg = access;
+    children.push_back(emitConstant(indices[i]));
   }
-  // We have walked the indexing chain, and now need to emit the final insert.
-  CPGProtoNode *call = builder.functionCallNode();
-  (*call) //
-      .setName("insertValue")
-      .setCode("insertValue")
-      .setTypeFullName(getTypeName(res->getType()))
-      .setMethodInstFullName("insertValue")
-      .setMethodFullName("insertValue")
-      .setSignature("xxx")
-      .setDispatchType("STATIC_DISPATCH");
+  return resolveConnections(
+      emitGenericOp("<operator>.insertValue", "insertvalue", getTypeName(instruction->getType()), "ANY (ANY)"),
+      children);
+}
 
-  setLineInfo(call);
-  CPGProtoNode *inserted = emitRefOrConstant(val);
-  resolveConnections(call, { agg, inserted });
-
-  return call;
+CPGProtoNode *CPGEmitter::emitInsertElement(llvm::InsertElementInst *instruction) {
+  /*
+    We have an issue: We would need an extra temp to get dataflow semantics correctly.
+    So we just push out the function as it appears in llvm?
+  */
+  return resolveConnections(
+      emitGenericOp(
+          "<operator>.insertElement", "insertelement", getTypeName(instruction->getType()), "ANY (ANY ANY)"),
+      { emitRefOrConstant(instruction->getOperand(0)),
+        emitRefOrConstant(instruction->getOperand(1)),
+        emitRefOrConstant(instruction->getOperand(2)) });
 }
 
 CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) {
@@ -1013,8 +994,6 @@ CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) 
     resolveConnections(access, { agg, idxCpg });
     agg = access;
   }
-
-  //  cf emitInsertValue
   return agg;
 }
 
@@ -1027,7 +1006,7 @@ CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *ind
   CPGProtoNode *call = builder.functionCallNode();
   (*call) //
       .setName(name)
-      .setCode(name)
+      .setCode("getelementptr")
       .setTypeFullName(getTypeName(type))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
@@ -1038,31 +1017,9 @@ CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *ind
   return call;
 }
 
-CPGProtoNode *CPGEmitter::emitInsertAccess(const llvm::Type *type, unsigned int idx,
-                                           bool memberAccess) {
-  std::string name("insertValue_indexShift");
-  if (memberAccess) {
-    name = "insertValue_memberSelect";
-  }
-  CPGProtoNode *call = builder.functionCallNode();
-  (*call) //
-      .setName(name)
-      .setCode(name)
-      .setTypeFullName(getTypeName(type))
-      .setMethodInstFullName(name)
-      .setMethodFullName(name)
-      .setSignature("xxx")
-      .setDispatchType("STATIC_DISPATCH");
-
-  setLineInfo(call);
-  return call;
-}
-
 CPGProtoNode *CPGEmitter::emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess) {
-  std::string name("ExtractValue_index");
-  if (memberAccess) {
-    name = "ExtractValue_member";
-  }
+  // This is problematic for the dataflow tracker. TODO revisit
+  std::string name("<operator>.computedMemberAccess");
   CPGProtoNode *call = builder.functionCallNode();
   (*call) //
       .setName(name)
@@ -1070,7 +1027,7 @@ CPGProtoNode *CPGEmitter::emitExtract(const llvm::Type *type, unsigned int idx, 
       .setTypeFullName(getTypeName(type))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
-      .setSignature("xxx")
+      .setSignature("ANY (ANY)")
       .setDispatchType("STATIC_DISPATCH");
 
   setLineInfo(call);
@@ -1126,9 +1083,11 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
 
   CPGProtoNode *call = builder.functionCallNode();
   std::string name(instruction->getCalledFunction()->getName());
-  (*call) //
-      .setName(name)
-      .setCode(name)
+  // Todo: move this once we have proper demangling and more special cases.
+  std::string human_name(name); //(llvm::isa<llvm::MemCpyInst>(instruction) ? name : "memcpy");
+  (*call)                       //
+      .setName(human_name)
+      .setCode(human_name)
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
@@ -1160,6 +1119,25 @@ CPGProtoNode *CPGEmitter::emitUnhandled() {
   return unhandled;
 }
 
+CPGProtoNode *CPGEmitter::emitGenericOp(const std::string &fullname, const std::string &code,
+                                        const std::string &returnType,
+                                        const std::string &signature) {
+
+  CPGProtoNode *call = builder.functionCallNode();
+  (*call) //
+      .setName(fullname)
+      .setCode(code)
+      .setTypeFullName(returnType)
+      .setMethodInstFullName(fullname)
+      .setMethodFullName(fullname)
+      .setSignature(signature)
+      .setDispatchType("STATIC_DISPATCH");
+
+  setLineInfo(call);
+  call->setEntry(call->getID());
+  return call;
+}
+
 const CPGProtoNode *CPGEmitter::getLocal(const llvm::Value *value) const {
   assert(isLocal(value) && "Local was not emitted");
   return locals.find(value)->second;
@@ -1177,9 +1155,11 @@ bool CPGEmitter::isConstExpr(const llvm::Value *value) const {
   return llvm::isa<llvm::ConstantExpr>(value);
 }
 
-void CPGEmitter::resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
+CPGProtoNode *CPGEmitter::resolveConnections(CPGProtoNode *parent,
+                                             std::vector<CPGProtoNode *> children) {
   resolveCFGConnections(parent, children);
   resolveASTConnections(parent, children);
+  return parent;
 }
 
 void CPGEmitter::resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children) {
