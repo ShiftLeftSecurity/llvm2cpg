@@ -34,7 +34,7 @@ class LLVM_SelectInstTest extends CPGMatcher {
     val selectCall = assignSelect.start.astChildren.isCall.head
     selectCall.name shouldBe "<operator>.select"
     selectCall.methodFullName shouldBe "<operator>.select"
-    selectCall.signature shouldBe "ANY (i1, ANY, ANY)"
+    selectCall.signature shouldBe "ANY (ANY, ANY, ANY)"
 
     val selectCondition = selectCall.start.astChildren.isLiteral.l.head
     selectCondition.code shouldBe "true"

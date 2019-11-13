@@ -1,4 +1,5 @@
 #include "llvm2cpg/CPG/CPG.h"
+#include <assert.h>
 
 using namespace llvm2cpg;
 

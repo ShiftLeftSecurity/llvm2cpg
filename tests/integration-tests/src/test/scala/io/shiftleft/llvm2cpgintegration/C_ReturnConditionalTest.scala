@@ -208,7 +208,7 @@ return:                                           ; preds = %if.end, %if.then
       icmpCall.order shouldBe 2
       icmpCall.argumentIndex shouldBe 2
       icmpCall.start.astChildren.l.size shouldBe 2
-      icmpCall.signature shouldBe "i1 (ANY, ANY)"
+      icmpCall.signature shouldBe "ANY (ANY, ANY)"
 
       val icmpLhs = icmpCall.start.astChildren.isIdentifier.l.head
       icmpLhs.name shouldBe "tmp"

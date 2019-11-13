@@ -74,9 +74,8 @@ private:
   CPGProtoNode *emitFunctionArgument(const llvm::Value *argument, size_t order);
 
   CPGProtoNode *emitAllocaCall(const llvm::Value *value);
-  CPGProtoNode *emitAssignCall(const llvm::Value *value, CPGProtoNode *lhs, CPGProtoNode *rhs);
   CPGProtoNode *emitAssignCall(const llvm::Type *type, CPGProtoNode *lhs, CPGProtoNode *rhs);
-  CPGProtoNode *emitIndirectionCall(const llvm::Value *value, CPGProtoNode *pointerRef);
+  CPGProtoNode *emitIndirectionCall(const llvm::Type *type, CPGProtoNode *pointerRef);
   CPGProtoNode *emitDereference(llvm::Value *value);
   CPGProtoNode *emitBinaryCall(const llvm::BinaryOperator *binary);
   CPGProtoNode *emitCmpCall(const llvm::CmpInst *comparison);
