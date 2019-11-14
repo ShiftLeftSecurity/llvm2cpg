@@ -57,40 +57,20 @@ pipeline {
 				script {
 					dir('target') {
 						sh "cmake -G Ninja \
-						    -DCMAKE_C_COMPILER=clang \
-						    -DCMAKE_CXX_COMPILER=clang++ \
+						    -DCMAKE_C_COMPILER=/opt/llvm/9.0.0/bin/clang \
+						    -DCMAKE_CXX_COMPILER=/opt/llvm/9.0.0/bin/clang++ \
 						    -DPATH_TO_LLVM=/opt/llvm/9.0.0/ \
-						    -DPATH_TO_CODEPROPERTYGRAPH=${WORKSPACE}/codepropertygraph \
+ 						    -DPATH_TO_CODEPROPERTYGRAPH=${WORKSPACE}/codepropertygraph \
 						    .."
 					}
 				}
 			}
 		}
-		stage('buildTests') {
+		stage('run-all-tests') {
 			steps {
 				script {
 					dir('target') {
-						sh "ninja unit-tests"
-						sh "./tests/unit-tests/unit-tests"
-						sh "ninja llvm2cpg"
-					}
-				}
-			}
-		}
-		stage('buildLLVM2cpg') {
-			steps {
-				script {
-					dir('target') {
-						sh "ninja llvm2cpg"
-					}
-				}
-			}
-    }
-		stage('runLLVM2cpg') {
-			steps {
-				script {
-					dir('target') {
-						sh "./tools/llvm2cpg/llvm2cpg ./tests/fixtures/basic_c_support/return_constant.bc"
+						sh "ninja run-all-tests"
 					}
 				}
 			}
