@@ -1,3 +1,7 @@
+## [0.2.0] - TBD
+
+- Better (demangled) names for C++ methods
+
 ## [0.1.0] - 06 Nov 2019
 
 - Initial LLVM support: most of the instructions have the right semantics defined

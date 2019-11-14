@@ -26,7 +26,6 @@ public:
   CPGMethod &operator=(const CPGMethod &) = delete;
 
   llvm::Type *getReturnType() const;
-  const std::string &getName() const;
   bool isExternal() const;
   llvm::Function &getFunction() const;
 
@@ -35,7 +34,6 @@ public:
 
 private:
   llvm::Function &function;
-  std::string name;
 
   std::vector<llvm::Value *> arguments;
   std::vector<llvm::Value *> localVariables;

@@ -37,7 +37,9 @@ object TestCpgPaths {
   val LLVM_InlineAsmTestCpg = "@LLVM_InlineAsmTest@"
   val LLVM_ConstantsTestCpg = "@LLVM_ConstantsTest@"
 
-
   val DataFlow_CallerTestCPG = "@DataFlow_CallerTest@"
   val DataFlow_CallerArgumentsTestCPG = "@DataFlow_CallerArgumentsTest@"
+
+  val CXX_ClassMethodNamesTestCPG = "@CXX_ClassMethodNamesTest@"
+
 }

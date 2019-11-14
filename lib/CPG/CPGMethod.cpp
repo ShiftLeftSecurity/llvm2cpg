@@ -3,23 +3,18 @@
 
 using namespace llvm2cpg;
 
-CPGMethod::CPGMethod(llvm::Function &function)
-    : function(function), name(function.getName().str()), arguments(), localVariables() {
+CPGMethod::CPGMethod(llvm::Function &function) : function(function), arguments(), localVariables() {
   CPGInstVisitor visitor(arguments, localVariables);
   visitor.run(function);
 }
 
 CPGMethod::CPGMethod(CPGMethod &&that) noexcept
-    : function(that.function), name(std::move(that.name)), arguments(std::move(that.arguments)),
+    : function(that.function), arguments(std::move(that.arguments)),
       localVariables(std::move(that.localVariables)) {}
 
 llvm::Type *CPGMethod::getReturnType() const {
   assert(function.getFunctionType() != nullptr);
   return function.getFunctionType()->getReturnType();
-}
-
-const std::string &CPGMethod::getName() const {
-  return name;
 }
 
 bool CPGMethod::isExternal() const {
@@ -37,4 +32,3 @@ const std::vector<llvm::Value *> &CPGMethod::getArguments() const {
 const std::vector<llvm::Value *> &CPGMethod::getLocalVariables() const {
   return localVariables;
 }
-

@@ -17,7 +17,6 @@ TEST(CPGMethod, basicProperties) {
 
   auto &function = *bitcode->functions().begin();
   CPGMethod method(function);
-  ASSERT_STREQ(method.getName().c_str(), "basic_c_support");
   ASSERT_FALSE(method.isExternal());
 }
 

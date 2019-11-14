@@ -26,6 +26,5 @@ TEST(CPG, addBitcode) {
   ASSERT_EQ(file.getName(), fixtures::return_constant_c_bc_input_path());
   ASSERT_EQ(file.getMethods().size(), size_t(1));
   auto &method = file.getMethods().front();
-  ASSERT_STREQ(method.getName().c_str(), "basic_c_support");
   ASSERT_FALSE(method.isExternal());
 }

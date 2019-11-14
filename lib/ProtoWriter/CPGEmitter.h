@@ -3,6 +3,7 @@
 #include <llvm/IR/InstVisitor.h>
 #include <unordered_map>
 #include <unordered_set>
+#include "llvm2cpg/Demangler/CPGDemangler.h"
 
 namespace llvm2cpg {
 
@@ -25,6 +26,7 @@ private:
   CPGLogger &logger;
   CPGProtoBuilder &builder;
   CPGTypeEmitter &typeEmitter;
+  CPGDemangler demangler;
   const CPGFile &file;
   unsigned int lineNumber;
   unsigned int columnNumber;

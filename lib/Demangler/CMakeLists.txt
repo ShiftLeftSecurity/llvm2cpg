@@ -1,7 +1,9 @@
 set (SOURCES
   Demangler.cpp
+  CPGDemangler.cpp
 )
 
-add_library(Demangler ${SOURCES})
-target_compile_options(Demangler PRIVATE ${LLVM2CPG_CXX_FLAGS})
-target_include_directories(Demangler PRIVATE ${CMAKE_SOURCE_DIR}/include)
+add_library(CPGDemangler ${SOURCES})
+target_compile_options(CPGDemangler PRIVATE ${LLVM2CPG_CXX_FLAGS})
+target_include_directories(CPGDemangler PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(CPGDemangler SYSTEM PUBLIC ${LLVM_INCLUDE_DIRS})

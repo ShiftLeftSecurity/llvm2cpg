@@ -8,7 +8,7 @@ import io.shiftleft.semanticcpg.language._
 
 class LLVM_NestedConstExprTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_NestedConstExprTestCpg)
-  private val methodName = "_ZL18__gthread_active_pv"
+  private val methodName = "__gthread_active_p()"
 
   "types" in {
     validateTypes(cpg, Set("ANY", "i1", "i8*", "i32", "i32*", "void (i8*)*", "i32 ()", "i32 (i32*, void (i8*)*)"))

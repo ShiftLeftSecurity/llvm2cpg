@@ -37,4 +37,6 @@ add_integration_test(LLVM_ConstantsTest constants_ll_bc)
 add_integration_test(DataFlow_CallerTest dataflow_caller_c_bc)
 add_integration_test(DataFlow_CallerArgumentsTest dataflow_caller_arguments_c_bc)
 
+add_integration_test(CXX_ClassMethodNamesTest class_method_names_cpp_ll)
+
 enable_integration_tests()

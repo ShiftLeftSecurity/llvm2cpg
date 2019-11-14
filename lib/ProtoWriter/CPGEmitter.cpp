@@ -44,7 +44,8 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     return;
   }
 
-  logger.logInfo(std::string("Emitting ") + method.getName());
+  logger.logInfo(std::string("Emitting ") +
+                 demangler.demangleFunctionName(&method.getFunction()).name);
 
   llvm::Module *module = method.getFunction().getParent();
   for (llvm::GlobalVariable &global : module->getGlobalList()) {
@@ -329,9 +330,10 @@ CPGProtoNode *CPGEmitter::visitReturnInst(llvm::ReturnInst &instruction) {
 }
 
 CPGProtoNode *CPGEmitter::emitMethodNode(const CPGMethod &method) {
+  const DemangledName &name = demangler.demangleFunctionName(&method.getFunction());
   CPGProtoNode *methodNode = builder.methodNode();
   (*methodNode) //
-      .setFullName(method.getName())
+      .setFullName(name.fullName)
       .setASTParentType("NAMESPACE_BLOCK")
       .setASTParentFullName(file.getGlobalNamespaceName())
       .setIsExternal(method.isExternal())
@@ -346,7 +348,7 @@ CPGProtoNode *CPGEmitter::emitMethodNode(const CPGMethod &method) {
   if (sub != nullptr && !sub->getName().empty()) {
     methodNode->setName(sub->getName());
   } else {
-    methodNode->setName(method.getName());
+    methodNode->setName(name.name);
   }
   return methodNode;
 }
@@ -470,7 +472,7 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     if (cda->isCString()) {
       auto str = cda->getAsCString();
       /* TODO: We need to do something about constants that are not UTF8. For example:
-      
+
       for (unsigned char c : str) {
         if (c > 127) {
           goto invalid_string;
@@ -767,9 +769,11 @@ CPGProtoNode *CPGEmitter::emitInsertValue(llvm::InsertValueInst *instruction) {
   for (unsigned int i = 0; i < instruction->getNumIndices(); i++) {
     children.push_back(emitConstant(indices[i]));
   }
-  return resolveConnections(
-      emitGenericOp("<operator>.insertValue", "insertvalue", getTypeName(instruction->getType()), "ANY (ANY)"),
-      children);
+  return resolveConnections(emitGenericOp("<operator>.insertValue",
+                                          "insertvalue",
+                                          getTypeName(instruction->getType()),
+                                          "ANY (ANY)"),
+                            children);
 }
 
 CPGProtoNode *CPGEmitter::emitInsertElement(llvm::InsertElementInst *instruction) {
@@ -777,12 +781,13 @@ CPGProtoNode *CPGEmitter::emitInsertElement(llvm::InsertElementInst *instruction
     We have an issue: We would need an extra temp to get dataflow semantics correctly.
     So we just push out the function as it appears in llvm?
   */
-  return resolveConnections(
-      emitGenericOp(
-          "<operator>.insertElement", "insertelement", getTypeName(instruction->getType()), "ANY (ANY ANY)"),
-      { emitRefOrConstant(instruction->getOperand(0)),
-        emitRefOrConstant(instruction->getOperand(1)),
-        emitRefOrConstant(instruction->getOperand(2)) });
+  return resolveConnections(emitGenericOp("<operator>.insertElement",
+                                          "insertelement",
+                                          getTypeName(instruction->getType()),
+                                          "ANY (ANY ANY)"),
+                            { emitRefOrConstant(instruction->getOperand(0)),
+                              emitRefOrConstant(instruction->getOperand(1)),
+                              emitRefOrConstant(instruction->getOperand(2)) });
 }
 
 CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) {
@@ -861,15 +866,12 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
   }
 
   CPGProtoNode *call = builder.functionCallNode();
-  std::string name(instruction->getCalledFunction()->getName());
-  // Todo: move this once we have proper demangling and more special cases.
-  std::string human_name(name); //(llvm::isa<llvm::MemCpyInst>(instruction) ? name : "memcpy");
-  (*call)                       //
-      .setName(human_name)
-      .setCode(human_name)
+  DemangledName demangledName = demangler.demangleFunctionName(instruction->getCalledFunction());
+  (*call) //
+      .setName(demangledName.name)
+      .setCode(demangledName.name)
       .setTypeFullName(getTypeName(instruction->getType()))
-      .setMethodInstFullName(name)
-      .setMethodFullName(name)
+      .setMethodFullName(demangledName.fullName)
       .setSignature(getTypeName(instruction->getCalledFunction()->getFunctionType()))
       .setDispatchType("STATIC_DISPATCH");
 
