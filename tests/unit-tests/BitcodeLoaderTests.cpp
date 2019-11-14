@@ -18,7 +18,6 @@ TEST(BitcodeLoader, loadBitcode_validPath) {
   CPGLogger logger;
   BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path(), context);
-  bitcode->print(llvm::errs(), nullptr);
 
   ASSERT_NE(bitcode.get(), nullptr);
   ASSERT_STREQ(fixtures::return_constant_c_bc_input_path(),
