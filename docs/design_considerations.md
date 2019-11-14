@@ -136,6 +136,153 @@ Figuring out the right optimization passes will take some fiddling. We probably 
 
 We will almost surely want to include at least some language specific handling of constructs like C++ vtables, objective C-style vtables, etc. Attempting "user gives us bitcode without more info" is probably a unrealistic if we want good analysis results. So the goal might rather be to have many llvm front-end languages like objectivec2cpg or c2cpg or cpp2cpg that all share a solid llvm2cpg, not have a single llvm2cpg that does everything on its own. Currently we just need to keep that in mind for our code, in order to be prepared to later include language specific parts.
 
+### C
+
+#### Argument rewriting
+
+If we have debug info, we can extract the source-level number, names and types of arguments from a function. However, this will not always correspond to the bitcode level signature. Let's say
+```C
+typedef struct {float x; float y; float z;} PointT;
+
+float mean(PointT point){
+  return (point.x + point.y + point.z) / 3;
+}
+```
+If we compile this with `-O3`, we get
+```
+define dso_local float @mean(<2 x float>, float) local_unnamed_addr #0 {
+  %3 = extractelement <2 x float> %0, i32 0
+  %4 = extractelement <2 x float> %0, i32 1
+  %5 = fadd float %3, %4
+  %6 = fadd float %5, %1
+  %7 = fdiv float %6, 3.000000e+00
+  ret float %7
+}
+```
+If we instead compile with `-O0`, we get
+```
+%struct.PointT = type { float, float, float }
+
+; Function Attrs: noinline nounwind optnone sspstrong uwtable
+define dso_local float @mean(<2 x float>, float) #0 {
+  %3 = alloca %struct.PointT, align 4
+  %4 = alloca { <2 x float>, float }, align 4
+  %5 = getelementptr inbounds { <2 x float>, float }, { <2 x float>, float }* %4, i32 0, i32 0
+  store <2 x float> %0, <2 x float>* %5, align 4
+  %6 = getelementptr inbounds { <2 x float>, float }, { <2 x float>, float }* %4, i32 0, i32 1
+  store float %1, float* %6, align 4
+  %7 = bitcast %struct.PointT* %3 to i8*
+  %8 = bitcast { <2 x float>, float }* %4 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 %7, i8* align 4 %8, i64 12, i1 false)
+  %9 = getelementptr inbounds %struct.PointT, %struct.PointT* %3, i32 0, i32 0
+  %10 = load float, float* %9, align 4
+  %11 = getelementptr inbounds %struct.PointT, %struct.PointT* %3, i32 0, i32 1
+  %12 = load float, float* %11, align 4
+  %13 = fadd float %10, %12
+  %14 = getelementptr inbounds %struct.PointT, %struct.PointT* %3, i32 0, i32 2
+  %15 = load float, float* %14, align 4
+  %16 = fadd float %13, %15
+  %17 = fdiv float %16, 3.000000e+00
+  ret float %17
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture writeonly, i8* nocapture readonly, i64, i1 immarg) #1
+```
+
+### Objective C
+
+#### Message Passing
+
+Objective C has a smalltalk-inspired message passing dynamic dispatch. The way this works is that we can send any message to any object, where a message consists of `name`, static types of the arguments, and the arguments themselves. The object has a pointer to its dynamic type; and the dynamic type can either respond to a message (consume it) or pass it up to its supertype. If a message reaches the top of the class hierarchy, then we get a runtime error.
+
+Consider ```acc += [s intValue]```
+
+In IR, this is a call to `@objc_msgSend`, that takes both a pointer to the object, a pointer to the message, and the arguments. In IR we get something like
+```
+@OBJC_METH_VAR_NAME_.1 = private unnamed_addr constant [9 x i8] c"intValue\00", section "__TEXT,__objc_methname,cstring_literals", align 1
+...
+@OBJC_SELECTOR_REFERENCES_.2 = private externally_initialized global i8* getelementptr inbounds ([9 x i8], [9 x i8]* @OBJC_METH_VAR_NAME_.1, i32 0, i32 0), section "__DATA,__objc_selrefs,literal_pointers,no_dead_strip", align 8
+...
+  %38 = load i8*, i8** @OBJC_SELECTOR_REFERENCES_.2, align 8, !dbg !77, !invariant.load !12
+  ...
+  %40 = call i32 bitcast (i8* (i8*, i8*, ...)* @objc_msgSend to i32 (i8*, i8*)*)(i8* %39, i8* %38), !dbg !77
+```
+In order to figure out what message gets sent (`intValue`) we need to track through all the indirections. We can probably do that in the frontend.
+
+Note the very useful `!invariant.load` tag. It informs LLVM that the this pointer load is save to hoist out of loops (regardless whether the target could be written to). For us, it is a hint to (illegally!) treat `@OBJC_SELECTOR_REFERENCES_.2` as a constant (even though it is not; it is a mutable global variable that happens to be initialized to be a pointer to the right string).
+
+AFAIU this pointer dance serves to correctly intern (dedup) the `intValue\00` string when a dynamic library is loaded at run time: The loader will then change the new lib's `@OBJC_SELECTOR_REFERENCES_.2` to point at the string in the loading libraries `TEXT` section. Hence, message strings can be compared by pointer identity instead of string-compare.
+
+### C++
+
+#### Templates
+
+From the LLVM / binary viewpoint, `foo<int>` and `foo<float>` bear no relation whatsoever. The fact that both were spawned from the same template has not syntactic nor semantic impact, nor does it impact generated assembly. We can recover some kind of source-like name by demangling the name used by LLVM (i.e.: The name defined in the CXX-ABI; it is intended for consumption by the dynamic linker, and not humans).
+
+Nevertheless, policy writers and end users want to think about source-style names, and will want to write queries / policies that match both `foo<int>` and `foo<float>`. Hence, we need some kind of wildcard support.
+
+We discussed the option of using regular expressions. The problem is that regular expressions are both too general and not general enough. They are too general and therefore slow in allowing arbitrary patterns (We must have a way of getting polylog-linear time in number of policies + methods, instead of policies x methods). They are not general enough, because C++ names are not a regular language and cannot be parsed with regex (cf https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454)): We cannot count nested template depths. 
+
+We think that it is probably feasible to match wildcards like `cxx"MyNameSpace::foo<%T>"` or `cxx"%NS::foo<%T>"`, where `%T` consumes one template parameter.
+
+For the sake of the data-flow tracker and CPG, `foo<int>` and `foo<bar>` will remain entirely separate entities that bear no relation whatsoever.
+
+
+#### Library inlining
+
+Clang will tend to emit template / header-only library code into the binary. This means we may have a lot of STL code in each CPG. We could try to special-case STL, but then there is boost and then the next hip template lib. Realistically, we should probably just ship the code to the backend, which uses the fancy template wildcard matching to attach semantics to the included library functions.
+
+
+Clang sometimes inlines some library code into user-code, even if inlining is disabled (some STL code, macros). If we have debug symbols, then we can detect this, but there is currently nothing we can do about it, except leaving the LINENUMBER field blank.
+
+
+#### Dynamic Dispatch
+
+C++ supports two kinds of dynamic dispatch: First, calling function pointers. There is nothing new here. Second, calls of non-static virtual member functions, i.e. the vtable. Consider:
+
+```C++
+int callfoo(Base *arg){
+    return arg->foo();
+}
+```
+Let's look at the output. With `-O3`
+```
+define dso_local i32 @_Z7callfooP4Base(%class.Base*) local_unnamed_addr #2 {
+  %2 = bitcast %class.Base* %0 to i8 (%class.Base*)***
+  %3 = load i8 (%class.Base*)**, i8 (%class.Base*)*** %2, align 8, !tbaa !4
+  %4 = getelementptr inbounds i8 (%class.Base*)*, i8 (%class.Base*)** %3, i64 1
+  %5 = load i8 (%class.Base*)*, i8 (%class.Base*)** %4, align 8
+  %6 = tail call signext i8 %5(%class.Base* %0)
+  %7 = sext i8 %6 to i32
+  ret i32 %7
+}
+!4 = !{!5, !5, i64 0}
+!5 = !{!"vtable pointer", !6, i64 0}
+!6 = !{!"Simple C++ TBAA"}
+```
+and with `-O0`:
+```
+define dso_local i32 @_Z7callfooP4Base(%class.Base*) #1 {
+  %2 = alloca %class.Base*, align 8
+  store %class.Base* %0, %class.Base** %2, align 8
+  %3 = load %class.Base*, %class.Base** %2, align 8
+  %4 = bitcast %class.Base* %3 to i8 (%class.Base*)***
+  %5 = load i8 (%class.Base*)**, i8 (%class.Base*)*** %4, align 8
+  %6 = getelementptr inbounds i8 (%class.Base*)*, i8 (%class.Base*)** %5, i64 1
+  %7 = load i8 (%class.Base*)*, i8 (%class.Base*)** %6, align 8
+  %8 = call signext i8 %7(%class.Base* %3)
+  %9 = sext i8 %8 to i32
+  ret i32 %9
+}
+```
+It is noteworthy that `-O0` lacks the very useful `tbaa`-tag that informs us about the position of vtables.
+
+From these codes we need to figure out that `Base::foo` was called (i.e. what message/vtable-slot is used? We see that it is slot 1, but we don't see immediately what the source-level base class is, nor the name `foo`; llvm names tend to be rather unreliable). I.e. we need to figure out vtable contents, and relate the vtables themselves to both types and constructors.
+
+It is maybe useful to model C++ dynamic dispatch like objectiveC message passing: The message is `Base::foo`. However, it is harder to figure out this message.
+
+
 ## CFG construction
 
 As mentioned above, we construct a flat/wide CPG from an LLVM function.
