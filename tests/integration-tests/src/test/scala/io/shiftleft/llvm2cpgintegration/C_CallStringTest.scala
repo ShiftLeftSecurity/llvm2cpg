@@ -14,7 +14,7 @@ class C_CallStringTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "[6 x i8]", "[6 x i8]*", "i32 (i8*)", "void ()"))
+    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "i64", "[6 x i8]", "[6 x i8]*", "i32 (i8*)", "void ()"))
   }
 
   "AST" in {
@@ -44,7 +44,7 @@ class C_CallStringTest extends CPGMatcher {
 
     val indexAccess_0_index = indexAccess_0.start.astChildren.isLiteral.head
     indexAccess_0_index.code shouldBe "0"
-    indexAccess_0_index.typeFullName shouldBe "i32"
+    indexAccess_0_index.typeFullName shouldBe "i64"
 
     val indexAccess_1 = indexAccess_0.start.astChildren.isCall.head
     indexAccess_1.typeFullName shouldBe "[6 x i8]"
@@ -54,7 +54,7 @@ class C_CallStringTest extends CPGMatcher {
     indexAccess_1_ref.typeFullName shouldBe "[6 x i8]*"
     indexAccess_1_ref.name shouldBe ".str"
     val indexAccess_1_index = indexAccess_1.start.astChildren.isLiteral.head
-    indexAccess_1_index.typeFullName shouldBe "i32"
+    indexAccess_1_index.typeFullName shouldBe "i64"
     indexAccess_1_index.code shouldBe "0"
   }
 

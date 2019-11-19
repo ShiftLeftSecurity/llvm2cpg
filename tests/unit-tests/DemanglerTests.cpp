@@ -61,16 +61,23 @@ TEST(Demangler, tableTests) {
                   "void std::__1::__sort<abssort(float*, unsigned int)::$_0&, float*>(float*, float*, abssort(float*, unsigned int)::$_0&)",
                   "__sort<abssort(float*, unsigned int)::$_0&, float*>"),
 
+#ifdef __APPLE__
+      /// The following name is not demangled on Linux for some reason
       Expectation("_ZNSt3__1L4swapIfEENS_9enable_ifIXaasr21is_move_constructibleIT_EE5valuesr18is_move_assignableIS2_EE5valueEvE4typeERS2_S5_",
                   "std::__1::enable_if<(is_move_constructible<float>::value) && (is_move_assignable<float>::value), void>::type std::__1::swap<float>(float&, float&)",
                   "swap<float>"),
+#endif
 
       Expectation("_ZZ7abssortPfjENK3$_0clEff",
                   "abssort(float*, unsigned int)::$_0::operator()(float, float) const",
                   "operator()"),
 
       Expectation("_ZNSt3__1L4moveIRfEEONS_16remove_referenceIT_E4typeEOS3_",
+#ifdef __APPLE__
                   "std::__1::remove_reference<float&>::type&& std::__1::move<float&>(float&&&)",
+#else
+                  "std::__1::remove_reference<float&>::type&& std::__1::move<float&>(float&)",
+#endif
                   "move<float&>"),
 
       Expectation("_ZNSt3__1neIPiEEbRKNS_11__wrap_iterIT_EES6_",
