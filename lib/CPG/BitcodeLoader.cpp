@@ -7,6 +7,8 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/SourceMgr.h>
+#include <sstream>
+#include <set>
 
 using namespace llvm2cpg;
 
@@ -45,11 +47,29 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
     return modules;
   }
 
+  std::set<std::string> availableArchitectures;
   for (ebc::BitcodeRetriever::BitcodeInfo &info : bitcodeInfo) {
-    if (!info.bitcodeContainer) {
-      logger.logWarning(std::string("No bitcode found for ") + info.arch);
+    if (info.bitcodeContainer) {
+      availableArchitectures.insert(info.arch);
+    }
+  }
+
+  if (availableArchitectures.size() > 1) {
+    std::stringstream message;
+    message << "Found more than one bitcode slice: ";
+    for (const std::string &arch : availableArchitectures) {
+      message << arch << " ";
+    }
+    logger.uiWarning(message.str());
+  }
+
+  const std::string &arch = *availableArchitectures.begin();
+
+  for (ebc::BitcodeRetriever::BitcodeInfo &info : bitcodeInfo) {
+    if (!info.bitcodeContainer || arch != info.arch) {
       continue;
     }
+    logger.uiInfo(std::string("Extracting bitcode for ") + info.arch);
     for (std::unique_ptr<ebc::EmbeddedFile> &file : info.bitcodeContainer->GetRawEmbeddedFiles()) {
       std::pair<const char *, size_t> rawBuffer = file->GetRawBuffer();
       if (rawBuffer.first == nullptr || rawBuffer.second == 0) {
