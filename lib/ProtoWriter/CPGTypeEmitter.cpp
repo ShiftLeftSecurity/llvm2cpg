@@ -3,6 +3,7 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm2cpg/Traversals/ObjCTraversal.h>
 #include <sstream>
 
 using namespace llvm2cpg;
@@ -140,19 +141,59 @@ void CPGTypeEmitter::emitRecordedTypes() {
   for (auto pair : recordedTypes) {
     std::string typeName = pair.first;
     std::string typeLocation = pair.second;
-    auto typeDeclNode = builder.typeDeclNode();
-    (*typeDeclNode) //
-        .setName(typeName)
-        .setFullName(typeName)
-        .setIsExternal(false)
-        .setOrder(0)
-        .setASTParentType("NAMESPACE_BLOCK")
-        .setASTParentFullName(typeLocation);
-
-    auto typeNode = builder.typeNode();
-    (*typeNode) //
-        .setName(typeName)
-        .setFullName(typeName)
-        .setTypeDeclFullName(typeName);
+    emitType(typeName);
+    emitTypeDecl(typeName, typeLocation);
   }
+}
+
+void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
+  ObjCTraversal traversal(&module);
+
+  std::unordered_map<std::string, std::vector<std::string>> classes;
+  std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();
+  for (const llvm::ConstantStruct *objcClass : worklist) {
+    const llvm::ConstantStruct *objcClassRO = traversal.objcClassROCounterpart(objcClass);
+    std::string className = traversal.objcClassName(objcClassRO);
+
+    classes[className] = std::vector<std::string>();
+
+    const llvm::ConstantStruct *objcSuperclass = traversal.objcSuperclass(objcClass);
+    if (!objcSuperclass) {
+      continue;
+    }
+    const llvm::ConstantStruct *objcSuperclassRO = traversal.objcClassROCounterpart(objcSuperclass);
+    std::string superclassName = traversal.objcClassName(objcSuperclassRO);
+
+    classes[className].push_back(superclassName);
+  }
+
+  for (const auto &classPair : classes) {
+    emitType(classPair.first);
+    CPGProtoNode *typeDecl = emitTypeDecl(classPair.first, "<global>");
+    for (const auto &parent : classPair.second) {
+      typeDecl->setInheritsFromTypeFullName(parent);
+    }
+  }
+}
+
+CPGProtoNode *CPGTypeEmitter::emitType(const std::string &typeName) {
+  auto typeNode = builder.typeNode();
+  (*typeNode) //
+      .setName(typeName)
+      .setFullName(typeName)
+      .setTypeDeclFullName(typeName);
+  return typeNode;
+}
+
+CPGProtoNode *CPGTypeEmitter::emitTypeDecl(const std::string &typeName,
+                                           const std::string &typeLocation) {
+  auto typeDeclNode = builder.typeDeclNode();
+  (*typeDeclNode) //
+      .setName(typeName)
+      .setFullName(typeName)
+      .setIsExternal(false)
+      .setOrder(0)
+      .setASTParentType("NAMESPACE_BLOCK")
+      .setASTParentFullName(typeLocation);
+  return typeDeclNode;
 }

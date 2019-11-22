@@ -31,6 +31,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
                   std::to_string(cpg.getFiles().size()));
     const CPGFile &file = cpg.getFiles()[index];
+    typeEmitter.emitObjCTypes(*file.getModule());
     auto fileNode = builder.fileNode();
     (*fileNode) //
         .setName(file.getName())

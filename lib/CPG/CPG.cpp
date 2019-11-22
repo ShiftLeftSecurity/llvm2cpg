@@ -10,6 +10,6 @@ const std::vector<CPGFile> &CPG::getFiles() const {
 void CPG::addBitcode(llvm::Module *bitcode) {
   assert(bitcode);
   transforms.transformBitcode(*bitcode);
-  CPGFile file(*bitcode);
+  CPGFile file(bitcode);
   files.push_back(std::move(file));
 }

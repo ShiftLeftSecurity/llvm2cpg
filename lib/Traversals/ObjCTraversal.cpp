@@ -6,15 +6,19 @@
 
 using namespace llvm2cpg;
 
-std::vector<llvm::ConstantStruct *> ObjCTraversal::objcClasses(llvm::Module &bitcode) {
-  llvm::Type *class_ro_t = bitcode.getTypeByName("struct._class_ro_t");
-  if (!class_ro_t) {
-    return std::vector<llvm::ConstantStruct *>();
+ObjCTraversal::ObjCTraversal(const llvm::Module *bitcode)
+    : bitcode(bitcode), class_t(bitcode->getTypeByName("struct._class_t")),
+      class_ro_t(bitcode->getTypeByName("struct._class_ro_t")) {}
+
+std::vector<const llvm::ConstantStruct *> ObjCTraversal::objcClasses() {
+  std::vector<const llvm::ConstantStruct *> classes;
+  if (!class_t || !class_ro_t) {
+    return classes;
   }
 
-  std::vector<llvm::ConstantStruct *> classes;
-  for (llvm::GlobalObject &global : bitcode.global_objects()) {
-    if (global.hasName() && global.getName().startswith("_OBJC_CLASS_RO_$")) {
+  for (const llvm::GlobalObject &global : bitcode->global_objects()) {
+    if (global.hasName() && global.getName().startswith("OBJC_CLASS_$")) {
+      assert(global.getType() == class_t->getPointerTo(0));
       auto &variable = llvm::cast<llvm::GlobalVariable>(global);
       assert(variable.hasInitializer() && "ObjC class should be constant");
       auto *constantStruct = llvm::cast<llvm::ConstantStruct>(variable.getInitializer());
@@ -24,7 +28,10 @@ std::vector<llvm::ConstantStruct *> ObjCTraversal::objcClasses(llvm::Module &bit
   return classes;
 }
 
-std::string ObjCTraversal::objcClassName(llvm::ConstantStruct *objcClass) {
+std::string ObjCTraversal::objcClassName(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass);
+  /// TODO: replace with type system
+  assert(objcClass->getType() == class_ro_t);
   llvm::Constant *classNameSlot = objcClass->getAggregateElement(4);
 
   auto *classNameConstExpr = llvm::cast<llvm::ConstantExpr>(classNameSlot)->getAsInstruction();
@@ -42,7 +49,8 @@ std::string ObjCTraversal::objcClassName(llvm::ConstantStruct *objcClass) {
   return classNameData->getAsCString();
 }
 
-std::vector<llvm::Function *> ObjCTraversal::objcMethods(llvm::ConstantStruct *objcClass) {
+std::vector<llvm::Function *> ObjCTraversal::objcMethods(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass->getType() == class_ro_t);
   llvm::Constant *methodsListSlot = objcClass->getAggregateElement(5);
   auto *methodsListSlotConstExpr =
       llvm::cast<llvm::ConstantExpr>(methodsListSlot)->getAsInstruction();
@@ -65,4 +73,29 @@ std::vector<llvm::Function *> ObjCTraversal::objcMethods(llvm::ConstantStruct *o
   }
 
   return methods;
+}
+
+const llvm::ConstantStruct *
+ObjCTraversal::objcClassROCounterpart(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass->getType() == class_t);
+
+  const llvm::Constant *objcClassROSlot =
+      objcClass->getAggregateElement(objcClass->getType()->getNumElements() - 1);
+  auto *objcClassRODecl = llvm::cast<const llvm::GlobalVariable>(objcClassROSlot);
+  assert(objcClassRODecl->hasInitializer());
+  auto *objcClassRO = llvm::cast<const llvm::ConstantStruct>(objcClassRODecl->getInitializer());
+  return objcClassRO;
+}
+
+const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass->getType() == class_t);
+  const llvm::Constant *superclassSlot = objcClass->getAggregateElement(1);
+  if (superclassSlot->isNullValue()) {
+    return nullptr;
+  }
+  auto *superclassDecl = llvm::cast<const llvm::GlobalVariable>(superclassSlot);
+  assert(superclassDecl->hasInitializer());
+
+  auto *superclass = llvm::cast<const llvm::ConstantStruct>(superclassDecl->getInitializer());
+  return superclass;
 }

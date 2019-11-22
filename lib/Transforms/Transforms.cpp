@@ -32,13 +32,14 @@ void Transforms::destructPHINodes(llvm::Function &function) {
 }
 
 void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
-  ObjCTraversal traversal;
-  std::vector<llvm::ConstantStruct *> worklist = traversal.objcClasses(bitcode);
+  ObjCTraversal traversal(&bitcode);
+  std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();
 
-  for (llvm::ConstantStruct *objcClass : worklist) {
-    std::string className = traversal.objcClassName(objcClass);
+  for (const llvm::ConstantStruct *objcClass : worklist) {
+    const llvm::ConstantStruct *objcROClass = traversal.objcClassROCounterpart(objcClass);
+    std::string className = traversal.objcClassName(objcROClass);
 
-    std::vector<llvm::Function *> methods = traversal.objcMethods(objcClass);
+    std::vector<llvm::Function *> methods = traversal.objcMethods(objcROClass);
     for (auto &function : methods) {
       llvm::FunctionType *type = function->getFunctionType();
       assert(type->getNumParams() >= 2 &&

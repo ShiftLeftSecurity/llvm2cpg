@@ -43,6 +43,7 @@ public:
   CPGProtoNode &setOrderAndIndex(int order);
   CPGProtoNode &setLineNumber(int line);
   CPGProtoNode &setColumnNumber(int column);
+  CPGProtoNode &setInheritsFromTypeFullName(const std::string &name);
 
 private:
   cpg::CpgStruct_Node *cpgNode;

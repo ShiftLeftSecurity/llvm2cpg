@@ -1,34 +1,17 @@
 package io.shiftleft.llvm2cpgintegration
 
+import io.shiftleft.SerializedCpg
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
+import io.shiftleft.semanticcpg.layers.EnhancementRunner
 
 class ObjC_ClassesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.ObjC_ClassesTestCPG)
 
-  "types" in {
-    validateTypes(cpg, Set("ANY",
-      "i8* (i8*, i8*)*",
-      "Child**",
-      "i8* (i8*, i8*)",
-      "RootClass**",
-      "void",
-      "i8* (RootClass*, i8*)",
-      "void (i8*, i8*)*",
-      "struct._class_t**",
-      "RootClass*",
-      "i8**",
-      "Child*",
-      "struct._class_t*",
-      "i8* (i8*)",
-      "void (Child*, i8*)",
-      "Child* ()",
-      "i8*",
-      "i8* (i8*, i8*, ...)"))
-  }
+  "typeDecl" in {
+    val enhancement = new EnhancementRunner()
+    enhancement.run(cpg, new SerializedCpg())
 
-  "typeDecl" ignore {
-    println(cpg.typeDecl.name.p)
     cpg.typeDecl.name("RootClass").l.size shouldBe 1
     cpg.typeDecl.name("Child").l.size shouldBe 1
 
