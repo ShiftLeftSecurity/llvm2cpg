@@ -39,4 +39,6 @@ add_integration_test(DataFlow_CallerArgumentsTest dataflow_caller_arguments_c_bc
 
 add_integration_test(CXX_ClassMethodNamesTest class_method_names_cpp_ll)
 
+add_integration_test(ObjC_ClassesTest objc_classes_ll_bc)
+
 enable_integration_tests()

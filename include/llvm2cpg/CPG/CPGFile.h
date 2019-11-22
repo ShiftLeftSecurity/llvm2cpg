@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CPGMethod.h"
+#include "llvm2cpg/CPG/CPGMethod.h"
 #include <string>
 #include <vector>
 

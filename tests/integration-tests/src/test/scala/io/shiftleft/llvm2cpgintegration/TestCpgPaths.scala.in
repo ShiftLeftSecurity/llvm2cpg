@@ -42,4 +42,5 @@ object TestCpgPaths {
 
   val CXX_ClassMethodNamesTestCPG = "@CXX_ClassMethodNamesTest@"
 
+  val ObjC_ClassesTestCPG = "@ObjC_ClassesTest@"
 }

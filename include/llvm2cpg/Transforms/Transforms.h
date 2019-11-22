@@ -13,6 +13,7 @@ public:
 
 private:
   void destructPHINodes(llvm::Function &function);
+  void renameOpaqueObjCTypes(llvm::Module &bitcode);
 };
 
 } // namespace llvm2cpg

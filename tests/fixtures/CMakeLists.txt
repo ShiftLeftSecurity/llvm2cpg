@@ -1,5 +1,6 @@
 add_subdirectory(basic_c_support)
 add_subdirectory(basic_cxx_support)
+add_subdirectory(basic_objc_support)
 add_subdirectory(llvm_support)
 add_subdirectory(bitcode_extraction)
 
