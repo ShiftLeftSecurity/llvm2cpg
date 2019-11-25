@@ -123,6 +123,7 @@ private:
   CPGProtoNode *resolveConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
   void resolveASTConnections(CPGProtoNode *parent, std::vector<CPGProtoNode *> children);
+  void resolveArgumentConnections(CPGProtoNode *call, std::vector<CPGProtoNode *> arguments);
 
   std::string getTypeName(const llvm::Type *type);
 };

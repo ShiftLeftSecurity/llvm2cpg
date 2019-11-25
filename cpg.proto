@@ -11,7 +11,11 @@ enum NodePropertyName {
   UNKNOWN_NODE_PROPERTY = 0;
   // Type full name of which a TYPE_DECL is an alias of
 ALIAS_TYPE_FULL_NAME = 158;
-// The index of a call argument. This is used for the association between arguments and parameters. This property is different from ORDER for named arguments because of the required reordering to align arguments with parameters
+// 
+ANNOTATION_FULL_NAME = 108;
+// 
+ANNOTATION_NAME = 107;
+// AST-children of CALL nodes have an argument index, that is used to match call-site arguments with callee parameters. Explicit parameters are numbered from 1 to N, while index 0 is reserved for implicit self / this parameter. CALLs without implicit parameter therefore have arguments starting with index 1. AST-children of BLOCK nodes may have an argument index as well; in this case, the last argument index determines the return-value of a BLOCK expression
 ARGUMENT_INDEX = 40;
 // The FULL_NAME of a the AST parent of an entity
 AST_PARENT_FULL_NAME = 57;
@@ -19,6 +23,10 @@ AST_PARENT_FULL_NAME = 57;
 AST_PARENT_TYPE = 56;
 // Binary type signature
 BINARY_SIGNATURE = 14;
+// 
+CATEGORY = 117;
+// 
+CLASS_NAME = 104;
 // Identifier which uniquely describes a CLOSURE_BINDING. This property is used to match captured LOCAL nodes with the corresponding CLOSURE_BINDING nodes
 CLOSURE_BINDING_ID = 50;
 // The original name of the (potentially mangled) captured variable
@@ -27,46 +35,114 @@ CLOSURE_ORIGINAL_NAME = 159;
 CODE = 21;
 // Column where the code starts
 COLUMN_NUMBER = 11;
+// Column where the code ends
+COLUMN_NUMBER_END = 16;
 // Content of CONFIG_FILE node
 CONTENT = 20;
+// 
+CWE_LINK = 130;
 // The group ID for a dependency
 DEPENDENCY_GROUP_ID = 58;
+// The depth first ordering number used to detect back edges in reducible CFGs
+DEPTH_FIRST_ORDER = 17;
+// 
+DESCRIPTION = 119;
 // The dispatch type of a call, which is either static or dynamic. See dispatchTypes
 DISPATCH_TYPE = 25;
+// Type hint for the dynamic type
+DYNAMIC_TYPE_HINT_FULL_NAME = 1591;
 // Evaluation strategy for function parameters and return values. One of the values in "evaluationStrategies"
 EVALUATION_STRATEGY = 15;
-// Full name of an element, e.g., the class name along, including its package
+// 
+EVALUATION_TYPE = 112;
+// 
+FILENAME = 106;
+// 
+FINGERPRINT = 114;
+// Full name of an element, e.g., the class name along, including its package (e.g. "io.shiftleft.dataflowenging.layers.dataflows.DataFlowRunner.run"). In theory, the FULL_NAME just needs to be unique and is used for linking references, so a consecutive integer would be valid. In practice, this should be human readable
 FULL_NAME = 6;
+// Marks that a method has at least one mapping defined from the policies
+HAS_MAPPING = 23;
 // The static types a TYPE_DECL inherits from. This property is matched against the FULL_NAME of TYPE nodes and thus it is required to have at least one TYPE node for each TYPE_FULL_NAME
 INHERITS_FROM_TYPE_FULL_NAME = 53;
-// Indicates that the construct is external, that is, it is referenced but not defined in the code
+// Indicates that the construct (METHOD or TYPE_DECL) is external, that is, it is referenced but not defined in the code (applies both to insular parsing and to library functions where we have header files only)
 IS_EXTERNAL = 7;
+// True if the referenced method is never overridden by the subclasses and false otherwise
+IS_METHOD_NEVER_OVERRIDDEN = 1002;
+// 
+IS_STATIC = 110;
 // The programming language this graph originates from
 LANGUAGE = 19;
+// 
+LINE_NO = 128;
 // Line where the code starts
 LINE_NUMBER = 2;
-// The FULL_NAME of a method. Used to link METHOD_INST and METHOD nodes. It is required to have exactly one METHOD node for each METHOD_FULL_NAME
+// Line where the code ends
+LINE_NUMBER_END = 12;
+// 
+LINK = 124;
+// 
+LITERALS_TO_SINK = 123;
+// The FULL_NAME of a method. Used to link CALL and METHOD nodes. It is required to have exactly one METHOD node for each METHOD_FULL_NAME
 METHOD_FULL_NAME = 54;
-// The FULL_NAME of a method instance. Used to link CALL and METHOD_REF nodes to METHOD_INST nodes. There needs to be at least one METHOD_INST node for each METHOD_INST_FULL_NAME
+// Deprecated
 METHOD_INST_FULL_NAME = 55;
+// 
+METHOD_NAME = 127;
+// 
+METHOD_SHORT_NAME = 102;
 // Indicates the modifier which is represented by a MODIFIER node. See modifierTypes
 MODIFIER_TYPE = 26;
-// Name of represented object, e.g., method name
+// Name of represented object, e.g., method name (e.g. "run")
 NAME = 5;
-// General ordering property. E.g. used to express the ordering of children in the AST
+// 
+NODE_ID = 99;
+// 
+NODE_LABEL = 105;
+// General ordering property, such that the children of each AST-node are typically numbered from 1, ..., N (this is not enforced). The ordering has no technical meaning, but is used for pretty printing and OUGHT TO reflect order in the source code
 ORDER = 4;
+// 
+OWASP_LINK = 129;
+// 
+PACKAGE_NAME = 103;
+// 
+PARAMETER = 126;
+// 
+PARAMETER_INDEX = 113;
 // Type name emitted by parser, only present for logical type UNKNOWN
 PARSER_TYPE_NAME = 3;
-// Method signature
+// 
+PATH = 121;
+// 
+PATTERN = 813;
+// Indicates whether a call was already resolved. If not set this means not yet resolved
+RESOLVED = 24;
+// 
+SCORE = 120;
+// Method signature. The format is defined by the language front-end, and the backend simply compares strings to resolve function overloading, i.e. match call-sites to METHODs. In theory, consecutive integers would be valid, but in practice this should be human readable
 SIGNATURE = 22;
+// 
+SINK_TYPE = 116;
+// 
+SOURCE_TYPE = 115;
+// 
+SPID = 122;
+// 
+SYMBOL = 100;
+// 
+TITLE = 118;
 // The static type decl of a TYPE. This property is matched against the FULL_NAME of TYPE_DECL nodes. It is required to have exactly one TYPE_DECL for each different TYPE_DECL_FULL_NAME
 TYPE_DECL_FULL_NAME = 52;
 // The static type of an entity. E.g. expressions, local, parameters etc. This property is matched against the FULL_NAME of TYPE nodes and thus it is required to have at least one TYPE node for each TYPE_FULL_NAME
 TYPE_FULL_NAME = 51;
 // Tag value
 VALUE = 8;
+// 
+VAR_TYPE = 111;
 // A version, given as a string
 VERSION = 13;
+// 
+VULN_DESCR = 125;
 }
 
 enum EdgePropertyName {
@@ -109,11 +185,44 @@ GOLANG = 3;
 CSHARP = 4;
 // 
 C = 5;
+// 
+PYTHON = 6;
 }
 
 enum FRAMEWORKS {
   UNKNOWN_FRAMEWORK = 0;
-  
+  // Play framework
+PLAY = 1;
+// Google web toolkit
+GWT = 2;
+// Java spring framework
+SPRING = 3;
+// Polyglot event-driven framework
+VERTX = 4;
+// JavaServer Faces
+JSF = 5;
+// Java Servlet based frameworks
+SERVLET = 6;
+// JAX-RS
+JAXRS = 7;
+// Spark micro web framework
+SPARK = 8;
+// Microsoft ASP.NET Core
+ASP_NET_CORE = 9;
+// Microsoft ASP.NET Web API
+ASP_NET_WEB_API = 10;
+// Microsoft ASP.NET MVC
+ASP_NET_MVC = 11;
+// JAX-WS
+JAXWS = 12;
+// Microsoft ASP.NET Web UI
+ASP_NET_WEB_UI = 13;
+// Framework facilities directly provided by Java
+JAVA_INTERNAL = 14;
+// Dropwizard framework
+DROPWIZARD = 15;
+// WCF HTTP and REST
+WCF = 16;
 }
 
 message PropertyValue {
@@ -174,10 +283,16 @@ ANNOTATION_PARAMETER = 7;
 ANNOTATION_PARAMETER_ASSIGN = 6;
 // Initialization construct for arrays
 ARRAY_INITIALIZER = 14;
+// A binding of a METHOD into a TYPE_DECL
+BINDING = 146;
 // A structuring block in the AST
 BLOCK = 31;
 // A (method)-call
 CALL = 15;
+// 
+CALL_CHAIN = 204;
+// 
+CALL_SITE = 201;
 // Represents the binding of a LOCAL or METHOD_PARAMETER_IN into the closure of a method
 CLOSURE_BINDING = 334;
 // A comment
@@ -188,16 +303,36 @@ CONFIG_FILE = 50;
 CONTROL_STRUCTURE = 339;
 // This node represents a dependency
 DEPENDENCY = 35;
+// 
+DETACHED_TRACKING_POINT = 1001;
+// Attribute of a DOM node
+DOM_ATTRIBUTE = 601;
+// A node in a Document Object Model (Tree) as obtained from, e.g., an HTML parser
+DOM_NODE = 600;
 // Node representing a source file. Often also the AST root
 FILE = 38;
+// 
+FINDING = 214;
+// 
+FLOW = 207;
+// Indicates the usage of a framework. E.g. java spring. The name key is one of the values from frameworks list
+FRAMEWORK = 42;
+// Data used by a framework
+FRAMEWORK_DATA = 43;
 // An arbitrary identifier/reference
 IDENTIFIER = 27;
 // An implicit call site hidden in a method indicated by METHOD_MAP policy entries
 IMPLICIT_CALL = 307;
+// 
+IOFLOW = 212;
 // Literal/Constant
 LITERAL = 8;
 // A local variable
 LOCAL = 23;
+// 
+LOCATION = 25;
+// 
+MATCH_INFO = 51;
 // Member of a class struct or union
 MEMBER = 9;
 // Node to save meta data about the graph on its properties. Exactly one node of this type per graph
@@ -214,19 +349,51 @@ METHOD_PARAMETER_OUT = 33;
 METHOD_REF = 333;
 // A formal method return
 METHOD_RETURN = 3;
+// 
+METHOD_SUMMARY = 199;
 // A modifier, e.g., static, public, private
 MODIFIER = 300;
 // This node represents a namespace as a whole whereas the NAMESPACE_BLOCK is used for each grouping occurrence of a namespace in code. Single representing NAMESPACE node is required for easier navigation in the query language
 NAMESPACE = 40;
 // A reference to a namespace
 NAMESPACE_BLOCK = 41;
+// 
+PROGRAM_POINT = 205;
+// 
+READ = 209;
 // A return instruction
 RETURN = 30;
+// 
+ROUTE = 215;
+// 
+SENSITIVE_DATA_TYPE = 52;
+// 
+SENSITIVE_MEMBER = 53;
+// 
+SENSITIVE_REFERENCE = 55;
+// 
+SENSITIVE_VARIABLE = 54;
+// 
+SINK = 203;
+// 
+SOURCE = 202;
+// 
+SP_ANNOTATION_PARAMETER = 200;
+// 
+SP_BLACKLIST = 216;
 // A string tag
 TAG = 24;
+// Multiple tags
+TAGS = 301;
+// 
+TAG_NODE_PAIR = 208;
+// 
+TRANSFORM = 211;
+// 
+TRANSFORMATION = 213;
 // A type which always has to reference a type declaration and may have type argument children if the referred to type declaration is a template
 TYPE = 45;
-// Argument for a TYPE_PARAMETER that belongs to a TYPE or METHOD_INST. It binds another TYPE to a TYPE_PARAMETER
+// Argument for a TYPE_PARAMETER that belongs to a TYPE. It binds another TYPE to a TYPE_PARAMETER
 TYPE_ARGUMENT = 48;
 // A type declaration
 TYPE_DECL = 46;
@@ -234,6 +401,10 @@ TYPE_DECL = 46;
 TYPE_PARAMETER = 47;
 // A language-specific node
 UNKNOWN = 44;
+// 
+VARIABLE_INFO = 206;
+// 
+WRITE = 210;
 // This node records what package prefix is most common to all analysed classes in the CPG
 PACKAGE_PREFIX = 36;
     }
@@ -261,8 +432,14 @@ PACKAGE_PREFIX = 36;
       UNKNOWN_EDGE_TYPE = 0;
       // Alias relation between types
 ALIAS_OF = 138;
+// Relation between a CALL and its arguments and RETURN and the returned expression
+ARGUMENT = 156;
 // Syntax tree edge
 AST = 3;
+// Link between FRAMEWORK and FRAMEWORK_DATA nodes
+ATTACHED_DATA = 18;
+// Relation between TYPE_DECL and BINDING node
+BINDS = 155;
 // Type argument binding to a type parameter
 BINDS_TO = 22;
 // Referencing to e.g. a LOCAL
@@ -271,6 +448,8 @@ CALL = 6;
 CAPTURE = 40;
 // Connection between a captured LOCAL and the corresponding CLOSURE_BINDING
 CAPTURED_BY = 41;
+// Control dependency graph
+CDG = 183;
 // Control flow edge
 CFG = 19;
 // Edge from control structure node to the expression that holds the condition
@@ -279,12 +458,24 @@ CONDITION = 56;
 CONTAINS = 28;
 // Membership relation for a compound object
 CONTAINS_NODE = 9;
+// Points to dominated node in DOM tree
+DOMINATE = 181;
+// Indicates the dynamic type(s) of an entity. This comes initially from the frontend provided DYNAMIC_TYPE_HINT_FULL_NAME property and is extended by our type resolution
+DYNAMIC_TYPE = 20;
 // Link to evaluation type
 EVAL_TYPE = 21;
 // Inheritance relation between types
 INHERITS_FROM = 23;
+// 
+IS_SENSITIVE_DATA_DESCR_OF = 900;
+// 
+IS_SENSITIVE_DATA_DESCR_OF_REF = 901;
+// 
+IS_SENSITIVE_DATA_OF_TYPE = 902;
 // Links together corresponding METHOD_PARAMETER_IN and METHOD_PARAMETER_OUT nodes
 PARAMETER_LINK = 12;
+// Points to dominated node in post DOM tree
+POST_DOMINATE = 182;
 // Encodes propagation of data from on node to another
 PROPAGATE = 1;
 // Reaching definition edge
@@ -295,6 +486,8 @@ RECEIVER = 55;
 REF = 10;
 // Edges from nodes to tags
 TAGGED_BY = 11;
+// Indicates taint removal. Only present between corresponding METHOD_PARAMETER_IN and METHOD_PARAMETER_OUT nodes
+TAINT_REMOVE = 17;
 // Indicates that a method is part of the vtable of a certain type declaration
 VTABLE = 30;
     }

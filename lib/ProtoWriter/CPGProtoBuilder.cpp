@@ -89,6 +89,10 @@ void CPGProtoBuilder::connectReceiver(const CPGProtoNode *from, const CPGProtoNo
   connect(cpg::CpgStruct_Edge_EdgeType_RECEIVER, from->getID(), to->getID());
 }
 
+void CPGProtoBuilder::connectArgument(const CPGProtoNode *from, const CPGProtoNode *to) {
+  connect(cpg::CpgStruct_Edge_EdgeType_ARGUMENT, from->getID(), to->getID());
+}
+
 void CPGProtoBuilder::connectCFG(uint64_t from, uint64_t to) {
   connect(cpg::CpgStruct_Edge_EdgeType_CFG, from, to);
 }

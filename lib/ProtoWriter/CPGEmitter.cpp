@@ -852,16 +852,19 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
 
     setLineInfo(callNode);
     CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
+    receiver->setArgumentIndex(0);
     builder.connectReceiver(callNode, receiver);
 
     std::vector<CPGProtoNode *> children({ receiver });
+    std::vector<CPGProtoNode *> arguments;
     for (const llvm::Use &argument : instruction->args()) {
       CPGProtoNode *arg = emitRefOrConstant(argument.get());
       children.push_back(arg);
+      arguments.push_back(arg);
     }
-    // TODO: Receiver should not be connected via AST edge
-    resolveConnections(callNode, children);
-    receiver->setArgumentIndex(0);
+    resolveASTConnections(callNode, children);
+    resolveCFGConnections(callNode, children);
+    resolveArgumentConnections(callNode, arguments);
     return callNode;
   }
 
@@ -940,6 +943,7 @@ CPGProtoNode *CPGEmitter::resolveConnections(CPGProtoNode *parent,
                                              std::vector<CPGProtoNode *> children) {
   resolveCFGConnections(parent, children);
   resolveASTConnections(parent, children);
+  resolveArgumentConnections(parent, children);
   return parent;
 }
 
@@ -964,6 +968,13 @@ void CPGEmitter::resolveCFGConnections(CPGProtoNode *parent, std::vector<CPGProt
     CPGProtoNode *current = children[i];
     CPGProtoNode *next = children[i + 1];
     builder.connectCFG(current->getID(), next->getEntry());
+  }
+}
+
+void CPGEmitter::resolveArgumentConnections(CPGProtoNode *call,
+                                            std::vector<CPGProtoNode *> arguments) {
+  for (CPGProtoNode *argument : arguments) {
+    builder.connectArgument(call, argument);
   }
 }
 

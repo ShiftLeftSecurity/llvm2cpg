@@ -32,6 +32,7 @@ public:
   void connectAST(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectREF(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectReceiver(const CPGProtoNode *from, const CPGProtoNode *to);
+  void connectArgument(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectCFG(uint64_t from, uint64_t to);
 
   cpg::CpgStruct *getGraph() const;
