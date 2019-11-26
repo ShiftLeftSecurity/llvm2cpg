@@ -5,7 +5,7 @@
 
 using namespace llvm2cpg;
 
-enum class ManglingType { Unknown, CXX };
+enum class ManglingType { Unknown, CXX, ObjC };
 
 struct ManglingResult {
   ManglingType type;
@@ -13,6 +13,10 @@ struct ManglingResult {
 };
 
 ManglingResult demangleString(const std::string &mangledName) {
+  if (mangledName[0] == 1) {
+    return ManglingResult{ .type = ManglingType::ObjC, .result = mangledName.substr(1) };
+  }
+
   int status;
   char *buffer = abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
   if (status == 0 && buffer != nullptr) {
@@ -27,8 +31,6 @@ std::string Demangler::extractFullName(const std::string &mangledName) {
   ManglingResult result = demangleString(mangledName);
   return result.result;
 }
-
-
 
 static std::string extractNameFromCXXName(const std::string &demangledName) {
   /// Starting from right to left
@@ -121,8 +123,12 @@ static std::string extractNameFromCXXName(const std::string &demangledName) {
 
 std::string Demangler::extractName(const std::string &mangledName) {
   ManglingResult result = demangleString(mangledName);
-  if (result.type == ManglingType::CXX) {
+  switch (result.type) {
+  case ManglingType::Unknown:
+    return result.result;
+  case ManglingType::CXX:
     return extractNameFromCXXName(result.result);
+  case ManglingType::ObjC:
+    return result.result;
   }
-  return result.result;
 }

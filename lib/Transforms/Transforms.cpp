@@ -39,9 +39,10 @@ void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
     const llvm::ConstantStruct *objcROClass = traversal.objcClassROCounterpart(objcClass);
     std::string className = traversal.objcClassName(objcROClass);
 
-    std::vector<llvm::Function *> methods = traversal.objcMethods(objcROClass);
-    for (auto &function : methods) {
-      llvm::FunctionType *type = function->getFunctionType();
+    std::vector<std::pair<std::string, llvm::Function *>> methods =
+        traversal.objcMethods(objcROClass);
+    for (auto &methodPair : methods) {
+      llvm::FunctionType *type = methodPair.second->getFunctionType();
       assert(type->getNumParams() >= 2 &&
              "ObjC method expected to have implicit parameters (self and _cmd)");
       auto *selfType = llvm::cast<llvm::PointerType>(type->getParamType(0));

@@ -20,7 +20,7 @@ class CPGEmitter : public llvm::InstVisitor<CPGEmitter, CPGProtoNode *> {
 public:
   CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter,
              const CPGFile &file);
-  void emitMethod(const CPGMethod &method);
+  CPGProtoNode *emitMethod(const CPGMethod &method);
 
 private:
   CPGLogger &logger;

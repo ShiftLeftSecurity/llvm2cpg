@@ -6,11 +6,12 @@ namespace llvm2cpg {
 
 class CPG;
 class CPGLogger;
+class CPGFile;
 
 class CPGProtoAdapter {
 public:
   CPGProtoAdapter(CPGLogger &logger, std::string zipPath);
-  void writeCpg(const llvm2cpg::CPG &cpg);
+  void writeCpg(const CPG &cpg);
 
 private:
   CPGLogger &logger;

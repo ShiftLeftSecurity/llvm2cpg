@@ -49,9 +49,13 @@ std::string ObjCTraversal::objcClassName(const llvm::ConstantStruct *objcClass) 
   return classNameData->getAsCString();
 }
 
-std::vector<llvm::Function *> ObjCTraversal::objcMethods(const llvm::ConstantStruct *objcClass) {
+std::vector<std::pair<std::string, llvm::Function *>>
+ObjCTraversal::objcMethods(const llvm::ConstantStruct *objcClass) {
   assert(objcClass->getType() == class_ro_t);
   llvm::Constant *methodsListSlot = objcClass->getAggregateElement(5);
+  if (methodsListSlot->isNullValue()) {
+    return std::vector<std::pair<std::string, llvm::Function *>>();
+  }
   auto *methodsListSlotConstExpr =
       llvm::cast<llvm::ConstantExpr>(methodsListSlot)->getAsInstruction();
   auto *methodsListCast = llvm::cast<llvm::BitCastInst>(methodsListSlotConstExpr);
@@ -61,15 +65,27 @@ std::vector<llvm::Function *> ObjCTraversal::objcMethods(const llvm::ConstantStr
   auto *methodListStruct = llvm::cast<llvm::ConstantStruct>(methodsListDecl->getInitializer());
   auto *methodList = llvm::cast<llvm::ConstantArray>(methodListStruct->getAggregateElement(2));
 
-  std::vector<llvm::Function *> methods;
+  std::vector<std::pair<std::string, llvm::Function *>> methods;
 
   for (uint64_t i = 0; i < methodList->getType()->getNumElements(); i++) {
     llvm::Constant *methodStruct = methodList->getAggregateElement(i);
+
+    auto *methodNameConstExpr =
+        llvm::cast<llvm::ConstantExpr>(methodStruct->getAggregateElement(uint(0)));
+    auto *methodNameGEP = llvm::cast<llvm::GetElementPtrInst>(methodNameConstExpr->getAsInstruction());
+    auto *methodNameDecl = llvm::cast<llvm::GlobalVariable>(methodNameGEP->getOperand(0));
+    assert(methodNameDecl->hasInitializer());
+    auto *methodNameData = llvm::cast<llvm::ConstantDataArray>(methodNameDecl->getInitializer());
+    std::string methodName = methodNameData->getAsCString();
+
     auto *methodRefConstExpr = llvm::cast<llvm::ConstantExpr>(methodStruct->getAggregateElement(2));
     auto *methodRefCast = llvm::cast<llvm::BitCastInst>(methodRefConstExpr->getAsInstruction());
     auto *method = llvm::cast<llvm::Function>(methodRefCast->getOperand(0));
-    methods.push_back(method);
+
+    methodNameGEP->deleteValue();
     methodRefCast->deleteValue();
+
+    methods.emplace_back(methodName, method);
   }
 
   return methods;
@@ -87,9 +103,8 @@ ObjCTraversal::objcClassROCounterpart(const llvm::ConstantStruct *objcClass) {
   return objcClassRO;
 }
 
-const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantStruct *objcClass) {
-  assert(objcClass->getType() == class_t);
-  const llvm::Constant *superclassSlot = objcClass->getAggregateElement(1);
+static const llvm::ConstantStruct *extractClass(const llvm::ConstantStruct *objcClass, uint index) {
+  const llvm::Constant *superclassSlot = objcClass->getAggregateElement(index);
   if (superclassSlot->isNullValue()) {
     return nullptr;
   }
@@ -98,4 +113,14 @@ const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantSt
 
   auto *superclass = llvm::cast<const llvm::ConstantStruct>(superclassDecl->getInitializer());
   return superclass;
+}
+
+const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass->getType() == class_t);
+  return extractClass(objcClass, 1);
+}
+
+const llvm::ConstantStruct *ObjCTraversal::objcMetaclass(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass->getType() == class_t);
+  return extractClass(objcClass, 0);
 }

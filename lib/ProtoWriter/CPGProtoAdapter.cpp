@@ -4,6 +4,7 @@
 #include <google/protobuf/text_format.h>
 #include <llvm2cpg/CPG/CPG.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
+#include <llvm2cpg/Traversals/ObjCTraversal.h>
 #include <sstream>
 #include <zip.h>
 
@@ -30,6 +31,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   for (size_t index = 0; index < cpg.getFiles().size(); index++) {
     logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
                   std::to_string(cpg.getFiles().size()));
+    std::unordered_map<llvm::Function *, CPGProtoNode *> emittedMethods;
     const CPGFile &file = cpg.getFiles()[index];
     typeEmitter.emitObjCTypes(*file.getModule());
     auto fileNode = builder.fileNode();
@@ -48,7 +50,36 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     CPGEmitter emitter(logger, builder, typeEmitter, file);
 
     for (auto &method : file.getMethods()) {
-      emitter.emitMethod(method);
+      CPGProtoNode *methodNode = emitter.emitMethod(method);
+      emittedMethods.insert(std::make_pair(&method.getFunction(), methodNode));
+    }
+
+    ObjCTraversal traversal(file.getModule());
+    std::vector<const llvm::ConstantStruct *> objcClassWorklist;
+    for (const llvm::ConstantStruct *objcClass : traversal.objcClasses()) {
+      objcClassWorklist.push_back(objcClass);
+      objcClassWorklist.push_back(traversal.objcMetaclass(objcClass));
+    }
+
+    for (const llvm::ConstantStruct *objcClass : objcClassWorklist) {
+      const llvm::ConstantStruct *objcClassRO = traversal.objcClassROCounterpart(objcClass);
+      std::string className = traversal.objcClassName(objcClassRO);
+
+      for (auto &methodPair : traversal.objcMethods(objcClassRO)) {
+        std::string methodName = methodPair.first;
+        llvm::Function *method = methodPair.second;
+        CPGProtoNode *typeDecl = typeEmitter.objcClassTypeDecl(className);
+        CPGProtoNode *methodNode = emittedMethods.at(method);
+        (*methodNode)
+            .setName(methodName)
+            .setASTParentType("TYPE_DECL")
+            .setASTParentFullName(className);
+
+        CPGProtoNode *binding = builder.bindingNode();
+        (*binding).setName(methodName).setSignature("");
+        builder.connectREF(binding, methodNode);
+        builder.connectBinding(typeDecl, binding);
+      }
     }
   }
 

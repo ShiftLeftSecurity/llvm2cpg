@@ -23,7 +23,7 @@ CPGEmitter::CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitt
     : logger(logger), builder(builder), typeEmitter(typeEmitter), file(file), lineNumber(0),
       columnNumber(0) {}
 
-void CPGEmitter::emitMethod(const CPGMethod &method) {
+CPGProtoNode *CPGEmitter::emitMethod(const CPGMethod &method) {
   CPGProtoNode *methodNode = emitMethodNode(method);
   CPGProtoNode *methodReturnNode = emitMethodReturnNode(method);
 
@@ -41,7 +41,7 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
 
   /// Skipping method declaration (empty methods)
   if (method.getFunction().isDeclaration()) {
-    return;
+    return methodNode;
   }
 
   logger.logInfo(std::string("Emitting ") +
@@ -141,6 +141,8 @@ void CPGEmitter::emitMethod(const CPGMethod &method) {
     }
     i++;
   }
+
+  return methodNode;
 }
 
 CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {

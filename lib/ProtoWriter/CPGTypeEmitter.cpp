@@ -168,12 +168,18 @@ void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
   }
 
   for (const auto &classPair : classes) {
-    emitType(classPair.first);
-    CPGProtoNode *typeDecl = emitTypeDecl(classPair.first, "<global>");
+    std::string className = classPair.first;
+    emitType(className);
+    CPGProtoNode *typeDecl = emitTypeDecl(className, "<global>");
     for (const auto &parent : classPair.second) {
       typeDecl->setInheritsFromTypeFullName(parent);
     }
+    objcTypeDecls.insert(std::make_pair(className, typeDecl));
   }
+}
+
+CPGProtoNode *CPGTypeEmitter::objcClassTypeDecl(const std::string &className) {
+  return objcTypeDecls.at(className);
 }
 
 CPGProtoNode *CPGTypeEmitter::emitType(const std::string &typeName) {

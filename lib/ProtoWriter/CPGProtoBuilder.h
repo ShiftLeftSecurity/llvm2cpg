@@ -28,12 +28,14 @@ public:
   CPGProtoNode *localVariableNode();
   CPGProtoNode *identifierNode();
   CPGProtoNode *methodRef();
+  CPGProtoNode *bindingNode();
 
   void connectAST(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectREF(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectReceiver(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectArgument(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectCFG(uint64_t from, uint64_t to);
+  void connectBinding(const CPGProtoNode *from, const CPGProtoNode *to);
 
   cpg::CpgStruct *getGraph() const;
 
