@@ -430,11 +430,12 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     return emitConstantExpr(constantExpr);
   } else if (auto function = llvm::dyn_cast<llvm::Function>(value)) {
     // TODO: handle functions without a name
+    DemangledName name = demangler.demangleFunctionName(function);
     CPGProtoNode *methodRef = builder.methodRef();
     (*methodRef) //
-        .setCode(function->getName())
-        .setMethodInstFullName(function->getName())
-        .setMethodFullName(function->getName());
+        .setCode(name.fullName)
+        .setMethodInstFullName(name.fullName)
+        .setMethodFullName(name.fullName);
     resolveConnections(methodRef, {});
     setLineInfo(methodRef);
     return methodRef;
