@@ -36,6 +36,8 @@ $ cd llvm2cpg
 llvm2cpg$ (cd target; cmake -G Ninja     -DCMAKE_C_COMPILER=clang     -DCMAKE_CXX_COMPILER=clang++     -DPATH_TO_LLVM=/opt/llvm/  -DPATH_TO_CODEPROPERTYGRAPH=/opt/codepropertygraph ..)
 ```
 
+Depending on system config, it might be preferable to also set `-DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fuse-ld=/usr/bin/ld.lld -fno-lto -O1 -Qunused-arguments"`.
+
 We then want to build everything we need:
 ```
 target$ ninja unit-tests

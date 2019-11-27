@@ -20,7 +20,8 @@ public:
   const llvm::ConstantStruct *objcSuperclass(const llvm::ConstantStruct *objcClass);
   const llvm::ConstantStruct *objcMetaclass(const llvm::ConstantStruct *objcClass);
   std::string objcClassName(const llvm::ConstantStruct *objcClass);
-  std::vector<std::pair<std::string, llvm::Function *>> objcMethods(const llvm::ConstantStruct *objcClass);
+  std::vector<std::pair<std::string, llvm::Function *>>
+  objcMethods(const llvm::ConstantStruct *objcClass);
 
 private:
   const llvm::Module *bitcode;

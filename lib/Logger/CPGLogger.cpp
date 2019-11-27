@@ -52,3 +52,7 @@ void CPGLogger::logWarning(const std::string &message) {
 const std::string &CPGLogger::getLogPath() {
   return debugLogPath;
 }
+
+void CPGLogger::doNothing() {
+  return;
+}

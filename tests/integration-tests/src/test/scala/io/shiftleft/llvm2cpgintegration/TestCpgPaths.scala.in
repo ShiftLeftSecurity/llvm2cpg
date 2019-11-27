@@ -16,6 +16,8 @@ object TestCpgPaths {
   val C_CallStringCPG = "@C_CallStringTest@"
   val C_CallUnknownFunctionCPG = "@C_CallUnknownFunctionTest@"
   val C_CallFunctionPointerCPG = "@C_CallFunctionPointerTest@"
+  val C_APinlineTestCpg = "@C_APinliningTest@"
+
 
   val LLVM_SelectInstCPG = "@LLVM_SelectInstTest@"
   val LLVM_GEPFlatStructCPG = "@LLVM_GEPFlatStructTest@"

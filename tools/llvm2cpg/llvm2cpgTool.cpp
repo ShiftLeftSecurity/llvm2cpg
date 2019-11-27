@@ -25,6 +25,11 @@ llvm::cl::opt<std::string> OutputName("output-name", llvm::cl::Optional,
                                       llvm::cl::cat(CPGProtoWriterCategory),
                                       llvm::cl::init("cpg.bin.zip"));
 
+llvm::cl::opt<bool>
+    APInliner("inline", llvm::cl::Optional,
+              llvm::cl::desc("Enable inlining of access paths (loads, pointer aritthmetic)"),
+              llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(true));
+
 int main(int argc, char **argv) {
   llvm::cl::SetVersionPrinter(llvm2cpg::printVersionInformationStream);
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
@@ -43,7 +48,7 @@ int main(int argc, char **argv) {
   llvm::Linker linker(globalModule);
 
   llvm2cpg::BitcodeLoader loader(logger);
-  llvm2cpg::CPG cpg;
+  llvm2cpg::CPG cpg(logger, APInliner.getValue());
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string path = BitcodePaths[i];
     logger.uiInfo(std::string("Loading ") + path);

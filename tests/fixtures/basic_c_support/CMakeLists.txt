@@ -26,6 +26,10 @@ set (SOURCES_DBG_OPT
   ${CMAKE_CURRENT_LIST_DIR}/vectorfind.c
 )
 
+set (SOURCES_OPT
+  ${CMAKE_CURRENT_LIST_DIR}/APinlining.c
+)
+
 
 foreach(source ${SOURCES})
   compile_fixture(
@@ -71,5 +75,20 @@ foreach(source ${SOURCES_DBG_OPT})
     INPUT ${source}
     OUTPUT_EXTENSION o3.dbg.ll
     FLAGS -c -emit-llvm -S -gfull -gdwarf-5 -O3 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
+  )
+endforeach()
+
+foreach(source ${SOURCES_OPT})
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION o3.bc
+    FLAGS -c -emit-llvm -O3
+  )
+  compile_fixture(
+    COMPILER ${CMAKE_C_COMPILER}
+    INPUT ${source}
+    OUTPUT_EXTENSION o3.ll
+    FLAGS -c -emit-llvm -S -O3
   )
 endforeach()

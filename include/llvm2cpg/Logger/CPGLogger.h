@@ -16,6 +16,8 @@ public:
   void logInfo(const std::string &message);
   void logWarning(const std::string &message);
 
+  void doNothing(); // serves to get rid of "unused variable" warnings
+
   const std::string &getLogPath();
 
 private:

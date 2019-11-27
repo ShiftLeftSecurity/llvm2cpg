@@ -10,6 +10,7 @@ set (LLVM2CPG_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/include
   )
 
+
 set (LLVM2CPG_CXX_FLAGS
   -std=c++14
   -Wall

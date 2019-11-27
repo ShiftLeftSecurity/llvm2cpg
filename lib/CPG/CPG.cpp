@@ -12,4 +12,7 @@ void CPG::addBitcode(llvm::Module *bitcode) {
   transforms.transformBitcode(*bitcode);
   CPGFile file(bitcode);
   files.push_back(std::move(file));
+  logger.doNothing();
 }
+
+CPG::CPG(CPGLogger &log, bool inlineAP) : transforms(log, inlineAP), logger(log) {}

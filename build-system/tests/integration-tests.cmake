@@ -9,7 +9,19 @@ endfunction()
 
 function(add_integration_test test_name)
   _record_integration_test(${test_name})
-  foreach(fixture_name ${ARGN})
+
+  set (optionArguments )
+  set (singleValueArguments )
+  set (multipleValueArguments FLAGS)
+
+  cmake_parse_arguments(arg
+    "${optionArguments}"
+    "${singleValueArguments}"
+    "${multipleValueArguments}"
+    ${ARGN}
+    )
+
+  foreach(fixture_name ${arg_UNPARSED_ARGUMENTS})
     get_fixture_output(${fixture_name} output)
     set (bitcode_files ${bitcode_files} ${output})
     set (bitcode_dependencies ${bitcode_dependencies} build-${fixture_name}-fixture)
@@ -18,7 +30,7 @@ function(add_integration_test test_name)
   set (cpg ${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpg.bin.zip)
 
   add_custom_command(OUTPUT ${cpg}
-    COMMAND $<TARGET_FILE:llvm2cpg> -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
+    COMMAND $<TARGET_FILE:llvm2cpg> ${arg_FLAGS} -output-dir=${CMAKE_CURRENT_BINARY_DIR} -output-name=${test_name}.cpg.bin.zip ${bitcode_files}
     DEPENDS llvm2cpg ${bitcode_dependencies} ${bitcode_files}
     )
   add_custom_target(generate-${test_name}-CPG ALL

@@ -17,6 +17,11 @@ llvm::cl::opt<std::string>
                     llvm::cl::desc("Where to store transformed bitcode (defaults to '.')"),
                     llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init("."));
 
+llvm::cl::opt<bool>
+    APInliner("inline", llvm::cl::Optional,
+              llvm::cl::desc("Enable inlining of access paths (loads, pointer aritthmetic)"),
+              llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(true));
+
 static std::string getOutputFilename(const std::string &input) {
   std::string inputFilename = llvm::sys::path::stem(input);
   std::string extension = llvm::sys::path::extension(input);
@@ -35,7 +40,7 @@ int main(int argc, char **argv) {
   llvm::LLVMContext context;
   llvm2cpg::CPGLogger log = llvm2cpg::CPGLogger();
   llvm2cpg::BitcodeLoader loader(log);
-  llvm2cpg::Transforms transforms;
+  llvm2cpg::Transforms transforms(log, APInliner.getValue());
 
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string input = BitcodePaths[i];

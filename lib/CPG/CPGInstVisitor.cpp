@@ -25,7 +25,7 @@ name. Hence, latest name wins.
 names
 */
 void CPGInstVisitor::run(llvm::Function &function) {
-
+  unsigned inlineMD = function.getContext().getMDKindID("shiftleft.inline");
   for (auto &arg : function.args()) {
     setNameIfEmpty(&arg, "arg");
     arguments.push_back(&arg);
@@ -33,6 +33,9 @@ void CPGInstVisitor::run(llvm::Function &function) {
 
   for (llvm::BasicBlock &bb : function) {
     for (llvm::Instruction &inst : bb) {
+      if (inst.getMetadata(inlineMD)) {
+        continue;
+      }
       llvm::InstVisitor<CPGInstVisitor, void>::visit(inst);
     }
   }

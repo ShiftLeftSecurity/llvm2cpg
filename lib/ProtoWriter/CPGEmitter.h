@@ -18,8 +18,8 @@ class CPGEmitter : public llvm::InstVisitor<CPGEmitter, CPGProtoNode *> {
   friend llvm::InstVisitor<CPGEmitter, CPGProtoNode *>;
 
 public:
-  CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter,
-             const CPGFile &file);
+  explicit CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter,
+                      const CPGFile &file);
   CPGProtoNode *emitMethod(const CPGMethod &method);
 
 private:
@@ -30,6 +30,7 @@ private:
   const CPGFile &file;
   unsigned int lineNumber;
   unsigned int columnNumber;
+  unsigned int inlineMD;
 
   std::unordered_map<const llvm::Value *, CPGProtoNode *> locals;
   std::unordered_set<const llvm::Value *> globals;

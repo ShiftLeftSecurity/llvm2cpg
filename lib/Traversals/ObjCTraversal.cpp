@@ -72,7 +72,8 @@ ObjCTraversal::objcMethods(const llvm::ConstantStruct *objcClass) {
 
     auto *methodNameConstExpr =
         llvm::cast<llvm::ConstantExpr>(methodStruct->getAggregateElement(uint(0)));
-    auto *methodNameGEP = llvm::cast<llvm::GetElementPtrInst>(methodNameConstExpr->getAsInstruction());
+    auto *methodNameGEP =
+        llvm::cast<llvm::GetElementPtrInst>(methodNameConstExpr->getAsInstruction());
     auto *methodNameDecl = llvm::cast<llvm::GlobalVariable>(methodNameGEP->getOperand(0));
     assert(methodNameDecl->hasInitializer());
     auto *methodNameData = llvm::cast<llvm::ConstantDataArray>(methodNameDecl->getInitializer());

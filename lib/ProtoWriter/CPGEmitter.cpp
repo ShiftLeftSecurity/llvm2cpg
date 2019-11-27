@@ -28,6 +28,8 @@ CPGProtoNode *CPGEmitter::emitMethod(const CPGMethod &method) {
   CPGProtoNode *methodReturnNode = emitMethodReturnNode(method);
 
   CPGProtoNode *methodBlock = emitMethodBlock(method);
+  llvm::Function *fun = &method.getFunction();
+  inlineMD = fun->getContext().getMDKindID("shiftleft.inline");
 
   builder.connectAST(methodNode, methodBlock);
   builder.connectAST(methodNode, methodReturnNode);
@@ -79,6 +81,9 @@ CPGProtoNode *CPGEmitter::emitMethod(const CPGMethod &method) {
       }
       if (auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(&instruction)) {
         unresolvedTerminators.push_back(switchInst);
+      }
+      if (instruction.getMetadata(inlineMD)) {
+        continue;
       }
       // TODO: Switch to llvm::Optional?
       // visit returns a CPG node for the instruction. If we ignore or do not support an
@@ -386,6 +391,17 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
 }
 
 CPGProtoNode *CPGEmitter::emitRef(llvm::Value *value) {
+  if (auto inst = llvm::dyn_cast<llvm::Instruction>(value)) {
+    if (inst->getMetadata(inlineMD) != nullptr) {
+      if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
+        return emitGEP(gep);
+      } else if (auto cast = llvm::dyn_cast<llvm::CastInst>(value)) {
+        return emitCast(cast);
+      } else if (auto load = llvm::dyn_cast<llvm::LoadInst>(value)) {
+        return emitDereference(load->getPointerOperand());
+      }
+    }
+  }
   assert((isLocal(value) || isGlobal(value) || isConstExpr(value)) &&
          "Cannot emit reference to a non-variable");
 
