@@ -603,7 +603,7 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Type *type, CPGProtoNo
 CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
   return resolveConnections(
       emitGenericOp("<operator>.indirection", "load", getTypeName(value->getType()), "ANY (ANY)"),
-      { emitRef(value) });
+      { emitRefOrConstant(value) });
 }
 
 CPGProtoNode *CPGEmitter::emitBinaryCall(const llvm::BinaryOperator *binary) {
