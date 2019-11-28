@@ -68,7 +68,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       for (auto &methodPair : traversal.objcMethods(objcClassRO)) {
         std::string methodName = methodPair.first;
         llvm::Function *method = methodPair.second;
-        CPGProtoNode *typeDecl = typeEmitter.objcClassTypeDecl(className);
+        CPGProtoNode *typeDecl = typeEmitter.namedTypeDecl(className);
         CPGProtoNode *methodNode = emittedMethods.at(method);
         (*methodNode)
             .setName(methodName)

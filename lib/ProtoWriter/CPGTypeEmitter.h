@@ -19,7 +19,7 @@ public:
   std::string recordType(const llvm::Type *type, const std::string &namespaceName);
   void emitRecordedTypes();
 
-  CPGProtoNode *objcClassTypeDecl(const std::string &className);
+  CPGProtoNode *namedTypeDecl(const std::string &className);
 
 private:
   std::string recordType(const std::string &typeName, const std::string &typeLocation);
@@ -28,7 +28,7 @@ private:
 
   CPGProtoBuilder &builder;
   std::unordered_map<std::string, std::string> recordedTypes;
-  std::unordered_map<std::string, CPGProtoNode *> objcTypeDecls;
+  std::unordered_map<std::string, CPGProtoNode *> namedTypeDecls;
 };
 
 } // namespace llvm2cpg

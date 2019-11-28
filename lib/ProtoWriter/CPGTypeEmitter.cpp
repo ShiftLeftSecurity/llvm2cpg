@@ -140,9 +140,13 @@ std::string CPGTypeEmitter::recordType(const std::string &typeName,
 void CPGTypeEmitter::emitRecordedTypes() {
   for (auto pair : recordedTypes) {
     std::string typeName = pair.first;
+    if (namedTypeDecls.count(typeName)) {
+      continue;
+    }
     std::string typeLocation = pair.second;
     emitType(typeName);
-    emitTypeDecl(typeName, typeLocation);
+    CPGProtoNode *typeDecl = emitTypeDecl(typeName, typeLocation);
+    namedTypeDecls.insert(std::make_pair(typeName, typeDecl));
   }
 }
 
@@ -169,17 +173,23 @@ void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
 
   for (const auto &classPair : classes) {
     std::string className = classPair.first;
-    emitType(className);
-    CPGProtoNode *typeDecl = emitTypeDecl(className, "<global>");
+    CPGProtoNode *typeDecl = nullptr;
+    if (namedTypeDecls.count(className)) {
+      typeDecl = namedTypeDecls.find(className)->second;
+    } else {
+      emitType(className);
+      typeDecl = emitTypeDecl(className, "<global>");
+      namedTypeDecls.insert(std::make_pair(className, typeDecl));
+    }
+
     for (const auto &parent : classPair.second) {
       typeDecl->setInheritsFromTypeFullName(parent);
     }
-    objcTypeDecls.insert(std::make_pair(className, typeDecl));
   }
 }
 
-CPGProtoNode *CPGTypeEmitter::objcClassTypeDecl(const std::string &className) {
-  return objcTypeDecls.at(className);
+CPGProtoNode *CPGTypeEmitter::namedTypeDecl(const std::string &className) {
+  return namedTypeDecls.at(className);
 }
 
 CPGProtoNode *CPGTypeEmitter::emitType(const std::string &typeName) {
