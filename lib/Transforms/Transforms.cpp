@@ -11,15 +11,68 @@
 #include <llvm/IR/Verifier.h>
 #include <llvm/Pass.h>
 #include <llvm/Passes/PassBuilder.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llvm/Transforms/IPO/FunctionAttrs.h>
 #include <llvm/Transforms/IPO/InferFunctionAttrs.h>
 #include <llvm/Transforms/Utils/Local.h>
 #include <llvm2cpg/Traversals/ObjCTraversal.h>
 
 using namespace llvm2cpg;
-#include <llvm/Support/raw_ostream.h>
+
+Transforms::Transforms(CPGLogger &log, bool inlineAP) : logger(log), inlineAP(inlineAP) {}
 
 void Transforms::transformBitcode(llvm::Module &bitcode) {
+  renameOpaqueObjCTypes(bitcode);
+  for (llvm::Function &function : bitcode) {
+    if (function.isDeclaration()) {
+      continue;
+    }
+    destructPHINodes(function);
+  }
+  calculateInlining(bitcode);
+
+  logger.doNothing();
+}
+
+void Transforms::destructPHINodes(llvm::Function &function) {
+  std::vector<llvm::PHINode *> worklist;
+  for (llvm::Instruction &instruction : llvm::instructions(function)) {
+    if (auto phi = llvm::dyn_cast<llvm::PHINode>(&instruction)) {
+      worklist.push_back(phi);
+    }
+  }
+
+  for (llvm::PHINode *phi : worklist) {
+    llvm::DemotePHIToStack(phi);
+  }
+}
+
+void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
+  ObjCTraversal traversal(&bitcode);
+  std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();
+
+  for (const llvm::ConstantStruct *objcClass : worklist) {
+    const llvm::ConstantStruct *objcROClass = traversal.objcClassROCounterpart(objcClass);
+    std::string className = traversal.objcClassName(objcROClass);
+
+    std::vector<std::pair<std::string, llvm::Function *>> methods =
+        traversal.objcMethods(objcROClass);
+    for (auto &methodPair : methods) {
+      llvm::FunctionType *type = methodPair.second->getFunctionType();
+      assert(type->getNumParams() >= 2 &&
+             "ObjC method expected to have implicit parameters (self and _cmd)");
+      auto *selfType = llvm::cast<llvm::PointerType>(type->getParamType(0));
+      auto *selfStruct = llvm::cast<llvm::StructType>(selfType->getPointerElementType());
+      assert(selfStruct->isOpaque() && "ObjC class types expected to be opaque");
+      selfStruct->setName(className);
+    }
+  }
+}
+
+void Transforms::calculateInlining(llvm::Module &bitcode) {
+  if (!inlineAP) {
+    return;
+  }
 
   llvm::PassBuilder passBuilder;
   bool DebugPM = false;
@@ -69,44 +122,4 @@ void Transforms::transformBitcode(llvm::Module &bitcode) {
   }
 
   modulePassManager.run(bitcode, moduleAnalysisManager);
-
-  renameOpaqueObjCTypes(bitcode);
-  logger.doNothing();
-}
-
-Transforms::Transforms(CPGLogger &log, bool inlineAP) : logger(log), inlineAP(inlineAP) {}
-
-void Transforms::destructPHINodes(llvm::Function &function) {
-  std::vector<llvm::PHINode *> worklist;
-  for (llvm::Instruction &instruction : llvm::instructions(function)) {
-    if (auto phi = llvm::dyn_cast<llvm::PHINode>(&instruction)) {
-      worklist.push_back(phi);
-    }
-  }
-
-  for (llvm::PHINode *phi : worklist) {
-    llvm::DemotePHIToStack(phi);
-  }
-}
-
-void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
-  ObjCTraversal traversal(&bitcode);
-  std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();
-
-  for (const llvm::ConstantStruct *objcClass : worklist) {
-    const llvm::ConstantStruct *objcROClass = traversal.objcClassROCounterpart(objcClass);
-    std::string className = traversal.objcClassName(objcROClass);
-
-    std::vector<std::pair<std::string, llvm::Function *>> methods =
-        traversal.objcMethods(objcROClass);
-    for (auto &methodPair : methods) {
-      llvm::FunctionType *type = methodPair.second->getFunctionType();
-      assert(type->getNumParams() >= 2 &&
-             "ObjC method expected to have implicit parameters (self and _cmd)");
-      auto *selfType = llvm::cast<llvm::PointerType>(type->getParamType(0));
-      auto *selfStruct = llvm::cast<llvm::StructType>(selfType->getPointerElementType());
-      assert(selfStruct->isOpaque() && "ObjC class types expected to be opaque");
-      selfStruct->setName(className);
-    }
-  }
 }

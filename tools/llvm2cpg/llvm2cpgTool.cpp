@@ -27,8 +27,8 @@ llvm::cl::opt<std::string> OutputName("output-name", llvm::cl::Optional,
 
 llvm::cl::opt<bool>
     APInliner("inline", llvm::cl::Optional,
-              llvm::cl::desc("Enable inlining of access paths (loads, pointer aritthmetic)"),
-              llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(true));
+              llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
+              llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(false));
 
 int main(int argc, char **argv) {
   llvm::cl::SetVersionPrinter(llvm2cpg::printVersionInformationStream);

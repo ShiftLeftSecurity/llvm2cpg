@@ -16,13 +16,14 @@ class Transforms;
 
 class Transforms {
 public:
+  Transforms(CPGLogger &logger, bool inlineAP);
   void transformBitcode(llvm::Module &bitcode);
-  explicit Transforms(CPGLogger &logger, bool inlineAP);
 
 private:
   CPGLogger &logger;
   bool inlineAP; // whether to inline access paths
   void destructPHINodes(llvm::Function &function);
+  void calculateInlining(llvm::Module &bitcode);
   void renameOpaqueObjCTypes(llvm::Module &bitcode);
 };
 
