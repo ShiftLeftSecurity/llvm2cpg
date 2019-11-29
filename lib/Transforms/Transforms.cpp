@@ -47,6 +47,25 @@ void Transforms::destructPHINodes(llvm::Function &function) {
   }
 }
 
+void Transforms::removeCyclicMetaclassInheritance(llvm::Module &bitcode) {
+  for (llvm::GlobalObject &global : bitcode.global_objects()) {
+    if (global.hasName() && global.getName().startswith("OBJC_METACLASS_$")) {
+      auto &metaclass = llvm::cast<llvm::GlobalVariable>(global);
+      if (!metaclass.hasInitializer()) {
+        continue;
+      }
+      auto *metaclassDefinition = llvm::cast<llvm::ConstantStruct>(metaclass.getInitializer());
+      llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
+      if (auto superclass = llvm::dyn_cast<llvm::GlobalVariable>(superclassSlot)) {
+        if (superclass->hasName() && !superclass->getName().startswith("OBJC_METACLASS_$")) {
+          llvm::Constant *nullValue = llvm::Constant::getNullValue(superclassSlot->getType());
+          metaclassDefinition->setOperand(1, nullValue);
+        }
+      }
+    }
+  }
+}
+
 void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
   ObjCTraversal traversal(&bitcode);
   std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();

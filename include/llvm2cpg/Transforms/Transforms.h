@@ -24,6 +24,7 @@ private:
   bool inlineAP; // whether to inline access paths
   void destructPHINodes(llvm::Function &function);
   void calculateInlining(llvm::Module &bitcode);
+  void removeCyclicMetaclassInheritance(llvm::Module &bitcode);
   void renameOpaqueObjCTypes(llvm::Module &bitcode);
 };
 
