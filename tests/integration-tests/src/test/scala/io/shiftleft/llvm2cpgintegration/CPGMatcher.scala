@@ -45,6 +45,10 @@ abstract class CPGMatcher extends WordSpec with Matchers with AppendedClues {
       val args = r_.start.astChildren.l.map{arg => (arg.order, treeDump(arg))}.sortBy{_._1}
       return ("BLOCK", r_.code, args)
     }
+    if(root.isInstanceOf[Local]){
+      val r_ = root.asInstanceOf[Local]
+      return ("LOCAL", r_.code, r_.name)
+    }
   return ("UNKNOWN", root.getClass)
   }
 }

@@ -165,7 +165,7 @@ CPGProtoNode *CPGEmitter::visitInstruction(llvm::Instruction &instruction) {
     return emitUnhandledCall(&instruction);
   } else {
     return emitAssignCall(
-        instruction.getType(), emitRef(&instruction), emitUnhandledCall(&instruction));
+        instruction.getType(), emitRefOrConstant(&instruction), emitUnhandledCall(&instruction));
   }
 }
 
@@ -193,37 +193,43 @@ CPGProtoNode *CPGEmitter::visitStoreInst(llvm::StoreInst &instruction) {
 
 CPGProtoNode *CPGEmitter::visitLoadInst(llvm::LoadInst &instruction) {
   llvm::Value *pointer = instruction.getPointerOperand();
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitDereference(pointer));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitDereference(pointer));
 }
 
 CPGProtoNode *CPGEmitter::visitBinaryOperator(llvm::BinaryOperator &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitBinaryCall(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitBinaryCall(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitCmpInst(llvm::CmpInst &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitCmpCall(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitCmpCall(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitCastInst(llvm::CastInst &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitCast(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitCast(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitSelectInst(llvm::SelectInst &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitSelect(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitSelect(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitGetElementPtrInst(llvm::GetElementPtrInst &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitGEP(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitGEP(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitExtractValueInst(llvm::ExtractValueInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitExtractValue(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitExtractValue(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitUnaryOperator(llvm::UnaryOperator &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitUnaryOperator(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitUnaryOperator(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitCallBase(llvm::CallBase &instruction) {
@@ -231,11 +237,12 @@ CPGProtoNode *CPGEmitter::visitCallBase(llvm::CallBase &instruction) {
     return emitFunctionCall(&instruction);
   }
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitFunctionCall(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitFunctionCall(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitAtomicRMWInst(llvm::AtomicRMWInst &instruction) {
-  return emitAssignCall(instruction.getType(), emitRef(&instruction), emitAtomicRMW(&instruction));
+  return emitAssignCall(
+      instruction.getType(), emitRefOrConstant(&instruction), emitAtomicRMW(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::emitAtomicRMW(llvm::AtomicRMWInst *instruction) {
@@ -248,7 +255,7 @@ CPGProtoNode *CPGEmitter::emitAtomicRMW(llvm::AtomicRMWInst *instruction) {
 
 CPGProtoNode *CPGEmitter::visitAtomicCmpXchgInst(llvm::AtomicCmpXchgInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitAtomicCmpXchg(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitAtomicCmpXchg(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction) {
@@ -262,7 +269,7 @@ CPGProtoNode *CPGEmitter::emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction
 
 CPGProtoNode *CPGEmitter::visitExtractElementInst(llvm::ExtractElementInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitExtractElement(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitExtractElement(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::emitExtractElement(llvm::ExtractElementInst *instruction) {
@@ -276,17 +283,17 @@ CPGProtoNode *CPGEmitter::emitExtractElement(llvm::ExtractElementInst *instructi
 
 CPGProtoNode *CPGEmitter::visitInsertElementInst(llvm::InsertElementInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitInsertElement(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitInsertElement(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitInsertValueInst(llvm::InsertValueInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitInsertValue(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitInsertValue(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitShuffleVectorInst(llvm::ShuffleVectorInst &instruction) {
   return emitAssignCall(
-      instruction.getType(), emitRef(&instruction), emitShuffleVector(&instruction));
+      instruction.getType(), emitRefOrConstant(&instruction), emitShuffleVector(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::emitShuffleVector(llvm::ShuffleVectorInst *instruction) {
@@ -383,14 +390,6 @@ CPGProtoNode *CPGEmitter::emitMethodBlock(const CPGMethod &method) {
 }
 
 CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
-  if (isLocal(value) || isGlobal(value)) {
-    return emitRef(value);
-  }
-
-  return emitConstant(value);
-}
-
-CPGProtoNode *CPGEmitter::emitRef(llvm::Value *value) {
   if (auto inst = llvm::dyn_cast<llvm::Instruction>(value)) {
     if (inst->getMetadata(inlineMD) != nullptr) {
       if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
@@ -402,25 +401,26 @@ CPGProtoNode *CPGEmitter::emitRef(llvm::Value *value) {
       }
     }
   }
-  assert((isLocal(value) || isGlobal(value) || isConstExpr(value)) &&
-         "Cannot emit reference to a non-variable");
 
-  if (isConstExpr(value)) {
+  if (isLocal(value) || isGlobal(value)) {
+    CPGProtoNode *valueRef = builder.identifierNode();
+    (*valueRef) //
+        .setName(value->getName())
+        .setCode(value->getName())
+        .setTypeFullName(getTypeName(value->getType()));
+
+    if (!isGlobal(value)) {
+      builder.connectREF(valueRef, getLocal(value));
+    }
+    resolveConnections(valueRef, {});
+    setLineInfo(valueRef);
+    return valueRef;
+  }
+  if (llvm::isa<llvm::ConstantExpr>(value)) {
     return emitConstantExpr(llvm::cast<llvm::ConstantExpr>(value));
-  }
+  };
 
-  CPGProtoNode *valueRef = builder.identifierNode();
-  (*valueRef) //
-      .setName(value->getName())
-      .setCode(value->getName())
-      .setTypeFullName(getTypeName(value->getType()));
-
-  if (!isGlobal(value)) {
-    builder.connectREF(valueRef, getLocal(value));
-  }
-  resolveConnections(valueRef, {});
-  setLineInfo(valueRef);
-  return valueRef;
+  return emitConstant(value);
 }
 
 // ConstantInt, ConstantFP, ConstantAggregateZero,

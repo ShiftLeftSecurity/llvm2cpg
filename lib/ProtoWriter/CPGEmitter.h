@@ -69,7 +69,6 @@ private:
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
 
   CPGProtoNode *emitRefOrConstant(llvm::Value *value);
-  CPGProtoNode *emitRef(llvm::Value *value);
   CPGProtoNode *emitConstant(llvm::Value *value);
   CPGProtoNode *emitConstant(unsigned int);
   CPGProtoNode *emitConstantExpr(llvm::ConstantExpr *constantExpr);
