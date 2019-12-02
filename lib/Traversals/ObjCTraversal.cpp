@@ -104,24 +104,34 @@ ObjCTraversal::objcClassROCounterpart(const llvm::ConstantStruct *objcClass) {
   return objcClassRO;
 }
 
-static const llvm::ConstantStruct *extractClass(const llvm::ConstantStruct *objcClass, uint index) {
-  const llvm::Constant *superclassSlot = objcClass->getAggregateElement(index);
-  if (superclassSlot->isNullValue()) {
+const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass);
+  assert(objcClass->getType() == class_t);
+  const llvm::Constant *classSlot = objcClass->getAggregateElement(1);
+  if (classSlot->isNullValue()) {
     return nullptr;
   }
-  auto *superclassDecl = llvm::cast<const llvm::GlobalVariable>(superclassSlot);
-  assert(superclassDecl->hasInitializer());
+  auto *classDecl = llvm::cast<const llvm::GlobalVariable>(classSlot);
+  assert(classDecl->hasInitializer());
+  unsigned objcRootClassMD = bitcode->getContext().getMDKindID("shiftleft.objc_root_class");
+  if (classDecl->hasMetadata(objcRootClassMD)) {
+    return nullptr;
+  }
 
-  auto *superclass = llvm::cast<const llvm::ConstantStruct>(superclassDecl->getInitializer());
-  return superclass;
-}
-
-const llvm::ConstantStruct *ObjCTraversal::objcSuperclass(const llvm::ConstantStruct *objcClass) {
-  assert(objcClass->getType() == class_t);
-  return extractClass(objcClass, 1);
+  auto *extracted = llvm::cast<const llvm::ConstantStruct>(classDecl->getInitializer());
+  return extracted;
 }
 
 const llvm::ConstantStruct *ObjCTraversal::objcMetaclass(const llvm::ConstantStruct *objcClass) {
+  assert(objcClass);
   assert(objcClass->getType() == class_t);
-  return extractClass(objcClass, 0);
+  const llvm::Constant *classSlot = objcClass->getAggregateElement(unsigned(0));
+  if (classSlot->isNullValue()) {
+    return nullptr;
+  }
+  auto *classDecl = llvm::cast<const llvm::GlobalVariable>(classSlot);
+  assert(classDecl->hasInitializer());
+
+  auto *extracted = llvm::cast<const llvm::ConstantStruct>(classDecl->getInitializer());
+  return extracted;
 }

@@ -95,7 +95,7 @@ llvm2cpg::customPasses::LoadInlinePass::run(llvm::Function &function,
                                             llvm::FunctionAnalysisManager &FAM) {
   llvm::LLVMContext &ctx = function.getContext();
   llvm::AAResults &AA = FAM.getResult<llvm::AAManager>(function);
-  llvm::MDNode *emptyTuple = llvm::MDNode::get(ctx, {});
+  llvm::MDNode *payload = llvm::MDNode::get(ctx, { llvm::MDString::get(ctx, "shiftleft.inline") });
 
   unsigned inlineMD = ctx.getMDKindID("shiftleft.inline");
 
@@ -110,7 +110,7 @@ llvm2cpg::customPasses::LoadInlinePass::run(llvm::Function &function,
       }
       case llvm::Instruction::AddrSpaceCast:
       case llvm::Instruction::GetElementPtr:
-        inst.setMetadata(inlineMD, emptyTuple);
+        inst.setMetadata(inlineMD, payload);
         break;
       case llvm::Instruction::PtrToInt:
       case llvm::Instruction::IntToPtr:
@@ -195,7 +195,7 @@ llvm2cpg::customPasses::LoadInlinePass::run(llvm::Function &function,
       int vU = vUPair.first;
       int uU = usedUntil(inst, inlineMD, &instNumber);
       if (uU <= vU) {
-        inst->setMetadata(inlineMD, emptyTuple);
+        inst->setMetadata(inlineMD, payload);
       } else {
         // explicitly mark as noinline for debug purposes?
         // problem: ValueAsMetadata produces badref for stores.

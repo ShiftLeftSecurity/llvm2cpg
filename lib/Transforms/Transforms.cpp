@@ -58,8 +58,11 @@ void Transforms::removeCyclicMetaclassInheritance(llvm::Module &bitcode) {
       llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
       if (auto superclass = llvm::dyn_cast<llvm::GlobalVariable>(superclassSlot)) {
         if (superclass->hasName() && !superclass->getName().startswith("OBJC_METACLASS_$")) {
-          llvm::Constant *nullValue = llvm::Constant::getNullValue(superclassSlot->getType());
-          metaclassDefinition->setOperand(1, nullValue);
+          llvm::LLVMContext &context = bitcode.getContext();
+          unsigned objcRootClassMD = context.getMDKindID("shiftleft.objc_root_class");
+          llvm::MDNode *payload = llvm::MDNode::get(
+              bitcode.getContext(), { llvm::MDString::get(context, "shiftleft.objc_root_class") });
+          metaclass.setMetadata(objcRootClassMD, payload);
         }
       }
     }
