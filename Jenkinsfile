@@ -60,7 +60,7 @@ pipeline {
 						    -DCMAKE_C_COMPILER=/opt/llvm/9.0.0/bin/clang \
 						    -DCMAKE_CXX_COMPILER=/opt/llvm/9.0.0/bin/clang++ \
 						    -DPATH_TO_LLVM=/opt/llvm/9.0.0/ \
- 						    -DPATH_TO_CODEPROPERTYGRAPH=${WORKSPACE}/codepropertygraph \
+						    -DPATH_TO_CODEPROPERTYGRAPH=${WORKSPACE}/codepropertygraph \
 						    .."
 					}
 				}
@@ -96,5 +96,6 @@ def notifyFailed() {
 }
 
 def notifyFixed() {
-	slackSend (channel: '#team-llvm', color: '#22FF00', message: "FIXED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")	emailext body: "Build URL: ${env.BUILD_URL} (to view full results, click on \"Console Output\")", attachLog: true, recipientProviders: [[$class: 'CulpritsRecipientProvider']], subject: 'Notice: Jenkins $JOB_NAME #$BUILD_NUMBER FIXED!', to: 'build-notify-code-science@shiftleft.io'
+	slackSend (channel: '#team-llvm', color: '#22FF00', message: "FIXED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+	//emailext body: "Build URL: ${env.BUILD_URL} (to view full results, click on \"Console Output\")", attachLog: true, recipientProviders: [[$class: 'CulpritsRecipientProvider']], subject: 'Notice: Jenkins $JOB_NAME #$BUILD_NUMBER FIXED!', to: 'build-notify-code-science@shiftleft.io'
 }
