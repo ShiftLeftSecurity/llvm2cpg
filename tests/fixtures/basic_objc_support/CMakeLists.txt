@@ -1,5 +1,7 @@
 set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/objc_classes.m
+  ${CMAKE_CURRENT_LIST_DIR}/objc_methods.m
+  ${CMAKE_CURRENT_LIST_DIR}/objc_external_class.m
 )
 
 foreach(source ${SOURCES})
@@ -13,6 +15,8 @@ endforeach()
 
 set (IR_SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/objc_classes.ll
+  ${CMAKE_CURRENT_LIST_DIR}/objc_methods.ll
+  ${CMAKE_CURRENT_LIST_DIR}/objc_external_class.ll
 )
 
 foreach(source ${IR_SOURCES})

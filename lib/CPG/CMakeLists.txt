@@ -5,6 +5,7 @@ set (SOURCES
   CPG.cpp
   CPGInstVisitor.cpp
   CPGOperatorNames.cpp
+  ObjCTypeHierarchy.cpp
   )
 
 add_library(CPG ${SOURCES})

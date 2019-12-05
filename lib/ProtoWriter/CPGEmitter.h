@@ -1,9 +1,9 @@
 #pragma once
 
+#include "llvm2cpg/Demangler/CPGDemangler.h"
 #include <llvm/IR/InstVisitor.h>
 #include <unordered_map>
 #include <unordered_set>
-#include "llvm2cpg/Demangler/CPGDemangler.h"
 
 namespace llvm2cpg {
 
@@ -103,12 +103,11 @@ private:
   CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);
   CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);
-  
-  //sets lineInfo from instruction
-  void updateLineInfo(const llvm::Instruction *inst);
-  //writes lineInfo into node
-  void setLineInfo(CPGProtoNode *node);
 
+  // sets lineInfo from instruction
+  void updateLineInfo(const llvm::Instruction *inst);
+  // writes lineInfo into node
+  void setLineInfo(CPGProtoNode *node);
 
   // Returns true if the value is a local variable or an argument, false otherwise
   bool isLocal(const llvm::Value *value) const;
@@ -130,7 +129,7 @@ private:
 
 struct ValGuard {
 public:
-  ValGuard(llvm::Value *val) : val(val) {}
+  explicit ValGuard(llvm::Value *val) : val(val) {}
   llvm::Value *val;
   ~ValGuard() {
     val->deleteValue();

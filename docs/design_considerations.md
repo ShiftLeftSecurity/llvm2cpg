@@ -214,6 +214,102 @@ Note the very useful `!invariant.load` tag. It informs LLVM that the this pointe
 
 AFAIU this pointer dance serves to correctly intern (dedup) the `intValue\00` string when a dynamic library is loaded at run time: The loader will then change the new lib's `@OBJC_SELECTOR_REFERENCES_.2` to point at the string in the loading libraries `TEXT` section. Hence, message strings can be compared by pointer identity instead of string-compare.
 
+#### Type Hierarchy
+
+Consider the following example:
+
+```objectivec
+@interface Foo : NSObject
+
++ (Foo *)classMethod;
+- (void)instanceMethod;
+
+@end
+```
+
+In this example, the class `Foo` inherits from the class `NSObject` declared elsewhere. There are two methods,
+`classMethod` and `instanceMethod` which belong to the class and to the instance respectively. Here an example of
+how they used. We pass a message `classMethod` to the class object, and then `instanceMethod` is passed to the
+instance object.
+
+```objectivec
+Foo *instance = [Foo classMethod];
+[instance instanceMethod];
+```
+
+The following code would lead to a runtime exception:
+
+```objectivec
+Foo *instance = [Foo instanceMethod];
+[instance classMethod];
+```
+Class and instance methods are differentiated by the `+` (class) or `-` (instance) symbol.
+
+Class and instance methods may have the same name:
+
+```objectivec
+@interface ValidClass : NSObject
+
++ (void)foobar;
+- (void)foobar;
+
+@end
+
+```
+
+But two class or instance method names cannot collide:
+
+```objectivec
+@interface InvalidClass : NSObject
+
+/// Collision despite different signatures 
++ (id)classMethod:(int)parameter;
++ (void)classMethod:(float)parameter;
+
+/// Collision despite different signatures
+- (id)instanceMethod:(int)parameter;
+- (void)instanceMethod:(float)parameter;
+
+@end
+``` 
+
+The closest analogy to the ObjC class methods in languages like C++ and Java are the static methods.
+Unlike Java and C++, ObjC class methods resolved dynamically via ObjC runtime.
+
+To handle class and instance methods correctly we build two parallel type hierarchies for ObjC classes. 
+Considering the first example:
+
+```objectivec
+@interface Foo : NSObject
+
++ (Foo *)classMethod;
+- (void)instanceMethod;
+
+@end
+```
+
+we emit two `typeDecl`s for the `Foo` class: `Foo` for the class and `Foo$` for so-called metaclass.
+Class and instance methods defined under the `Foo` typeDecl, while the metaclass `Foo$` does not have any:
+
+```scala
+ocular> cpg.typeDecl.nameExact("Foo").method.name.p
++classMethod
+-instanceMethod
+ocular> cpg.typeDecl.nameExact("Foo$").method.name.p
+<empty>
+```
+
+Method bindings, though, attached to the class and metaclass depending whether they are class methods or class methods:
+
+```scala
+ocular> cpg.typeDecl.nameExact("Foo").boundMethod.name.p
+-instanceMethod
+ocular> cpg.typeDecl.nameExact("Foo$").boundMethod.name.p
++classMethod
+```
+
+This way, we can use different types at the call site to differentiate between instance and class methods correctly.
+
 ### C++
 
 #### Templates

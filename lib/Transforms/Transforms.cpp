@@ -22,6 +22,7 @@ using namespace llvm2cpg;
 Transforms::Transforms(CPGLogger &log, bool inlineAP) : logger(log), inlineAP(inlineAP) {}
 
 void Transforms::transformBitcode(llvm::Module &bitcode) {
+  markObjCRootClasses(bitcode);
   renameOpaqueObjCTypes(bitcode);
   for (llvm::Function &function : bitcode) {
     if (function.isDeclaration()) {
@@ -47,23 +48,46 @@ void Transforms::destructPHINodes(llvm::Function &function) {
   }
 }
 
-void Transforms::removeCyclicMetaclassInheritance(llvm::Module &bitcode) {
+static void markAsRoot(llvm::GlobalVariable &global) {
+  llvm::LLVMContext &context = global.getContext();
+  std::string mdName("shiftleft.objc_root_class");
+  unsigned rootClassMD = context.getMDKindID(mdName);
+  llvm::MDNode *paylod = llvm::MDNode::get(context, { llvm::MDString::get(context, mdName) });
+  global.setMetadata(rootClassMD, paylod);
+}
+
+void Transforms::markObjCRootClasses(llvm::Module &bitcode) {
   for (llvm::GlobalObject &global : bitcode.global_objects()) {
-    if (global.hasName() && global.getName().startswith("OBJC_METACLASS_$")) {
+    if (!global.hasName()) {
+      continue;
+    }
+
+    if (global.getName().startswith("OBJC_METACLASS_$")) {
       auto &metaclass = llvm::cast<llvm::GlobalVariable>(global);
       if (!metaclass.hasInitializer()) {
+        markAsRoot(metaclass);
         continue;
       }
       auto *metaclassDefinition = llvm::cast<llvm::ConstantStruct>(metaclass.getInitializer());
       llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
+      if (superclassSlot->isNullValue()) {
+        markAsRoot(metaclass);
+      }
       if (auto superclass = llvm::dyn_cast<llvm::GlobalVariable>(superclassSlot)) {
         if (superclass->hasName() && !superclass->getName().startswith("OBJC_METACLASS_$")) {
-          llvm::LLVMContext &context = bitcode.getContext();
-          unsigned objcRootClassMD = context.getMDKindID("shiftleft.objc_root_class");
-          llvm::MDNode *payload = llvm::MDNode::get(
-              bitcode.getContext(), { llvm::MDString::get(context, "shiftleft.objc_root_class") });
-          metaclass.setMetadata(objcRootClassMD, payload);
+          markAsRoot(metaclass);
         }
+      }
+    } else if (global.getName().startswith("OBJC_CLASS_$")) {
+      auto &metaclass = llvm::cast<llvm::GlobalVariable>(global);
+      if (!metaclass.hasInitializer()) {
+        markAsRoot(metaclass);
+        continue;
+      }
+      auto *metaclassDefinition = llvm::cast<llvm::ConstantStruct>(metaclass.getInitializer());
+      llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
+      if (superclassSlot->isNullValue()) {
+        markAsRoot(metaclass);
       }
     }
   }
@@ -71,16 +95,12 @@ void Transforms::removeCyclicMetaclassInheritance(llvm::Module &bitcode) {
 
 void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
   ObjCTraversal traversal(&bitcode);
-  std::vector<const llvm::ConstantStruct *> worklist = traversal.objcClasses();
+  std::vector<ObjCClassDefinition *> worklist = traversal.objcClasses();
 
-  for (const llvm::ConstantStruct *objcClass : worklist) {
-    const llvm::ConstantStruct *objcROClass = traversal.objcClassROCounterpart(objcClass);
-    std::string className = traversal.objcClassName(objcROClass);
-
-    std::vector<std::pair<std::string, llvm::Function *>> methods =
-        traversal.objcMethods(objcROClass);
-    for (auto &methodPair : methods) {
-      llvm::FunctionType *type = methodPair.second->getFunctionType();
+  for (ObjCClassDefinition *objcClass : worklist) {
+    std::string className = objcClass->getName();
+    for (auto &method : traversal.objcMethods(objcClass)) {
+      llvm::FunctionType *type = method.function->getFunctionType();
       assert(type->getNumParams() >= 2 &&
              "ObjC method expected to have implicit parameters (self and _cmd)");
       auto *selfType = llvm::cast<llvm::PointerType>(type->getParamType(0));
