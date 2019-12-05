@@ -25,6 +25,11 @@ llvm::cl::opt<std::string> OutputName("output-name", llvm::cl::Optional,
                                       llvm::cl::cat(CPGProtoWriterCategory),
                                       llvm::cl::init("cpg.bin.zip"));
 
+llvm::cl::opt<std::string>
+    Output("output", llvm::cl::Optional,
+           llvm::cl::desc("Output file path. Overrides --output-dir and --output-name"),
+           llvm::cl::cat(CPGProtoWriterCategory));
+
 llvm::cl::opt<bool>
     APInliner("inline", llvm::cl::Optional,
               llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
@@ -79,7 +84,12 @@ int main(int argc, char **argv) {
   }
   cpg.addBitcode(&globalModule);
 
-  llvm2cpg::CPGProtoWriter writer(logger, OutputDirectory.getValue(), OutputName.getValue());
+  std::string output = Output.getValue();
+  if (output.empty()) {
+    output = OutputDirectory.getValue() + '/' + OutputName.getValue();
+  }
+
+  llvm2cpg::CPGProtoWriter writer(logger, output);
   writer.writeCpg(cpg);
 
   logger.uiInfo("Shutting down");

@@ -8,8 +8,8 @@
 
 using namespace llvm2cpg;
 
-CPGProtoWriter::CPGProtoWriter(CPGLogger &logger, std::string outputDir, std::string outputName)
-    : logger(logger), outputDir(std::move(outputDir)), outputName(std::move(outputName)) {}
+CPGProtoWriter::CPGProtoWriter(CPGLogger &logger, std::string output)
+    : logger(logger), output(std::move(output)) {}
 
 void CPGProtoWriter::writeCpg(const llvm2cpg::CPG &cpg) {
   const std::vector<CPGFile> &files = cpg.getFiles();
@@ -18,7 +18,6 @@ void CPGProtoWriter::writeCpg(const llvm2cpg::CPG &cpg) {
     return;
   }
   logger.logInfo(std::string("Emitting CPG for ") + std::to_string(files.size()) + " file(s)");
-  auto zipPath = outputDir + "/" + outputName;
-  CPGProtoAdapter adapter(logger, zipPath);
+  CPGProtoAdapter adapter(logger, output);
   adapter.writeCpg(cpg);
 }
