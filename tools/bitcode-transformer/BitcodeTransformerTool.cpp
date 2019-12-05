@@ -20,7 +20,7 @@ llvm::cl::opt<std::string>
 llvm::cl::opt<bool>
     APInliner("inline", llvm::cl::Optional,
               llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
-              llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(false));
+              llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(true));
 
 static std::string getOutputFilename(const std::string &input) {
   std::string inputFilename = llvm::sys::path::stem(input);
