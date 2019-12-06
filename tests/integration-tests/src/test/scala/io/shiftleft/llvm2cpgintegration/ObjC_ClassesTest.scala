@@ -39,4 +39,14 @@ class ObjC_ClassesTest extends CPGMatcher with BeforeAndAfterAll {
     cpg.typeDecl.nameExact("Child$").derivedTypeDecl.l.size shouldBe 0
   }
 
+  "call site" in {
+    val method =  cpg.method.nameExact("useChild").head
+    method.start.callOut.name("newChild").argument.size shouldBe 2
+
+    val doSomething = cpg.method.fullNameExact("-[Child doSomething]").head
+    val resolver : ICallResolver = NoResolve
+    method.start.callOut.name("doSomething").calledMethod(resolver).head shouldBe doSomething
+    method.start.callOut.name("doSomething").argument.size shouldBe 2
+  }
+
 }

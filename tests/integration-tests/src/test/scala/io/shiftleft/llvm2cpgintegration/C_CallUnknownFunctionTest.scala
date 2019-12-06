@@ -39,8 +39,8 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     callValueRef.start.refsTo.head shouldBe callValue
 
     val ptrCall = assignCall.start.astChildren.isCall.head
-    ptrCall.name shouldBe "fptr"
-    ptrCall.methodFullName shouldBe "fptr"
+    ptrCall.name shouldBe "indirect_call"
+    ptrCall.methodFullName shouldBe "indirect_call"
     ptrCall.typeFullName shouldBe "i32"
     ptrCall.dispatchType shouldBe "DYNAMIC_DISPATCH"
     ptrCall.signature shouldBe "i32 (i8*, ...)*"

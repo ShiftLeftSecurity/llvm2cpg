@@ -24,6 +24,7 @@ Transforms::Transforms(CPGLogger &log, bool inlineAP) : logger(log), inlineAP(in
 void Transforms::transformBitcode(llvm::Module &bitcode) {
   markObjCRootClasses(bitcode);
   renameOpaqueObjCTypes(bitcode);
+  markObjCTypeHints(bitcode);
   for (llvm::Function &function : bitcode) {
     if (function.isDeclaration()) {
       continue;
@@ -89,6 +90,50 @@ void Transforms::markObjCRootClasses(llvm::Module &bitcode) {
       if (superclassSlot->isNullValue()) {
         markAsRoot(metaclass);
       }
+    }
+  }
+}
+
+void Transforms::markObjCTypeHints(llvm::Module &bitcode) {
+  ObjCTraversal traversal(&bitcode);
+  for (llvm::GlobalObject &global : bitcode.global_objects()) {
+    if (!global.hasName()) {
+      continue;
+    }
+
+    if (global.getName().startswith("OBJC_CLASSLIST_REFERENCES_$")) {
+      auto &classReference = llvm::cast<llvm::GlobalVariable>(global);
+      if (!classReference.hasInitializer()) {
+        std::string str;
+        llvm::raw_string_ostream stream(str);
+        stream << "ObjC class reference does not have initializer: ";
+        classReference.printAsOperand(stream);
+        logger.logWarning(stream.str());
+        continue;
+      }
+      auto *globalVariable = llvm::dyn_cast<llvm::GlobalVariable>(classReference.getInitializer());
+      if (!globalVariable) {
+        std::string str;
+        llvm::raw_string_ostream stream(str);
+        stream << "ObjC class reference does not reference global variable: ";
+        classReference.getInitializer()->printAsOperand(stream);
+        logger.logWarning(stream.str());
+        continue;
+      }
+      ObjCClassDefinition *classDefinition = traversal.objcClassFromGlobalObject(globalVariable);
+      if (!classDefinition) {
+        logger.logWarning("Cannot initialize ObjC class");
+        continue;
+      }
+
+      assert(!classDefinition->isMetaclass());
+
+      llvm::LLVMContext &context = global.getContext();
+      std::string mdName("shiftleft.objc_type_hint");
+      unsigned rootClassMD = context.getMDKindID(mdName);
+      llvm::MDNode *paylod = llvm::MDNode::get(
+          context, { llvm::MDString::get(context, classDefinition->getName() + "$") });
+      global.setMetadata(rootClassMD, paylod);
     }
   }
 }

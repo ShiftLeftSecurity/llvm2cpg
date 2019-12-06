@@ -47,9 +47,10 @@ public:
 
   std::vector<ObjCMethod> objcMethods(ObjCClassDefinition *objcClass);
 
+  ObjCClassDefinition *objcClassFromGlobalObject(const llvm::GlobalObject *global);
+
 private:
   std::string objcClassName(const llvm::ConstantStruct *objcClass);
-  ObjCClassDefinition *objcClassFromGlobalObject(const llvm::GlobalObject *global);
   const llvm::ConstantStruct *objcClassROCounterpart(const llvm::ConstantStruct *objcClass);
   bool shouldSkipGlobal(const llvm::GlobalObject *global);
 

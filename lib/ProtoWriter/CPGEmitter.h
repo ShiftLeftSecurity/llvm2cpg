@@ -93,12 +93,16 @@ private:
   CPGProtoNode *emitGEPAccess(const llvm::Type *type, llvm::Value *index, bool memberAccess);
   CPGProtoNode *emitExtract(const llvm::Type *type, unsigned int idx, bool memberAccess);
   CPGProtoNode *emitUnaryOperator(const llvm::UnaryOperator *instruction);
-  CPGProtoNode *emitFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitNoop();
   CPGProtoNode *emitUnhandled();
   CPGProtoNode *emitAtomicRMW(llvm::AtomicRMWInst *instruction);
   CPGProtoNode *emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction);
   CPGProtoNode *emitUnhandledCall(llvm::Instruction *instruction);
+
+  CPGProtoNode *emitFunctionCall(llvm::CallBase *instruction);
+  CPGProtoNode *emitIndirectFunctionCall(llvm::CallBase *instruction);
+  CPGProtoNode *emitDirectFunctionCall(llvm::CallBase *instruction);
+  CPGProtoNode *emitObjCFunctionCall(llvm::CallBase *instruction);
 
   CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);

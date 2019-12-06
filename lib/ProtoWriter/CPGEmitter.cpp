@@ -6,8 +6,9 @@
 #include "llvm2cpg/CPG/CPGMethod.h"
 #include "llvm2cpg/CPG/CPGOperatorNames.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
-#include "llvm/IR/DebugInfoMetadata.h"
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/InlineAsm.h>
+#include <sstream>
 
 using namespace llvm2cpg;
 
@@ -21,7 +22,7 @@ static std::string valueToString(const llvm::Value *value) {
 CPGEmitter::CPGEmitter(CPGLogger &logger, CPGProtoBuilder &builder, CPGTypeEmitter &typeEmitter,
                        const CPGFile &file)
     : logger(logger), builder(builder), typeEmitter(typeEmitter), file(file), lineNumber(0),
-      columnNumber(0) {}
+      columnNumber(0), inlineMD(0) {}
 
 CPGProtoNode *CPGEmitter::emitMethod(const CPGMethod &method) {
   CPGProtoNode *methodNode = emitMethodNode(method);
@@ -409,9 +410,19 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
         .setCode(value->getName())
         .setTypeFullName(getTypeName(value->getType()));
 
-    if (!isGlobal(value)) {
+    if (isGlobal(value)) {
+      auto *global = llvm::dyn_cast<llvm::GlobalObject>(value);
+      std::string mdName("shiftleft.objc_type_hint");
+      if (global && global->hasMetadata(mdName)) {
+        llvm::MDNode *md = global->getMetadata(mdName);
+        assert(md->getNumOperands() == 1);
+        auto *typeHint = llvm::cast<llvm::MDString>(md->getOperand(0).get());
+        valueRef->setDynamicTypeHintFullName(typeHint->getString());
+      }
+    } else {
       builder.connectREF(valueRef, getLocal(value));
     }
+
     resolveConnections(valueRef, {});
     setLineInfo(valueRef);
     return valueRef;
@@ -858,35 +869,63 @@ CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instructi
 
 CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
   if (!instruction->getCalledFunction()) {
-    CPGProtoNode *callNode = builder.functionCallNode();
-    std::string name("fptr");
-    (*callNode) //
-        .setName(name)
-        .setCode(name)
-        .setTypeFullName(getTypeName(instruction->getType()))
-        .setMethodInstFullName(name)
-        .setMethodFullName(name)
-        .setSignature(getTypeName(instruction->getCalledOperand()->getType()))
-        .setDispatchType("DYNAMIC_DISPATCH");
+    return emitIndirectFunctionCall(instruction);
+  }
+  return emitDirectFunctionCall(instruction);
+}
 
-    setLineInfo(callNode);
-    CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
-    receiver->setArgumentIndex(0);
-    builder.connectReceiver(callNode, receiver);
-
-    std::vector<CPGProtoNode *> children({ receiver });
-    std::vector<CPGProtoNode *> arguments;
-    for (const llvm::Use &argument : instruction->args()) {
-      CPGProtoNode *arg = emitRefOrConstant(argument.get());
-      children.push_back(arg);
-      arguments.push_back(arg);
+static bool isObjCCall(llvm::CallBase *instruction) {
+  llvm::Function *msgSend = instruction->getModule()->getFunction("objc_msgSend");
+  if (!msgSend) {
+    return false;
+  }
+  llvm::Value *operand = instruction->getCalledOperand();
+  if (auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(operand)) {
+    llvm::Instruction *constInst = constExpr->getAsInstruction();
+    ValGuard guard(constInst);
+    if (auto cast = llvm::dyn_cast<llvm::BitCastInst>(constInst)) {
+      if (auto function = llvm::dyn_cast<llvm::Function>(cast->getOperand(0))) {
+        if (function == msgSend) {
+          return true;
+        }
+      }
     }
-    resolveASTConnections(callNode, children);
-    resolveCFGConnections(callNode, children);
-    resolveArgumentConnections(callNode, arguments);
-    return callNode;
   }
 
+  return false;
+}
+
+CPGProtoNode *CPGEmitter::emitIndirectFunctionCall(llvm::CallBase *instruction) {
+  if (isObjCCall(instruction)) {
+    return emitObjCFunctionCall(instruction);
+  }
+
+  CPGProtoNode *callNode = builder.functionCallNode();
+  std::string name("indirect_call");
+  (*callNode) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
+      .setSignature(getTypeName(instruction->getCalledOperand()->getType()))
+      .setDispatchType("DYNAMIC_DISPATCH");
+
+  setLineInfo(callNode);
+  CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
+  builder.connectReceiver(callNode, receiver);
+
+  std::vector<CPGProtoNode *> children({ receiver });
+  for (const llvm::Use &argument : instruction->args()) {
+    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+    children.push_back(arg);
+  }
+  resolveConnections(callNode, children);
+  return callNode;
+}
+
+CPGProtoNode *CPGEmitter::emitDirectFunctionCall(llvm::CallBase *instruction) {
+  assert(instruction->getCalledFunction());
   CPGProtoNode *call = builder.functionCallNode();
   DemangledName demangledName = demangler.demangleFunctionName(instruction->getCalledFunction());
   (*call) //
@@ -906,6 +945,93 @@ CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
 
   resolveConnections(call, children);
   return call;
+}
+
+static llvm::Constant *getConstInitializer(llvm::Value *globalVariable) {
+  auto global = llvm::dyn_cast<llvm::GlobalVariable>(globalVariable);
+  if (global && global->hasInitializer()) {
+    if (auto constant = llvm::dyn_cast<llvm::Constant>(global->getInitializer())) {
+      return constant;
+    }
+  }
+
+  return nullptr;
+}
+
+static std::string objcSelectorName(llvm::Value *selector) {
+  std::string defaultName("objc_msgSend");
+  if (auto load = llvm::dyn_cast<llvm::LoadInst>(selector)) {
+    llvm::Constant *constReference = getConstInitializer(load->getPointerOperand());
+    if (!constReference) {
+      return defaultName;
+    }
+    if (auto constReferenceExpr = llvm::dyn_cast<llvm::ConstantExpr>(constReference)) {
+      llvm::Instruction *referenceInst = constReferenceExpr->getAsInstruction();
+      ValGuard referenceGuard(referenceInst);
+      if (auto gep = llvm::dyn_cast<llvm::GetElementPtrInst>(referenceInst)) {
+        llvm::Constant *constSelector = getConstInitializer(gep->getPointerOperand());
+        if (!constSelector) {
+          return defaultName;
+        }
+        if (auto constSelectorString = llvm::dyn_cast<llvm::ConstantDataArray>(constSelector)) {
+          if (constSelectorString->isCString()) {
+            return constSelectorString->getAsCString();
+          }
+        }
+      }
+    }
+  }
+
+  return defaultName;
+}
+
+CPGProtoNode *CPGEmitter::emitObjCFunctionCall(llvm::CallBase *instruction) {
+  llvm::Value *receiver = instruction->getArgOperand(0);
+  if (auto cast = llvm::dyn_cast<llvm::BitCastInst>(receiver)) {
+    receiver = cast->getOperand(0);
+    if (cast->getNumUses() != 1) {
+      std::string message;
+      llvm::raw_string_ostream stream(message);
+      stream << "objc_msgSend receiver has more than one use:\n";
+      for (auto &use : cast->uses()) {
+        use->printAsOperand(stream);
+        stream << "\n";
+      }
+      logger.logWarning(stream.str());
+    }
+  } else {
+    std::string message;
+    llvm::raw_string_ostream stream(message);
+    stream << "objc_msgSend receiver is not a bitcast: ";
+    receiver->printAsOperand(stream);
+    logger.logWarning(stream.str());
+  }
+
+  llvm::Value *selector = instruction->getArgOperand(1);
+
+  CPGProtoNode *callNode = builder.functionCallNode();
+  std::string name = objcSelectorName(selector);
+  (*callNode) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(receiver->getType()))
+      .setSignature("")
+      .setDispatchType("DYNAMIC_DISPATCH");
+
+  setLineInfo(callNode);
+  CPGProtoNode *receiverNode = emitRefOrConstant(receiver);
+  builder.connectReceiver(callNode, receiverNode);
+
+  std::vector<CPGProtoNode *> children({ receiverNode });
+
+  for (unsigned i = 1; i < instruction->arg_size(); i++) {
+    llvm::Value *argument = instruction->getArgOperand(i);
+    CPGProtoNode *arg = emitRefOrConstant(argument);
+    children.push_back(arg);
+  }
+
+  resolveConnections(callNode, children);
+  return callNode;
 }
 
 CPGProtoNode *CPGEmitter::emitNoop() {

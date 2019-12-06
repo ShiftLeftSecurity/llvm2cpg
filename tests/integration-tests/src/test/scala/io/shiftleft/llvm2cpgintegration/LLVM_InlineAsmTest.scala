@@ -18,7 +18,7 @@ class LLVM_InlineAsmTest extends CPGMatcher {
   "AST" in {
     val block = cpg.method.name("inline_asm").block.head
     val asmCall = block.start.astChildren.isCall.head
-    asmCall.methodFullName shouldBe "fptr"
+    asmCall.methodFullName shouldBe "indirect_call"
     val asm = asmCall.start.astChildren.isLiteral.head
     asm.code shouldBe "add %al, (%rax)"
   }

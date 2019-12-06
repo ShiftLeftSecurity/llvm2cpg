@@ -25,6 +25,7 @@ private:
   void destructPHINodes(llvm::Function &function);
   void calculateInlining(llvm::Module &bitcode);
   void markObjCRootClasses(llvm::Module &bitcode);
+  void markObjCTypeHints(llvm::Module &bitcode);
   void renameOpaqueObjCTypes(llvm::Module &bitcode);
 };
 
