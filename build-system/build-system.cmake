@@ -16,6 +16,8 @@ set (LLVM2CPG_CXX_FLAGS
   -Wall
   -Werror
   -fno-exceptions
+  -fvisibility=hidden
+  -fvisibility-inlines-hidden
   )
 
 include(${CMAKE_CURRENT_LIST_DIR}/version.cmake)
