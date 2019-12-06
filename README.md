@@ -159,7 +159,7 @@ The resulting `main` can be passed to `llvm2cpg` as is:
 [2019-11-06 10:00:59.029] [llvm2cpg] [info] Shutting down
 ```
 
-## Real-world version
+### Real-world version
 
 Getting Bitcode for the real-world projects with all the different build systems is less straightforward, but still doable. One need to inject one of the following flags into the build system:
 

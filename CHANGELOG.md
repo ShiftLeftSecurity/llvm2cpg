@@ -1,6 +1,9 @@
-## [0.2.0] - TBD
+## [0.2.0] - 06 Dec 2019
 
 - Better (demangled) names for C++ methods
+- Internal inliner: improves reachability resolution
+- ObjC type hierarchy (classes + methods)
+- Initial ObjC call trees resolution
 
 ## [0.1.0] - 06 Nov 2019
 
