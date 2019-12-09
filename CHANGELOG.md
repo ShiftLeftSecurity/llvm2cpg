@@ -1,3 +1,7 @@
+## [0.2.1] - 09 Dec 2019
+
+- ObjC class method call resolution
+
 ## [0.2.0] - 06 Dec 2019
 
 - Better (demangled) names for C++ methods
