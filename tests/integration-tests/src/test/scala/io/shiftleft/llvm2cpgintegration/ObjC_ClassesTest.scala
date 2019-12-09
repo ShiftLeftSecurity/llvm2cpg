@@ -44,9 +44,15 @@ class ObjC_ClassesTest extends CPGMatcher with BeforeAndAfterAll {
     method.start.callOut.name("newChild").argument.size shouldBe 2
 
     val doSomething = cpg.method.fullNameExact("-[Child doSomething]").head
+    val newChild = cpg.method.fullNameExact("+[Child newChild]").head
     val resolver : ICallResolver = NoResolve
+
     method.start.callOut.name("doSomething").calledMethod(resolver).head shouldBe doSomething
     method.start.callOut.name("doSomething").argument.size shouldBe 2
-  }
 
+//  This works with Ocular, but not yet supported by codepropertygraph
+//
+//    method.start.callOut.name("newChild").calledMethod(resolver).head shouldBe newChild
+//    method.start.callOut.name("newChild").argument.size shouldBe 2
+  }
 }

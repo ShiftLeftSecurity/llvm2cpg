@@ -133,7 +133,11 @@ void Transforms::markObjCTypeHints(llvm::Module &bitcode) {
       unsigned rootClassMD = context.getMDKindID(mdName);
       llvm::MDNode *paylod = llvm::MDNode::get(
           context, { llvm::MDString::get(context, classDefinition->getName() + "$") });
-      global.setMetadata(rootClassMD, paylod);
+      for (llvm::Value *user : global.users()) {
+        if (auto instruction = llvm::dyn_cast<llvm::Instruction>(user)) {
+          instruction->setMetadata(rootClassMD, paylod);
+        }
+      }
     }
   }
 }

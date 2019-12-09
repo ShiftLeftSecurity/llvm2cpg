@@ -137,7 +137,7 @@ class C_ReturnParameterTest extends CPGMatcher {
       assignCall.start.astChildren.isCall.l.size shouldBe 1
       val rhs =  assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "<operator>.indirection"
-      rhs.typeFullName shouldBe "i32*"
+      rhs.typeFullName shouldBe "i32"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
       rhs.start.astChildren.l.size shouldBe 1

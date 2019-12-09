@@ -193,9 +193,8 @@ CPGProtoNode *CPGEmitter::visitStoreInst(llvm::StoreInst &instruction) {
 }
 
 CPGProtoNode *CPGEmitter::visitLoadInst(llvm::LoadInst &instruction) {
-  llvm::Value *pointer = instruction.getPointerOperand();
   return emitAssignCall(
-      instruction.getType(), emitRefOrConstant(&instruction), emitDereference(pointer));
+      instruction.getType(), emitRefOrConstant(&instruction), emitDereference(&instruction));
 }
 
 CPGProtoNode *CPGEmitter::visitBinaryOperator(llvm::BinaryOperator &instruction) {
@@ -398,7 +397,7 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
       } else if (auto cast = llvm::dyn_cast<llvm::CastInst>(value)) {
         return emitCast(cast);
       } else if (auto load = llvm::dyn_cast<llvm::LoadInst>(value)) {
-        return emitDereference(load->getPointerOperand());
+        return emitDereference(load);
       }
     }
   }
@@ -410,16 +409,7 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
         .setCode(value->getName())
         .setTypeFullName(getTypeName(value->getType()));
 
-    if (isGlobal(value)) {
-      auto *global = llvm::dyn_cast<llvm::GlobalObject>(value);
-      std::string mdName("shiftleft.objc_type_hint");
-      if (global && global->hasMetadata(mdName)) {
-        llvm::MDNode *md = global->getMetadata(mdName);
-        assert(md->getNumOperands() == 1);
-        auto *typeHint = llvm::cast<llvm::MDString>(md->getOperand(0).get());
-        valueRef->setDynamicTypeHintFullName(typeHint->getString());
-      }
-    } else {
+    if (!isGlobal(value)) {
       builder.connectREF(valueRef, getLocal(value));
     }
 
@@ -628,10 +618,18 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Type *type, CPGProtoNo
       { pointerRef });
 }
 
-CPGProtoNode *CPGEmitter::emitDereference(llvm::Value *value) {
-  return resolveConnections(
-      emitGenericOp("<operator>.indirection", "load", getTypeName(value->getType()), "ANY (ANY)"),
-      { emitRefOrConstant(value) });
+CPGProtoNode *CPGEmitter::emitDereference(llvm::LoadInst *load) {
+  CPGProtoNode *dereference =
+      emitGenericOp("<operator>.indirection", "load", getTypeName(load->getType()), "ANY (ANY)");
+  /// Special-casing here to handle the class method call resolution in ObjC
+  if (load->hasMetadata()) {
+    if (llvm::MDNode *md = load->getMetadata("shiftleft.objc_type_hint")) {
+      assert(md->getNumOperands() == 1);
+      auto *typeHint = llvm::cast<llvm::MDString>(md->getOperand(0).get());
+      dereference->setDynamicTypeHintFullName(typeHint->getString());
+    }
+  }
+  return resolveConnections(dereference, { emitRefOrConstant(load->getPointerOperand()) });
 }
 
 CPGProtoNode *CPGEmitter::emitBinaryCall(const llvm::BinaryOperator *binary) {
