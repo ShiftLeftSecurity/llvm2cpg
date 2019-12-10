@@ -893,9 +893,26 @@ static bool isObjCCall(llvm::CallBase *instruction) {
   return false;
 }
 
+llvm::Function *getCastFunction(llvm::CallBase *instruction) {
+  if (auto constantExpr = llvm::dyn_cast<llvm::ConstantExpr>(instruction->getCalledOperand())) {
+    if (constantExpr->getNumOperands() == 0) {
+      return nullptr;
+    }
+    return llvm::dyn_cast<llvm::Function>(constantExpr->getOperand(0));
+  }
+  return nullptr;
+}
+
+static bool isCastCall(llvm::CallBase *instruction) {
+  return getCastFunction(instruction) != nullptr;
+}
+
 CPGProtoNode *CPGEmitter::emitIndirectFunctionCall(llvm::CallBase *instruction) {
   if (isObjCCall(instruction)) {
     return emitObjCFunctionCall(instruction);
+  }
+  if (isCastCall(instruction)) {
+    return emitCastFunctionCall(instruction);
   }
 
   CPGProtoNode *callNode = builder.functionCallNode();
@@ -1028,6 +1045,32 @@ CPGProtoNode *CPGEmitter::emitObjCFunctionCall(llvm::CallBase *instruction) {
     children.push_back(arg);
   }
 
+  resolveConnections(callNode, children);
+  return callNode;
+}
+
+CPGProtoNode *CPGEmitter::emitCastFunctionCall(llvm::CallBase *instruction) {
+  llvm::Function *function = getCastFunction(instruction);
+  assert(function);
+
+  CPGProtoNode *callNode = builder.functionCallNode();
+  std::string name = function->getName();
+  (*callNode) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(instruction->getType()))
+      .setMethodInstFullName(name)
+      .setMethodFullName(name)
+      .setSignature(getTypeName(function->getFunctionType()))
+      .setDispatchType("STATIC_DISPATCH");
+
+  setLineInfo(callNode);
+
+  std::vector<CPGProtoNode *> children;
+  for (const llvm::Use &argument : instruction->args()) {
+    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+    children.push_back(arg);
+  }
   resolveConnections(callNode, children);
   return callNode;
 }

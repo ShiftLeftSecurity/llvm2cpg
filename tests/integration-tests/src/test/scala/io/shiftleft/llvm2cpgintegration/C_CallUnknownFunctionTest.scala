@@ -17,7 +17,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (i8*, ...)*", "i32 (...)", "void ()"))
+    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (...)", "void ()"))
   }
 
   "AST" in {
@@ -38,29 +38,12 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     callValueRef.typeFullName shouldBe "i32"
     callValueRef.start.refsTo.head shouldBe callValue
 
-    val ptrCall = assignCall.start.astChildren.isCall.head
-    ptrCall.name shouldBe "indirect_call"
-    ptrCall.methodFullName shouldBe "indirect_call"
-    ptrCall.typeFullName shouldBe "i32"
-    ptrCall.dispatchType shouldBe "DYNAMIC_DISPATCH"
-    ptrCall.signature shouldBe "i32 (i8*, ...)*"
-
-    val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
-    ptrCallParam.typeFullName shouldBe "i8*"
-    ptrCallParam.name shouldBe "tmp"
-    ptrCallParam.start.refsTo.head shouldBe tmpValue
-
-    val receiver = ptrCall.start.receiver.isCall.head
-    receiver.name shouldBe "<operator>.cast"
-    receiver.typeFullName shouldBe "i32 (i8*, ...)*"
-    val methodRef = receiver.start.astChildren.isMethodRef.head
-    methodRef.methodFullName shouldBe "something"
-
-    // TODO: Receiver should not be connected via AST edge
-    // But it is for now
-    // ptrCall.start.astChildren.l.size shouldBe 1
-    val receiverAST = ptrCall.start.astChildren.isCall.head
-    receiver shouldBe receiverAST
+    val call = assignCall.start.astChildren.isCall.head
+    call.name shouldBe "something"
+    call.methodFullName shouldBe "something"
+    call.typeFullName shouldBe "i32"
+    call.dispatchType shouldBe "STATIC_DISPATCH"
+    call.signature shouldBe "i32 (...)"
   }
 
   "CPG" in {
@@ -70,18 +53,14 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     val assignLoadCall = block.start.astChildren.isCall.l.apply(0)
     val assignCall = block.start.astChildren.isCall.l.apply(1)
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
-    val ptrCall = assignCall.start.astChildren.isCall.head
-    val ptrCallParam = ptrCall.start.astChildren.isIdentifier.head
-    val receiver = ptrCall.start.receiver.isCall.head
-    val methodRef = receiver.start.astChildren.isMethodRef.head
+    val call = assignCall.start.astChildren.isCall.head
+    val callParam = call.start.astChildren.isIdentifier.head
     val ret = block.start.astChildren.isReturnNode.head
 
     assignLoadCall.start.cfgNext.head shouldBe callValueRef
-    callValueRef.start.cfgNext.head shouldBe methodRef
-    new MethodRef(methodRef.start.raw).cfgNext.head shouldBe receiver
-    receiver.start.cfgNext.head shouldBe ptrCallParam
-    ptrCallParam.start.cfgNext.head shouldBe ptrCall
-    ptrCall.start.cfgNext.head shouldBe assignCall
+    callValueRef.start.cfgNext.head shouldBe callParam
+    callParam.start.cfgNext.head shouldBe call
+    call.start.cfgNext.head shouldBe assignCall
     assignCall.start.cfgNext.head shouldBe ret
   }
 

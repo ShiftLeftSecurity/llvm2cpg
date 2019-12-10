@@ -103,6 +103,7 @@ private:
   CPGProtoNode *emitIndirectFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitDirectFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitObjCFunctionCall(llvm::CallBase *instruction);
+  CPGProtoNode *emitCastFunctionCall(llvm::CallBase *instruction);
 
   CPGProtoNode *emitExtractElement(llvm::ExtractElementInst *instruction);
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);

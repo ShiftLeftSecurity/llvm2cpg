@@ -10,6 +10,7 @@ add_integration_test(C_CallIntTest call_int_c_bc FLAGS -inline=false)
 add_integration_test(C_CallStringTest call_string_c_bc FLAGS -inline=false)
 add_integration_test(C_CallUnknownFunctionTest call_unknown_function_c_bc FLAGS -inline=false)
 add_integration_test(C_CallFunctionPointerTest call_function_pointer_c_bc FLAGS -inline=false)
+add_integration_test(C_CallFunctionCastTest call_cast_c_bc FLAGS -inline=false)
 
 add_integration_test(C_DbgVectorfindTest vectorfind_c_dbg_bc FLAGS -inline=false)
 add_integration_test(C_DbgVectorfindOptTest vectorfind_c_o3_dbg_bc FLAGS -inline=false)
