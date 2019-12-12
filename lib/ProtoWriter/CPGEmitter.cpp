@@ -402,6 +402,13 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
     }
   }
 
+  if (isGlobal(value)) {
+    auto global = llvm::dyn_cast<llvm::GlobalVariable>(value);
+    if (global && global->hasInitializer()) {
+      return emitRefOrConstant(global->getInitializer());
+    }
+  }
+
   if (isLocal(value) || isGlobal(value)) {
     CPGProtoNode *valueRef = builder.identifierNode();
     (*valueRef) //
@@ -419,7 +426,7 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   }
   if (llvm::isa<llvm::ConstantExpr>(value)) {
     return emitConstantExpr(llvm::cast<llvm::ConstantExpr>(value));
-  };
+  }
 
   return emitConstant(value);
 }
@@ -750,6 +757,21 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   //  TODO: handle vectors of addresses, i.e. getelementptr yielding [ i32*, i32*, i32*, ... ]
   //  instead of a single address
   //
+
+  /// If the GEP only has zero indices, then we emit the operand itself bypassing the GEP completely
+  bool shouldSkipGEP = true;
+  for (const llvm::Use &index : instruction->indices()) {
+    llvm::Value *value = index.get();
+    auto constInt = llvm::dyn_cast<llvm::ConstantInt>(value);
+    if (!constInt || !constInt->getValue().isNullValue()) {
+      shouldSkipGEP = false;
+      break;
+    }
+  }
+
+  if (shouldSkipGEP) {
+    return emitRefOrConstant(instruction->getOperand(0));
+  }
 
   llvm::Value *element = instruction->getOperand(0);
   llvm::Value *index = instruction->getOperand(1);

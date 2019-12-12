@@ -8,7 +8,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*", "i32 ()"))
+    validateTypes(cpg, Set("ANY", "i32", "i32 ()"))
   }
 
   "method AST" in {
@@ -49,13 +49,12 @@ class C_ReturnGlobalTest extends CPGMatcher {
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
       rhs.start.astChildren.l.size shouldBe 1
-      rhs.start.astChildren.isIdentifier.l.size shouldBe 1
-      val dereference = rhs.start.astChildren.isIdentifier.head
-      dereference.name shouldBe "x"
-      dereference.typeFullName shouldBe "i32*"
-      dereference.order shouldBe 1
-      dereference.argumentIndex shouldBe 1
-      dereference.start.refsTo.l.size shouldBe 0
+      rhs.start.astChildren.isLiteral.l.size shouldBe 1
+      val argument = rhs.start.astChildren.isLiteral.head
+      argument.code shouldBe "15"
+      argument.typeFullName shouldBe "i32"
+      argument.order shouldBe 1
+      argument.argumentIndex shouldBe 1
     }
 
     {
@@ -80,9 +79,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
 
   "CFG" in {
     /*
-      %x.addr = alloca i32
-      store i32 %x, i32* %x.addr
-      %0 = load i32, i32* %x.addr
+      %0 = load i32, i32* @x
       ret i32 %0
     */
 
@@ -95,7 +92,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
       // %0 = load i32, i32* @x
       val lhs =  assignLoadCall.start.astChildren.isIdentifier.head
       val rhs =  assignLoadCall.start.astChildren.isCall.head
-      val ref = rhs.start.astChildren.isIdentifier.head
+      val ref = rhs.start.astChildren.isLiteral.head
 
       lhs.start.cfgNext.head shouldBe ref
       ref.start.cfgNext.head shouldBe rhs

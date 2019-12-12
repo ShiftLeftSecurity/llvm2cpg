@@ -14,7 +14,7 @@ class C_CallStringTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "i64", "[6 x i8]", "[6 x i8]*", "i32 (i8*)", "void ()"))
+    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "[6 x i8]", "i32 (i8*)", "void ()"))
   }
 
   "AST" in {
@@ -37,25 +37,9 @@ class C_CallStringTest extends CPGMatcher {
     call.typeFullName shouldBe "i32"
     call.signature shouldBe "i32 (i8*)"
 
-    val indexAccess_0 = call.start.astChildren.isCall.head
-    indexAccess_0.typeFullName shouldBe "i8*"
-    indexAccess_0.name shouldBe "<operator>.computedMemberAccess"
-    indexAccess_0.methodFullName shouldBe "<operator>.computedMemberAccess"
-
-    val indexAccess_0_index = indexAccess_0.start.astChildren.isLiteral.head
-    indexAccess_0_index.code shouldBe "0"
-    indexAccess_0_index.typeFullName shouldBe "i64"
-
-    val indexAccess_1 = indexAccess_0.start.astChildren.isCall.head
-    indexAccess_1.typeFullName shouldBe "[6 x i8]"
-    indexAccess_1.name shouldBe "<operator>.computedMemberAccess"
-
-    val indexAccess_1_ref = indexAccess_1.start.astChildren.isIdentifier.head
-    indexAccess_1_ref.typeFullName shouldBe "[6 x i8]*"
-    indexAccess_1_ref.name shouldBe ".str"
-    val indexAccess_1_index = indexAccess_1.start.astChildren.isLiteral.head
-    indexAccess_1_index.typeFullName shouldBe "i64"
-    indexAccess_1_index.code shouldBe "0"
+    val argument = call.start.astChildren.isLiteral.head
+    argument.code shouldBe "hello"
+    argument.typeFullName shouldBe "[6 x i8]"
   }
 
   "CPG" in {
@@ -65,18 +49,10 @@ class C_CallStringTest extends CPGMatcher {
     val assignCall = block.start.astChildren.isCall.head
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     val call = assignCall.start.astChildren.isCall.head
-    val indexAccess_0 = call.start.astChildren.isCall.head
-    val indexAccess_0_index = indexAccess_0.start.astChildren.isLiteral.head
-    val indexAccess_1 = indexAccess_0.start.astChildren.isCall.head
-    val indexAccess_1_ref = indexAccess_1.start.astChildren.isIdentifier.head
-    val indexAccess_1_index = indexAccess_1.start.astChildren.isLiteral.head
+    val argument = call.start.astChildren.isLiteral.head
 
-    callValueRef.start.cfgNext.head shouldBe indexAccess_1_ref
-    indexAccess_1_ref.start.cfgNext.head shouldBe indexAccess_1_index
-    indexAccess_1_index.start.cfgNext.head shouldBe indexAccess_1
-    indexAccess_1.start.cfgNext.head shouldBe indexAccess_0_index
-    indexAccess_0_index.start.cfgNext.head shouldBe indexAccess_0
-    indexAccess_0.start.cfgNext.head shouldBe call
+    callValueRef.start.cfgNext.head shouldBe argument
+    argument.start.cfgNext.head shouldBe call
     call.start.cfgNext.head shouldBe assignCall
 
     val ret = block.start.astChildren.isReturnNode.head

@@ -56,29 +56,9 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     xRef.name shouldBe "x"
     xRef.start.refsTo.head shouldBe x
 
-    val memberAccessGEP_X = assignGEP_X.start.astChildren.isCall.head
-    // TODO: Switch to memberAccess
-//    memberAccessGEP_X.name shouldBe "<operator>.memberAccess"
-//    memberAccessGEP_X.methodFullName shouldBe "<operator>.memberAccess"
-    memberAccessGEP_X.name shouldBe "<operator>.computedMemberAccess"
-    memberAccessGEP_X.methodFullName shouldBe "<operator>.computedMemberAccess"
-    memberAccessGEP_X.typeFullName shouldBe "i32*"
-    memberAccessGEP_X.signature shouldBe "ANY (ANY)"
-
-    val memberAccessGEP_X_memberRef = memberAccessGEP_X.start.astChildren.isLiteral.head
-    memberAccessGEP_X_memberRef.code shouldBe "0"
-
-    val indexAccessGEP_X = memberAccessGEP_X.start.astChildren.isCall.head
-    indexAccessGEP_X.name shouldBe "<operator>.computedMemberAccess"
-    indexAccessGEP_X.typeFullName shouldBe "struct.Point"
-    indexAccessGEP_X.signature shouldBe "ANY (ANY)"
-
-    val indexAccessGEP_X_index = indexAccessGEP_X.start.astChildren.isLiteral.head
-    indexAccessGEP_X_index.code shouldBe "0"
-
-    val pIdentifierX = indexAccessGEP_X.start.astChildren.isIdentifier.head
-    pIdentifierX.name shouldBe "p"
-    pIdentifierX.start.refsTo.head shouldBe p
+    val pRef = assignGEP_X.start.astChildren.isIdentifier.l.apply(1)
+    pRef.name shouldBe "p"
+    pRef.start.refsTo.head shouldBe p
 
     // %y = getelementptr %struct.Point, %struct.Point* %p, i32 0, i32 0
     val assignGEP_Y = calls.apply(2)
@@ -114,18 +94,10 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val assignGEP_X = calls.apply(0)
 
     val xRef = assignGEP_X.start.astChildren.isIdentifier.head
-    val memberAccessGEP_X = assignGEP_X.start.astChildren.isCall.head
-    val memberAccessGEP_X_memberRef = memberAccessGEP_X.start.astChildren.isLiteral.head
-    val indexAccessGEP_X = memberAccessGEP_X.start.astChildren.isCall.head
-    val indexAccessGEP_X_index = indexAccessGEP_X.start.astChildren.isLiteral.head
-    val pIdentifierX = indexAccessGEP_X.start.astChildren.isIdentifier.head
+    val pRef = assignGEP_X.start.astChildren.isIdentifier.l.apply(1)
 
-    xRef.start.cfgNext.head shouldBe pIdentifierX
-    pIdentifierX.start.cfgNext.head shouldBe indexAccessGEP_X_index
-    indexAccessGEP_X_index.start.cfgNext.head shouldBe indexAccessGEP_X
-    indexAccessGEP_X.start.cfgNext.head shouldBe memberAccessGEP_X_memberRef
-    memberAccessGEP_X_memberRef.start.cfgNext.head shouldBe memberAccessGEP_X
-    memberAccessGEP_X.start.cfgNext.head shouldBe assignGEP_X
+    xRef.start.cfgNext.head shouldBe pRef
+    pRef.start.cfgNext.head shouldBe assignGEP_X
 
     // store i32 127, i32* %x
     val assignStoreX = calls.apply(1)
