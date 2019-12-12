@@ -6,8 +6,10 @@
 #include "llvm2cpg/CPG/CPGMethod.h"
 #include "llvm2cpg/CPG/CPGOperatorNames.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
+#include <iomanip>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/InlineAsm.h>
+#include <llvm/Support/JSON.h>
 #include <sstream>
 
 using namespace llvm2cpg;
@@ -496,17 +498,19 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
 
   case llvm::Value::ValueTy::ConstantDataArrayVal: {
     auto cda = llvm::dyn_cast<llvm::ConstantDataArray>(value);
-    if (cda->isCString()) {
-      auto str = cda->getAsCString();
-      /* TODO: We need to do something about constants that are not UTF8. For example:
 
-      for (unsigned char c : str) {
-        if (c > 127) {
-          goto invalid_string;
+    if (cda->isCString()) {
+      llvm::StringRef str = cda->getAsCString();
+      if (llvm::json::isUTF8(str, nullptr)) {
+        literalNode->setCode(str);
+      } else {
+        std::stringstream stream;
+        for (unsigned i = 0; i < cda->getNumElements() - 1; i++) {
+          stream << "0x" << std::setw(2) << std::hex << std::setfill('0')
+                 << cda->getElementAsInteger(i);
         }
+        literalNode->setCode(stream.str());
       }
-      */
-      literalNode->setCode(str);
       break;
     } // else fall through
   }

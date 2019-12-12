@@ -3,5 +3,6 @@ add_smoke_test(ExtractBitcodeTest_bc bitcode_extraction_c_bc)
 add_smoke_test(ExtractBitcodeTest_lto bitcode_extraction_c_lto_bc)
 add_smoke_test(ExtractBitcodeTest_embedBitcode bitcode_extraction_c_bin)
 add_smoke_test(ExtractBitcodeTest_objectFile bitcode_extraction_c_o)
+add_smoke_test(MalformedCStringTest malformed_utf8_ll_bc)
 
 enable_smoke_tests()
