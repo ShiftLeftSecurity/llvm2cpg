@@ -5,7 +5,7 @@ import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_BranchesTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesTestCPG)
 
   "types" in {
     validateTypes(cpg, Set("ANY", "void", "i8", "i1", "i8*", "void ()", "i8 (i1)", "i8 (i8)"))

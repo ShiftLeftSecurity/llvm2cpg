@@ -10,7 +10,7 @@ import io.shiftleft.semanticcpg.language._
   ret void
 */
 class C_CallStringTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_CallStringCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_CallStringTestCPG)
   private val methodName = "basic_c_support"
 
   "types" in {

@@ -5,7 +5,7 @@ import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_SwitchesTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_SwitchesCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_SwitchesTestCPG)
   private val methodName = "switches";
 
   "types" in {

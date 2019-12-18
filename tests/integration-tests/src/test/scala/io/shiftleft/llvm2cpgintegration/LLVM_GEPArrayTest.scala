@@ -8,7 +8,7 @@ import io.shiftleft.semanticcpg.language._
   ret i32* %ptr                                      ;  2
 */
 class LLVM_GEPArrayTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPArrayCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPArrayTestCPG)
   private val methodName = "gep_array"
 
   "types" in {

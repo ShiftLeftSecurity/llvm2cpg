@@ -47,7 +47,7 @@ cond.end:                                         ; preds = %cond.false, %cond.t
 */
 
 class LLVM_PHINodeTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_PHINodeCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_PHINodeTestCPG)
   private val methodName = "foobar"
 
   "types" in {

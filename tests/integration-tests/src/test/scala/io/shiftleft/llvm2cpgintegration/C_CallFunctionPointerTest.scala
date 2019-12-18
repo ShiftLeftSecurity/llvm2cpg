@@ -11,7 +11,7 @@ import io.shiftleft.semanticcpg.language._
   ret void
  */
 class C_CallFunctionPointerTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_CallFunctionPointerCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_CallFunctionPointerTestCPG)
   private val methodName = "basic_c_support"
 
   "types" in {

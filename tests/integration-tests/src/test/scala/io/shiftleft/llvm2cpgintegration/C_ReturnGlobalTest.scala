@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class C_ReturnGlobalTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnGlobalCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnGlobalTestCPG)
   private val methodName = "basic_c_support"
 
   "types" in {

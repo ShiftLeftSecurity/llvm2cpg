@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_SelectInstTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_SelectInstCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_SelectInstTestCPG)
   private val methodName = "basic_c_support"
 
   "types" in {

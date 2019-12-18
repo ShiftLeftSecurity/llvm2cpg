@@ -7,7 +7,7 @@ import io.shiftleft.codepropertygraph.generated.nodes._
 
 
 class C_DbgVectorfindTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_DbgVectorfindCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_DbgVectorfindTestCPG)
   "Parameter Names" in {
     val params = cpg.method.name("findbyte").parameter.l
     params.map{p=>(p.name, p.order)}.toSet[Any] shouldBe Set(("haystack.arg", 1), ("needle.arg", 2), ("bogus.arg", 3))

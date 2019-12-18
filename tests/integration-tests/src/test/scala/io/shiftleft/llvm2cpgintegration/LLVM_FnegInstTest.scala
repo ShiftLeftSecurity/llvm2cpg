@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_FnegInstTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FnegInstCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FnegInstTestCPG)
   private val methodName = "negate"
 
   "types" in {

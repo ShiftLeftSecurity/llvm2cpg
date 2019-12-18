@@ -13,7 +13,7 @@ import io.shiftleft.semanticcpg.language.types.expressions.MethodRef
   ret void
 */
 class C_CallUnknownFunctionTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_CallUnknownFunctionCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_CallUnknownFunctionTestCPG)
   private val methodName = "basic_c_support"
 
   "types" in {

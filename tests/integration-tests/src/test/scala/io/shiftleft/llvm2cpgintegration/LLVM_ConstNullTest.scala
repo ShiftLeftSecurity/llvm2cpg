@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_ConstNullTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_ConstNullCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_ConstNullTestCPG)
 
   "types" in {
     validateTypes(cpg, Set("ANY", "i32*", "i32* ()"))

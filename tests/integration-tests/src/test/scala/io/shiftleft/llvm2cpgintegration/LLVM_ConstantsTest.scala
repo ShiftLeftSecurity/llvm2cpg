@@ -7,7 +7,7 @@ import io.shiftleft.codepropertygraph.generated.nodes._
 
 
 class LLVM_ConstantsTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_ConstantsTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_ConstantsTestCPG)
   "constants" in {
     cpg.method.ast.isLiteral.code.l.toSet shouldBe Set(
       "[4 x i16] [i16 1, i16 2, i16 3, i16 4]",

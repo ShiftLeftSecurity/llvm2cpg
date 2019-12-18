@@ -7,7 +7,7 @@ import io.shiftleft.semanticcpg.language._
 // ret i32 zext (i1 icmp ne (i8* bitcast (i32 (i32*, void (i8*)*)* @__pthread_key_create to i8*), i8* null) to i32)
 
 class LLVM_NestedConstExprTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_NestedConstExprTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_NestedConstExprTestCPG)
   private val methodName = "__gthread_active_p()"
 
   "types" in {

@@ -7,7 +7,7 @@ import io.shiftleft.codepropertygraph.generated.nodes._
 import io.shiftleft.semanticcpg.language.types.expressions.generalizations
 
 class LLVM_AggregateTest extends CPGMatcher {
-    private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AggregateTestCpg)
+    private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AggregateTestCPG)
 
     "types" in {
         validateTypes(cpg, Set(

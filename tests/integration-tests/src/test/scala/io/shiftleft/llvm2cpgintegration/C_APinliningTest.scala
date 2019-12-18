@@ -5,7 +5,7 @@ import io.shiftleft.semanticcpg.language._
 import io.shiftleft.codepropertygraph.generated.nodes._
 
 class C_APinliningTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_APinlineTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_APinliningTestCPG)
   val aliasing = cpg.method.name("nest_alias").head
   val noaliasing = cpg.method.name("nest_noalias").head
   "ast" in{

@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_FenceTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FenceTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_FenceTestCPG)
 
   "types" in {
     validateTypes(cpg, Set("ANY", "void", "void ()"))

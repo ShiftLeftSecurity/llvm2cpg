@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_StoreConstExprTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_StoreConstExprCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_StoreConstExprTestCPG)
   private val methodName = "store_const"
 
   "types" in {

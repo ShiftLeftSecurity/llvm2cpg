@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_AliasTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AliasTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AliasTestCPG)
   private val methodName = "aliases"
 
   "types" in {

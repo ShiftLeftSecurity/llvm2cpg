@@ -4,7 +4,7 @@ import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
 
 class C_ReturnMultipliedParameterTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnMultipliedParameterCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnMultipliedParameterTestCPG)
   private val methodName = "basic_c_support"
 
   "metadata" in {

@@ -12,7 +12,7 @@ import io.shiftleft.semanticcpg.language._
 */
 
 class LLVM_GEPMixedTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPMixedCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPMixedTestCPG)
   private val methodName = "gep_mixed"
 
   "types" in {

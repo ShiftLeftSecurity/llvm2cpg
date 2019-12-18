@@ -9,7 +9,7 @@ ret void
  */
 
 class LLVM_InlineAsmTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_InlineAsmTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_InlineAsmTestCPG)
 
   "types" in {
     validateTypes(cpg, Set("ANY", "void ()*", "void", "void ()"))

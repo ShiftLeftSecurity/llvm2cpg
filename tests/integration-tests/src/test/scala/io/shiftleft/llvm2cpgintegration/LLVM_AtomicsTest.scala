@@ -5,7 +5,7 @@ import io.shiftleft.semanticcpg.language._
 import org.scalatest.{Matchers, WordSpec}
 
 class LLVM_AtomicsTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AtomicsCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AtomicsTestCPG)
 
   "types" in {
     validateTypes(cpg, Set("ANY", "{ i32, i1 }", "i32", "i32*", "void", "void (i32*)", "i32 (i32*)"))

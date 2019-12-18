@@ -14,7 +14,7 @@ import io.shiftleft.semanticcpg.language._
   ret void                                                            ; 5
 */
 class LLVM_GEPFlatStructTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPFlatStructCPG)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_GEPFlatStructTestCPG)
   private val methodName = "flat_struct"
 
   "types" in {

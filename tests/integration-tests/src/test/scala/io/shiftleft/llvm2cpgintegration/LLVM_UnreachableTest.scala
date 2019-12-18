@@ -5,7 +5,7 @@ import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
 
 class LLVM_UnreachableTest extends CPGMatcher {
-  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_UnreachableTestCpg)
+  private val cpg = CpgLoader.load(TestCpgPaths.LLVM_UnreachableTestCPG)
   private val methodName = "unreachable"
 
   "types" in {
