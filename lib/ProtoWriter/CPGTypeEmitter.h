@@ -21,10 +21,11 @@ public:
   void emitObjCTypes(const llvm::Module &module);
   void emitObjCMethodBindings(const llvm::Module *module,
                               std::unordered_map<llvm::Function *, CPGProtoNode *> &emittedMethods);
+  void emitStructMembers(const llvm::Module *module);
   std::string recordType(const llvm::Type *type, const std::string &namespaceName);
   void emitRecordedTypes();
 
-  CPGProtoNode *namedTypeDecl(const std::string &className);
+  CPGProtoNode *namedTypeDecl(const std::string &typeName);
 
 private:
   std::string recordType(const std::string &typeName, const std::string &typeLocation);

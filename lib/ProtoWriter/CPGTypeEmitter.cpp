@@ -1,6 +1,7 @@
 #include "CPGTypeEmitter.h"
 #include "CPGProtoBuilder.h"
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm2cpg/CPG/ObjCTypeHierarchy.h>
@@ -221,6 +222,30 @@ void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
   }
 }
 
+void CPGTypeEmitter::emitStructMembers(const llvm::Module *module) {
+  for (const llvm::StructType *structType : module->getIdentifiedStructTypes()) {
+    if (structType->isOpaque() || !structType->hasName()) {
+      continue;
+    }
+    CPGProtoNode *structDecl = emitTypeDecl(structType->getName(), "<global>");
+    emitType(structType->getName());
+    assert(structDecl);
+    for (unsigned i = 0; i < structType->getStructNumElements(); i++) {
+      std::string typeName = typeToString(structType->getStructElementType(i));
+      emitTypeDecl(typeName, "<global>");
+      emitType(typeName);
+      std::string memberName = std::to_string(i);
+      CPGProtoNode *member = builder.memberNode();
+      (*member) //
+          .setName(memberName)
+          .setCode(memberName)
+          .setTypeFullName(typeName)
+          .setOrder(i);
+      builder.connectAST(structDecl, member);
+    }
+  }
+}
+
 CPGProtoNode *CPGTypeEmitter::emitObjCType(ObjCClassDefinition *base,
                                            ObjCTypeHierarchy &typeHierarchy) {
   std::string baseName = base->getName();
@@ -234,8 +259,8 @@ CPGProtoNode *CPGTypeEmitter::emitObjCType(ObjCClassDefinition *base,
   return baseNode;
 }
 
-CPGProtoNode *CPGTypeEmitter::namedTypeDecl(const std::string &className) {
-  return namedTypeDecls.at(className);
+CPGProtoNode *CPGTypeEmitter::namedTypeDecl(const std::string &typeName) {
+  return namedTypeDecls.at(typeName);
 }
 
 CPGProtoNode *CPGTypeEmitter::emitType(const std::string &typeName) {

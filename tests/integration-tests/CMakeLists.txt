@@ -38,6 +38,7 @@ add_integration_test(LLVM_AggregateTest aggregate_access_ll_bc FLAGS -inline=fal
 add_integration_test(LLVM_AliasTest alias_ll_bc FLAGS -inline=false)
 add_integration_test(LLVM_InlineAsmTest inline_asm_ll_bc FLAGS -inline=false)
 add_integration_test(LLVM_ConstantsTest constants_ll_bc FLAGS -inline=false)
+add_integration_test(LLVM_StructMembersTest llvm_structs_ll_bc FLAGS -inline=false)
 
 add_integration_test(DataFlow_CallerTest dataflow_caller_c_bc FLAGS -inline=false)
 add_integration_test(DataFlow_CallerArgumentsTest dataflow_caller_arguments_c_bc FLAGS -inline=false)

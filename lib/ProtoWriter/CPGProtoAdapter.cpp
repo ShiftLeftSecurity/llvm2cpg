@@ -55,6 +55,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     }
 
     typeEmitter.emitObjCMethodBindings(file.getModule(), emittedMethods);
+    typeEmitter.emitStructMembers(file.getModule());
   }
 
   typeEmitter.emitRecordedTypes();

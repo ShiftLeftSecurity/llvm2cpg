@@ -29,6 +29,7 @@ public:
   CPGProtoNode *identifierNode();
   CPGProtoNode *methodRef();
   CPGProtoNode *bindingNode();
+  CPGProtoNode *memberNode();
 
   void connectAST(const CPGProtoNode *from, const CPGProtoNode *to);
   void connectREF(const CPGProtoNode *from, const CPGProtoNode *to);

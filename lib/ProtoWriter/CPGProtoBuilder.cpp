@@ -79,6 +79,10 @@ CPGProtoNode *CPGProtoBuilder::bindingNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_BINDING);
 }
 
+CPGProtoNode *CPGProtoBuilder::memberNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_MEMBER);
+}
+
 #pragma mark - Node Connection
 
 void CPGProtoBuilder::connectAST(const CPGProtoNode *from, const CPGProtoNode *to) {

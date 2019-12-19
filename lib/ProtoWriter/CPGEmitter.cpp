@@ -799,12 +799,24 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
       indexType = instruction->getType();
     }
 
-    lhs = access;
-    rhs = emitRefOrConstant(index);
+    bool isMemberAccess = indexType->isStructTy() && llvm::isa<llvm::ConstantInt>(index);
 
-    // TODO: Emit proper member access as soon as we have struct types properly emitted
-    bool isStruct = false; // indexType->isStructTy();
-    access = emitGEPAccess(indexType, index, isStruct);
+    lhs = access;
+    if (isMemberAccess) {
+      rhs = builder.identifierNode();
+      rhs->setEntry(rhs->getID());
+
+      auto constIndex = llvm::cast<llvm::ConstantInt>(index);
+      std::string indexName = constantIntToString(constIndex->getValue());
+      (*rhs) //
+          .setName(indexName)
+          .setTypeFullName(getTypeName(indexType))
+          .setCode(indexName);
+    } else {
+      rhs = emitRefOrConstant(index);
+    }
+
+    access = emitGEPAccess(indexType, index, isMemberAccess);
     resolveConnections(access, { lhs, rhs });
   }
 
