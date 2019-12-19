@@ -953,16 +953,24 @@ CPGProtoNode *CPGEmitter::emitIndirectFunctionCall(llvm::CallBase *instruction) 
     return emitCastFunctionCall(instruction);
   }
 
-  CPGProtoNode *callNode = builder.functionCallNode();
   std::string name("indirect_call");
+  std::string dispatch("DYNAMIC_DISPATCH");
+  std::string code(name);
+  /// TODO: Find a better way to represent inline assembly
+  if (instruction->isInlineAsm()) {
+    name = "inline_asm";
+    dispatch = "STATIC_DISPATCH";
+    code = valueToString(instruction->getCalledOperand());
+  }
+  CPGProtoNode *callNode = builder.functionCallNode();
   (*callNode) //
       .setName(name)
-      .setCode(name)
+      .setCode(code)
       .setTypeFullName(getTypeName(instruction->getType()))
       .setMethodInstFullName(name)
       .setMethodFullName(name)
       .setSignature(getTypeName(instruction->getCalledOperand()->getType()))
-      .setDispatchType("DYNAMIC_DISPATCH");
+      .setDispatchType(dispatch);
 
   setLineInfo(callNode);
   CPGProtoNode *receiver = emitRefOrConstant(instruction->getCalledOperand());
