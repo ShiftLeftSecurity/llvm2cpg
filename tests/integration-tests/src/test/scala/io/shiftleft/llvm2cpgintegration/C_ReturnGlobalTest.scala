@@ -49,8 +49,13 @@ class C_ReturnGlobalTest extends CPGMatcher {
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
       rhs.start.astChildren.l.size shouldBe 1
-      rhs.start.astChildren.isLiteral.l.size shouldBe 1
-      val argument = rhs.start.astChildren.isLiteral.head
+      rhs.start.astChildren.isCall.l.size shouldBe 1
+      val addressOf = rhs.start.astChildren.isCall.head
+      addressOf.code shouldBe "addressOf"
+      addressOf.typeFullName shouldBe "ANY"
+      addressOf.order shouldBe 1
+      addressOf.argumentIndex shouldBe 1
+      val argument = addressOf.start.astChildren.isLiteral.head
       argument.code shouldBe "15"
       argument.typeFullName shouldBe "i32"
       argument.order shouldBe 1
@@ -92,10 +97,12 @@ class C_ReturnGlobalTest extends CPGMatcher {
       // %0 = load i32, i32* @x
       val lhs =  assignLoadCall.start.astChildren.isIdentifier.head
       val rhs =  assignLoadCall.start.astChildren.isCall.head
-      val ref = rhs.start.astChildren.isLiteral.head
+      val addressOf = rhs.start.astChildren.isCall.head
+      val literal = addressOf.start.astChildren.isLiteral.head
 
-      lhs.start.cfgNext.head shouldBe ref
-      ref.start.cfgNext.head shouldBe rhs
+      lhs.start.cfgNext.head shouldBe literal
+      literal.start.cfgNext.head shouldBe addressOf
+      addressOf.start.cfgNext.head shouldBe rhs
       rhs.start.cfgNext.head shouldBe assignLoadCall
     }
 

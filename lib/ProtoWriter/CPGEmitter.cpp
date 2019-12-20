@@ -407,7 +407,7 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   if (isGlobal(value)) {
     auto global = llvm::dyn_cast<llvm::GlobalVariable>(value);
     if (global && global->hasInitializer()) {
-      return emitRefOrConstant(global->getInitializer());
+      return emitAddressOf(emitRefOrConstant(global->getInitializer()));
     }
   }
 
@@ -1230,6 +1230,11 @@ void CPGEmitter::setLineInfo(CPGProtoNode *node) {
   if (columnNumber && node) {
     node->setColumnNumber(columnNumber);
   }
+}
+
+llvm2cpg::CPGProtoNode *CPGEmitter::emitAddressOf(llvm2cpg::CPGProtoNode *node) {
+  return resolveConnections(emitGenericOp("<operator>.addressOf", "addressOf", "ANY", "ANY"),
+                            { node });
 }
 
 std::string CPGEmitter::getTypeName(const llvm::Type *type) {

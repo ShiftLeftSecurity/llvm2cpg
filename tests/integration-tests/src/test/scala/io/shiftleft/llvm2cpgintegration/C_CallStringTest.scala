@@ -37,7 +37,12 @@ class C_CallStringTest extends CPGMatcher {
     call.typeFullName shouldBe "i32"
     call.signature shouldBe "i32 (i8*)"
 
-    val argument = call.start.astChildren.isLiteral.head
+    val addressOf = call.start.astChildren.isCall.head
+    addressOf.name shouldBe "<operator>.addressOf"
+    addressOf.code shouldBe "addressOf"
+    addressOf.typeFullName shouldBe "ANY"
+
+    val argument = addressOf.start.astChildren.isLiteral.head
     argument.code shouldBe "hello"
     argument.typeFullName shouldBe "[6 x i8]"
   }
@@ -49,10 +54,12 @@ class C_CallStringTest extends CPGMatcher {
     val assignCall = block.start.astChildren.isCall.head
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     val call = assignCall.start.astChildren.isCall.head
-    val argument = call.start.astChildren.isLiteral.head
+    val addressOf = call.start.astChildren.isCall.head
+    val argument = addressOf.start.astChildren.isLiteral.head
 
     callValueRef.start.cfgNext.head shouldBe argument
-    argument.start.cfgNext.head shouldBe call
+    argument.start.cfgNext.head shouldBe addressOf
+    addressOf.start.cfgNext.head shouldBe call
     call.start.cfgNext.head shouldBe assignCall
 
     val ret = block.start.astChildren.isReturnNode.head
