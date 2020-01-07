@@ -794,12 +794,13 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   // Skipping the pointer operand and the first index
   for (size_t i = 2; i < instruction->getNumOperands(); i++) {
     index = instruction->getOperand(i);
+    bool isMemberAccess = indexType->isStructTy() &&
+                          llvm::cast<llvm::StructType>(indexType)->hasName() &&
+                          llvm::isa<llvm::ConstantInt>(index);
     indexType = nextIndexType(indexType, index);
     if (i == instruction->getNumOperands() - 1) {
       indexType = instruction->getType();
     }
-
-    bool isMemberAccess = indexType->isStructTy() && llvm::isa<llvm::ConstantInt>(index);
 
     lhs = access;
     if (isMemberAccess) {

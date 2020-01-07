@@ -20,6 +20,7 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/constants.ll
   ${CMAKE_CURRENT_LIST_DIR}/malformed_utf8.ll
   ${CMAKE_CURRENT_LIST_DIR}/llvm_structs.ll
+  ${CMAKE_CURRENT_LIST_DIR}/struct_member_access.ll
   )
 
 foreach(source ${SOURCES})

@@ -49,9 +49,9 @@ class LLVM_GEPMixedTest extends CPGMatcher {
 
     // i32 1
     val indexAccessGEP_1 = indexAccessGEP_5.start.astChildren.isCall.head
-    indexAccessGEP_1.name shouldBe "<operator>.computedMemberAccess"
+    indexAccessGEP_1.name shouldBe "<operator>.memberAccess"
     indexAccessGEP_1.typeFullName shouldBe "[10 x [20 x i32]]"
-    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isLiteral.head
+    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isIdentifier.head
     indexAccessGEP_1_index.code shouldBe "1"
 
     // i32 2
@@ -94,7 +94,7 @@ class LLVM_GEPMixedTest extends CPGMatcher {
 
     // i32 1
     val indexAccessGEP_1 = indexAccessGEP_5.start.astChildren.isCall.head
-    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isLiteral.head
+    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isIdentifier.head
 
     // i32 2
     val indexAccessGEP_2 = indexAccessGEP_1.start.astChildren.isCall.head
