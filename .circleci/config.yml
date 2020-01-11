@@ -1,0 +1,24 @@
+version: 2.1
+jobs:
+  "ubuntu-1804":
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run:
+          name: 
+          command: |
+            apt-get update
+            apt-get install -y python3-pip
+            pip3 install ansible
+            cd ci && ansible-playbook ubuntu-playbook.yaml \
+              -e source_dir=$PWD/.. \
+              -e gitref=$CIRCLE_SHA1 \
+              -e host=localhost \
+              --verbose
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "ubuntu-1804"
