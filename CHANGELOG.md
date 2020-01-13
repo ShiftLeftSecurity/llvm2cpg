@@ -1,3 +1,10 @@
+## [0.3.0] - 13 Jan 2020
+
+- String literals now emitted as part of CPG
+- Less indirect calls (function pointers casts promoted to the static calls)
+- Inline assembly is treated as a static call
+- Structs now have (unnamed) members
+
 ## [0.2.1] - 09 Dec 2019
 
 - ObjC class method call resolution
