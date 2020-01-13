@@ -1,9 +1,7 @@
-- name: Setup Ubuntu Machine
+- name: Ubuntu CI
   hosts: "{{ host | default('all') }}"
 
   vars:
-    repo_url: git@github.com:ShiftLeftSecurity/llvm2cpg.git
-    llvm_version: 9.0.0
     platform: ubuntu
 
     llvm2cpg_cxx_flags: -D_GLIBCXX_USE_CXX11_ABI=1
@@ -24,47 +22,12 @@
       - openjdk-8-jdk
       - openjdk-8-jre
 
-    working_dir: /opt
-    gitref: master
-
-    llvm_mapping:
-      ubuntu:
-        9.0.0:
-          url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-          path: clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04
-
-    llvm_url: "{{ llvm_mapping[platform][llvm_version].url }}"
-    llvm_path: "{{ llvm_mapping[platform][llvm_version].path }}"
-    llvm_dir: "{{ working_dir }}/llvm-{{ llvm_version }}"
-
-    protobuf_url: https://github.com/protocolbuffers/protobuf/releases/download/v3.10.1/protobuf-all-3.10.1.zip
-    protobuf_dir: "{{ working_dir }}/protobuf-3.10.1"
-
-    libzip_url: https://github.com/nih-at/libzip.git
-    libzip_dir: "{{ working_dir }}/libzip"
-    libzip_build_dir: "{{ working_dir }}/libzip.build.dir"
-
-    source_dir: "{{ working_dir }}/llvm2cpg"
-    debug_build_dir: "{{ working_dir }}/build.llvm2cpg.debug.dir"
-    release_build_dir: "{{ working_dir }}/build.llvm2cpg.release.dir"
+  vars_files:
+    - helpers/variables.yaml
 
   tasks:
-    ### Basic Setup
-
-    - name: Prepare Working Directory ({{ working_dir }})
-      file:
-        path: "{{ working_dir }}"
-        state: directory
-      become: true
-
-    - name: Change ownership of working directory ({{ working_dir }})
-      file:
-        path: "{{ working_dir }}"
-        owner: "{{ ansible_user_id }}"
-        recurse: true
-      become: true
-
-    ### Install packages
+    - name: Prepare Working Directory
+      include: helpers/working-dir.yaml
 
     - name: Add sbt key
       apt_key:
@@ -84,8 +47,6 @@
         state: present
       become: true
 
-    ### Install CMake
-
     - name: Download CMake
       get_url:
         url: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.sh
@@ -99,132 +60,17 @@
       when: download_cmake.changed
       become: true
 
-    ### Install LLVM
+    - name: Install LLVM
+      include: helpers/install-llvm.yaml
 
-    - name: Download LLVM ({{ llvm_version }})
-      get_url:
-        url: "{{ llvm_url }}"
-        dest: "{{ working_dir }}/{{ llvm_version }}.tar.gz"
-        timeout: 30
-      register: download_llvm
+    - name: Install Protobuf
+      include: helpers/install-protobuf.yaml
 
-    - name: Extract LLVM ({{ llvm_version }})
-      unarchive:
-        src: "{{ working_dir }}/{{ llvm_version }}.tar.gz"
-        dest: "{{ working_dir }}"
-        remote_src: yes
-      when: download_llvm.changed
+    - name: Install Libzip
+      include: helpers/install-libzip.yaml
 
-    - name: Move LLVM ({{ llvm_version }})
-      command: mv {{ working_dir }}/{{ llvm_path }} {{ llvm_dir }}
-      args:
-        creates: "{{ llvm_dir }}"
+    - name: Build and test
+      include: helpers/build-and-test.yaml
 
-    ### Install Protobuf
-
-    - name: Download protobuf
-      get_url:
-        url: "{{ protobuf_url }}"
-        dest: "{{ working_dir }}/protobuf.zip"
-        timeout: 30
-      register: download_protobuf
-
-    - name: Extract protobuf
-      unarchive:
-        src: "{{ working_dir }}/protobuf.zip"
-        dest: "{{ working_dir }}"
-        remote_src: yes
-      when: download_protobuf.changed
-
-    - name: Prepare protobuf build system
-      command: ./configure --enable-static=yes --enable-shared=no
-      args:
-        chdir: "{{ protobuf_dir }}"
-        creates: "{{ protobuf_dir }}/Makefile"
-
-    - name: Build protobuf
-      make:
-        chdir: "{{ protobuf_dir }}"
-
-    - name: Install protobuf
-      command: make install
-      args:
-        chdir: "{{ protobuf_dir }}"
-        creates: /usr/local/bin/protoc
-      become: true
-
-    ### Install Libzip
-
-    - name: Clone libzip
-      git:
-        repo: "{{ libzip_url }}"
-        dest: "{{ libzip_dir }}"
-
-    - name: Create libzip Build Directory
-      file:
-        path: "{{ libzip_build_dir }}"
-        state: directory
-
-    - name: Prepare libzip Build System
-      command: cmake -G Ninja -DBUILD_SHARED_LIBS=OFF -DENABLE_BZIP2=OFF -DENABLE_LZMA=OFF -DCMAKE_BUILD_TYPE=Release {{ libzip_dir }}
-      args:
-        chdir: "{{ libzip_build_dir }}"
-        creates: "{{ libzip_build_dir }}/CMakeCache.txt"
-      environment:
-        CC: "{{ llvm_dir }}/bin/clang"
-        CXX: "{{ llvm_dir }}/bin/clang++"
-
-    - name: Build libzip
-      command: ninja all
-      args:
-        chdir: "{{ libzip_build_dir }}"
-
-    - name: Install libzip
-      command: ninja install
-      args:
-        chdir: "{{ libzip_build_dir }}"
-      become: true
-
-    ### Build llvm2cpg
-
-    - name: Clone sources
-      git:
-        repo: "{{ repo_url }}"
-        dest: "{{ source_dir }}"
-        version: "{{ gitref }}"
-        accept_hostkey: true
-        ssh_opts: "-o ForwardAgent=yes -o StrictHostKeyChecking=no"
-
-    - name: Create Build Directory (Debug)
-      file:
-        path: "{{ debug_build_dir }}"
-        state: directory
-
-    - name: Prepare Build System (Debug)
-      command: cmake -DPATH_TO_LLVM={{ llvm_dir }} -DCMAKE_CXX_FLAGS="{{ llvm2cpg_cxx_flags }}" {{ source_dir }}
-      args:
-        chdir: "{{ debug_build_dir }}"
-        creates: "{{ debug_build_dir }}/CMakeCache.txt"
-      environment:
-        CC: "{{ llvm_dir }}/bin/clang"
-        CXX: "{{ llvm_dir }}/bin/clang++"
-
-    - name: Build llvm2cpg (Debug)
-      command: make all
-      args:
-        chdir: "{{ debug_build_dir }}"
-
-    - name: Build Unit Tests (Debug)
-      command: make unit-tests
-      args:
-        chdir: "{{ debug_build_dir }}"
-
-    ### Run tests
-
-    - name: Run Unit Tests (Debug)
-      command: "{{ debug_build_dir}}/tests/unit-tests/unit-tests"
-
-    - name: Run Integration Tests (Debug)
-      command: make run-integration-tests
-      args:
-        chdir: "{{ debug_build_dir }}"
+    - name: Package
+      include: helpers/package.yaml

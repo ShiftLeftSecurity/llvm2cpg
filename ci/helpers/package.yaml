@@ -1,0 +1,21 @@
+---
+- name: Prepare Package
+  make:
+    target: package
+    chdir: "{{ release_build_dir }}"
+
+- name: Get the package name
+  slurp:
+    src: "{{ release_build_dir }}/PACKAGE_FILE_NAME"
+  register: package_file_name
+
+- name: Prepare package dir
+  file:
+    path: /tmp/packages
+    state: directory
+
+- name: Copy package
+  copy:
+    src: "{{ release_build_dir }}/{{ package_file_name['content'] | b64decode }}.zip"
+    dest: /tmp/packages/
+    remote_src: true

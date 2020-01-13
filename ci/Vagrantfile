@@ -34,4 +34,22 @@ Vagrant.configure(2) do |config|
     end
   end
 
+  config.vm.define "macos" do |cfg|
+    cfg.vm.box = "yzgyyang/macOS-10.14"
+    cfg.ssh.insert_key = false
+    cfg.ssh.forward_agent = true
+
+    configure_vm("macOS", cfg)
+
+    cfg.vm.synced_folder ".", "/vagrant", disabled: true
+    cfg.vm.provision "ansible" do |ansible|
+      ansible.verbose = "v"
+      ansible.playbook = "macos-playbook.yaml"
+      ansible.extra_vars = {
+        llvm_version: ENV['LLVM_VERSION'] || '9.0.0',
+        gitref: ENV['GITREF'] || 'master',
+      }
+    end
+  end
+
 end

@@ -1,0 +1,31 @@
+---
+- name: Download protobuf
+  get_url:
+    url: "{{ protobuf_url }}"
+    dest: "{{ working_dir }}/protobuf.zip"
+    timeout: 30
+  register: download_protobuf
+
+- name: Extract protobuf
+  unarchive:
+    src: "{{ working_dir }}/protobuf.zip"
+    dest: "{{ working_dir }}"
+    remote_src: yes
+  when: download_protobuf.changed
+
+- name: Prepare protobuf build system
+  command: ./configure --enable-static=yes --enable-shared=no
+  args:
+    chdir: "{{ protobuf_dir }}"
+    creates: "{{ protobuf_dir }}/Makefile"
+
+- name: Build protobuf
+  make:
+    chdir: "{{ protobuf_dir }}"
+
+- name: Install protobuf
+  command: make install
+  args:
+    chdir: "{{ protobuf_dir }}"
+    creates: /usr/local/bin/protoc
+  become: true

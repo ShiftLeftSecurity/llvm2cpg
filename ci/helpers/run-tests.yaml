@@ -1,0 +1,8 @@
+---
+- name: Run Unit Tests ({{ build_type }})
+  command: "{{ build_dir}}/tests/unit-tests/unit-tests"
+
+- name: Run Integration Tests ({{ build_type }})
+  command: make run-integration-tests
+  args:
+    chdir: "{{ build_dir }}"

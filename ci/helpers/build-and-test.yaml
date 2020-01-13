@@ -1,0 +1,32 @@
+---
+- name: Clone sources
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ source_dir }}"
+    version: "{{ gitref }}"
+    accept_hostkey: true
+    ssh_opts: "-o ForwardAgent=yes -o StrictHostKeyChecking=no"
+
+- name: Build llvm2cpg
+  include: helpers/build-llvm2cpg.yaml
+  vars:
+    build_dir: "{{ debug_build_dir }}"
+    build_type: Debug
+
+- name: Run tests
+  include: helpers/run-tests.yaml
+  vars:
+    build_dir: "{{ debug_build_dir }}"
+    build_type: Debug
+
+- name: Build llvm2cpg
+  include: helpers/build-llvm2cpg.yaml
+  vars:
+    build_dir: "{{ release_build_dir }}"
+    build_type: Release
+
+- name: Run tests
+  include: helpers/run-tests.yaml
+  vars:
+    build_dir: "{{ release_build_dir }}"
+    build_type: Release

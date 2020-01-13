@@ -1,0 +1,65 @@
+- name: macOS CI
+  hosts: "{{ host | default('all') }}"
+
+  environment:
+    PATH: /usr/local/bin/:{{ ansible_env.PATH }}
+
+  vars:
+    platform: macos
+
+    llvm2cpg_cxx_flags: ""
+
+    packages:
+      - vim
+      - wget
+      - sbt
+      - cmake
+      - zlib
+      - ncurses
+      - sqlite
+      - ninja
+      - gnu-tar
+      - pkg-config
+      - python3
+
+  vars_files:
+    - helpers/variables.yaml
+
+  tasks:
+    - name: Prepare Working Directory
+      include: helpers/working-dir.yaml
+
+    - name: Install OpenJDK
+      homebrew_cask:
+        name: adoptopenjdk
+        state: present
+      environment:
+        HOMEBREW_NO_AUTO_UPDATE: 1
+
+    - name: Install Required Packages
+      homebrew:
+        name: "{{ packages }}"
+        state: present
+      environment:
+        HOMEBREW_NO_AUTO_UPDATE: 1
+
+    - name: Create a symbolic link for gnu-tar
+      file:
+        src: /usr/local/bin/gtar
+        dest: /usr/local/bin/tar
+        state: link
+
+    - name: Install LLVM
+      include: helpers/install-llvm.yaml
+
+    - name: Install Protobuf
+      include: helpers/install-protobuf.yaml
+
+    - name: Install Libzip
+      include: helpers/install-libzip.yaml
+
+    - name: Build and test
+      include: helpers/build-and-test.yaml
+
+    - name: Package
+      include: helpers/package.yaml

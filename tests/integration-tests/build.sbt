@@ -1,6 +1,6 @@
 name := "llvm2cpgintegration"
 ThisBuild / organization := "io.shiftleft"
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := "2.12.0"
 
 val cpgVersion = "0.10.120"
 

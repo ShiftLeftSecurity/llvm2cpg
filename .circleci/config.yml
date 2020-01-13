@@ -16,9 +16,29 @@ jobs:
               -e gitref=$CIRCLE_SHA1 \
               -e host=localhost \
               --verbose
+      - store_artifacts:
+          path: /tmp/packages
+
+  "macos":
+    macos:
+      xcode: "11.1.0"
+    steps:
+      - checkout
+      - run:
+          name: 
+          command: |
+            pip3 install ansible
+            cd ci && ansible-playbook macos-playbook.yaml \
+              -e source_dir=$PWD/.. \
+              -e gitref=$CIRCLE_SHA1 \
+              -e host=localhost \
+              --verbose
+      - store_artifacts:
+          path: /tmp/packages
 
 workflows:
   version: 2
   build:
     jobs:
       - "ubuntu-1804"
+      - "macos"

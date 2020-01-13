@@ -1,0 +1,33 @@
+---
+repo_url: git@github.com:ShiftLeftSecurity/llvm2cpg.git
+llvm_version: 9.0.0
+
+llvm2cpg_cxx_flags: ""
+
+working_dir: /opt
+gitref: master
+
+llvm_mapping:
+  ubuntu:
+    9.0.0:
+      url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+      path: clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04
+  macos:
+    9.0.0:
+      url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz
+      path: clang+llvm-9.0.0-x86_64-darwin-apple
+
+llvm_url: "{{ llvm_mapping[platform][llvm_version].url }}"
+llvm_path: "{{ llvm_mapping[platform][llvm_version].path }}"
+llvm_dir: "{{ working_dir }}/llvm-{{ llvm_version }}"
+
+protobuf_url: https://github.com/protocolbuffers/protobuf/releases/download/v3.10.1/protobuf-all-3.10.1.zip
+protobuf_dir: "{{ working_dir }}/protobuf-3.10.1"
+
+libzip_url: https://github.com/nih-at/libzip.git
+libzip_dir: "{{ working_dir }}/libzip"
+libzip_build_dir: "{{ working_dir }}/libzip.build.dir"
+
+source_dir: "{{ working_dir }}/llvm2cpg"
+debug_build_dir: "{{ working_dir }}/build.llvm2cpg.debug.dir"
+release_build_dir: "{{ working_dir }}/build.llvm2cpg.release.dir"

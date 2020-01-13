@@ -1,0 +1,30 @@
+---
+- name: Clone libzip
+  git:
+    repo: "{{ libzip_url }}"
+    dest: "{{ libzip_dir }}"
+
+- name: Create libzip Build Directory
+  file:
+    path: "{{ libzip_build_dir }}"
+    state: directory
+
+- name: Prepare libzip Build System
+  command: cmake -G Ninja -DBUILD_SHARED_LIBS=OFF -DENABLE_BZIP2=OFF -DENABLE_LZMA=OFF -DCMAKE_BUILD_TYPE=Release {{ libzip_dir }}
+  args:
+    chdir: "{{ libzip_build_dir }}"
+    creates: "{{ libzip_build_dir }}/CMakeCache.txt"
+  environment:
+    CC: "{{ llvm_dir }}/bin/clang"
+    CXX: "{{ llvm_dir }}/bin/clang++"
+
+- name: Build libzip
+  command: ninja all
+  args:
+    chdir: "{{ libzip_build_dir }}"
+
+- name: Install libzip
+  command: ninja install
+  args:
+    chdir: "{{ libzip_build_dir }}"
+  become: true
