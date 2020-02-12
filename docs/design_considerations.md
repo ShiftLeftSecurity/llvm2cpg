@@ -446,3 +446,192 @@ for (size_t i = 0; i < nodes.size() - 1; i++) {
 Each basic block ends with a terminator instruction. We do not process them immediately, but collect
 and process after all the top level nodes are constructed. Take a look at `CPGEmitter::emitMethod` 
 for more details.
+
+
+# Type Deduplication
+
+## Problem Statement
+
+Consider the following example:
+
+```c
+// Point.h
+struct Point {
+  int x;
+  int y;
+};
+```
+
+```c
+// foo.c
+#include "Point.h"
+
+// use struct Point
+```
+
+```c
+// bar.c
+#include "Point.h"
+
+// use struct Point
+```
+
+When `foo.c` and `bar.c` compiled down to the LLVM IR (`foo.ll` and `bar.ll`) they both have `struct Point` as follows:
+
+```llvm
+%struct.Point = type { i32, i32 }
+```
+
+Though, when both IR files loaded in one context the type names changed to prevent name collisions, so they end up being defined as
+
+```llvm
+%struct.Point = type { i32, i32 }
+%struct.Point.0 = type { i32, i32 }
+```
+
+We want to deduplicate such types.
+
+These are the options we considered:
+
+1. `IRLinker`/`llvm-link` it works OK-ish, but far away from being good: it drops some important information. 
+
+The following IR after running through `IRLinker`
+
+```llvm
+%struct.Point = type { i32, i32 }
+%struct.Tuple = type { i32, i32 }
+```
+
+becomes
+
+```llvm
+%struct.Point = type { i32, i32 }
+```
+
+dropping the other struct since both have the same layout.
+We don't want to lose this information.
+
+2. `llvm::StructType::isLayoutIdentical` function is supposed to tell whether two are struct have the same layout.
+Then, we can pick the IR
+
+```llvm
+%struct.Point = type { i32, i32 }
+%struct.Point.0 = type { i32, i32 }
+```
+
+group structs by their canonical name (dropping `struct.` and anything that goes after the next dot),
+and then check if they have the same layout. If that's the case, we consider both structs to be the same and only emit one
+`typeDecl` for both.
+
+However, this approach does not work for the following code:
+
+```llvm
+%struct.Point = type { i32, i32 }
+%struct.Point.0 = type { i32, i32 }
+
+%struct.Wrapper = type { %struct.Point }
+%struct.Wrapper.0 = type { %struct.Point.0 }
+```
+
+According to LLVM, `Point` and `Point.0` have an identical layout, while `Wrapper` and `Wrapper.0` don't. That is because
+LLVM compares types by pointer: `i32` is reused and points to the same `llvm::Type` instance, which is not the case for `Point` and `Point.0`.
+
+## Current Solution
+
+We are not aware of any other present solutions for the problem, so we roll out our own.
+
+### A bit of background
+
+Our implementation is inspired by [Tree Automata](https://en.wikipedia.org/wiki/Tree_automaton) and [Ranked Alphabet](https://en.wikipedia.org/wiki/Ranked_alphabet).
+
+Here is a short description: a ranked alphabet consists of a finite set of symbols _F_, and a function _Arity(f), where f belongs to F_.
+The _Arity_ tells how many arguments a symbol _f_ has. Symbols can be constant, unary, binary, ternary, or n-ary.
+
+Here is an example of the notation: `a`, `b`, `f(,)`, `g()`, `h(,,,,)`, `a` and `b` are constants, `f(,)` is binary, `g()` is unary, and `h(,,,,)` is n-ary.
+Arity for each symbol is 0, 0, 2, 1, and 5, respectively.
+
+Given the alphabet `a`, `b`, `f(,)`, `g()` we can construct a number of trees:
+
+ - f(a, b)
+ - g(b)
+ - g(f(b, b))
+ - f(g(a), f(f(a, a), b))
+ - f(g(a), g(f(a, a)))
+ 
+etc.
+
+If we know the arity of each symbol, then we can omit parentheses and commas and write the tree as a string.
+The tree is constructed in the depth-first order, here are the same examples as above, but in the string notation:
+
+ - fab
+ - gb
+ - gfbb
+ - fgaffaab
+ - fgagfaa
+ 
+### Type Equality
+
+We consider each type to be a symbol and its arity is the number of properties we want to compare. Then, we build a tree of the type and convert it to the string representation.
+If two types have the same string representation, then they are equal.
+
+Some examples:
+
+ - `i32`, `i64`, `i156`: symbol `I`, arity is 1 since we only care about bitwidth (e.g., 32, 64, 156)
+ - `float`: symbol `F`, arity is 0, all `float` types are the same
+ - `[16 x i32]`: symbol `A`, arity is 2, we care only about the length of the array and its element type
+ - `i8*`: symbol `P`, arity is 1, we care only about the pointee type
+ - `{ i32, [16 x i8], i8* }`: symbol `S`, arity is number of elements + 2. We want to store the struct ID and number of its elements.
+ 
+If we care about more or fewer values, then we can simply increase the arity for a given symbol.
+More examples with the above example in mind:
+
+ - `i32` -> `I(32)` -> `I32`
+ - `i177` -> `I(177)` -> `I177`
+ - `[16 x i8*]` -> `A(16, P(I(8)))` -> `A16PI8`
+ - `{ i32, i8*, float }` -> `S(3, S0, I(32), P(I(8)), F)` -> `S300I32PI8F`
+ 
+_Note:_ the values in `S` are the number of elements (3), struct ID (`S0`), and all its nested types defined recursively
+
+### Structural Equality
+
+Above we mentioned the `struct ID`. We need it to define the structural equality for recursive types.
+Consider the following example: 
+
+```llvm
+%list = type { %list*, i32 }
+%node = type { %node*, i32 }
+%root = type { %node*, i32 } 
+``` 
+All of the above structs have the same layout: a pointer + an integer. But we do not consider them all to be equal.
+By our definition of equality the following holds:
+
+```
+list == node
+root != node
+root != list
+```
+
+The reasoning is simple: the `list` and `node` has the same layout and the same structure (recursive), while `root` has another structure.
+In order to take this into account and to make the equality hold we do not use the names of the structures, but before building the tree we assign them a symbolic name or IDs.
+So both the `list` and `node` encoded as the following: `S(2, S0, P(S(2, S0, x, x), I(32))` where `x` is the placeholder for a recursive struct definition,
+while the `root` is defined as follows `S(2, S0, P(S(2, S1, P(S(2, S1, x, x), I(32), I(32))), I(32))` please note the nestedness and `S0` and `S1` struct IDs.
+
+Given these two encodings, the comparison above holds.
+
+### Opaque Struct Equality
+
+Comparing opaque structs is something that is not easy to define. We also use symbolic names whenever we see an opaque struct.
+But different opaque structs get the same symbolic name as soon as the have the same canonical name, example:
+
+```llvm
+%struct.A = type opaque
+%struct.A.0 = type opaque
+%struct.B = type opaque
+
+%foo = type { %struct.A* }
+%bar = type { %struct.A.0* }
+%buzz = type { %struct.B* }
+``` 
+Here, the canonical names for opaque structs are `A` (`%struct.A`, `%struct.A.0`) and `B` (`%struct.B`).
+Therefore, we consider the `%struct.A` and `%struct.A.0` as equal, while `%struct.B` is not equal to either of `A`s.
+Even though, all of the 3 structs can point to the same type, or to completely different types.  
