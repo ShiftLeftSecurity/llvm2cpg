@@ -471,7 +471,6 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
   literalNode->setTypeFullName(getTypeName(value->getType()));
   resolveConnections(literalNode, {});
   setLineInfo(literalNode);
-
   switch (value->getValueID()) {
   case llvm::Value::ValueTy::ConstantIntVal:
     literalNode->setCode(constantIntToString(llvm::dyn_cast<llvm::ConstantInt>(value)->getValue()));
@@ -480,9 +479,12 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     literalNode->setCode("nullptr");
     break;
   case llvm::Value::ValueTy::ConstantFPVal:
-    literalNode->setCode(
-        std::to_string(llvm::dyn_cast<llvm::ConstantFP>(value)->getValueAPF().convertToDouble()));
-    break;
+    {
+      llvm::SmallVector<char, 16> tmp;
+      llvm::dyn_cast<llvm::ConstantFP>(value)->getValueAPF().toString(tmp);
+      literalNode->setCode(std::string(tmp.begin(), tmp.end()));
+      break;
+    }
   case llvm::Value::ValueTy::ConstantAggregateZeroVal:
     literalNode->setCode("zero initialized");
     break;
