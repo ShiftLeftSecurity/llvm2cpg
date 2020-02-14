@@ -12,7 +12,7 @@ TEST(CPGMethod, basicProperties) {
   llvm::LLVMContext context;
   CPGLogger logger;
   BitcodeLoader loader(logger);
-  auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path(), context);
+  auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path());
   ASSERT_NE(bitcode.get(), nullptr);
 
   auto &function = *bitcode->functions().begin();

@@ -8,8 +8,8 @@ import io.shiftleft.semanticcpg.language.types.expressions.generalizations
 
 abstract class CPGMatcher extends WordSpec with Matchers with AppendedClues {
   def validateTypes(cpg: Cpg, types: Set[String]) {
-    cpg.typeDecl.name.toSet shouldBe types
-    cpg.types.name.toSet shouldBe types
+    cpg.typeDecl.name.toSet.toList.sorted shouldBe types.toList.sorted
+    cpg.types.name.toSet.toList.sorted shouldBe types.toList.sorted
   }
 /* Starting from Method, generates lists of all AST descendants with nontrivial CFG (first non-RETURN nodes with !=1 predecessors, then non-entry nodes with != 1 successors)*/
   def getNonStraightCfg(meth: Method) = {

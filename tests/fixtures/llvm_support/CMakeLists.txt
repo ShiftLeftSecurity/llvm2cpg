@@ -21,6 +21,9 @@ set (SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/malformed_utf8.ll
   ${CMAKE_CURRENT_LIST_DIR}/llvm_structs.ll
   ${CMAKE_CURRENT_LIST_DIR}/struct_member_access.ll
+
+  ${CMAKE_CURRENT_LIST_DIR}/struct_merging_1.ll
+  ${CMAKE_CURRENT_LIST_DIR}/struct_merging_2.ll
   )
 
 foreach(source ${SOURCES})

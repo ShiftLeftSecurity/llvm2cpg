@@ -5,8 +5,13 @@
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm2cpg/CPG/ObjCTypeHierarchy.h>
+#include <llvm2cpg/LLVMExt/TypeEquality.h>
 #include <llvm2cpg/Traversals/ObjCTraversal.h>
+#include <llvm2cpg/Logger/CPGLogger.h>
 #include <sstream>
+#include <set>
+#include <unordered_map>
+#include <utility>
 
 using namespace llvm2cpg;
 
@@ -21,28 +26,21 @@ static std::string concatStrings(const std::vector<std::string> &v) {
   return stream.str();
 }
 
-static std::string typeToString(const llvm::Type *type);
-static std::string typeToString(const llvm::PointerType *type);
-static std::string typeToString(const llvm::StructType *type);
-static std::string typeToString(const llvm::FunctionType *type);
-static std::string typeToString(const llvm::VectorType *type);
-static std::string typeToString(const llvm::ArrayType *type);
-static std::string defaultTypeToString(const llvm::Type *type);
-
-static std::string defaultTypeToString(const llvm::Type *type) {
+std::string CPGTypeEmitter::defaultTypeToString(const llvm::Type *type) {
   std::string typeName;
   llvm::raw_string_ostream stream(typeName);
   type->print(stream);
   return stream.str();
 }
 
-static std::string typeToString(const llvm::PointerType *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::PointerType *type) {
   return typeToString(type->getElementType()) + "*";
 }
 
-static std::string typeToString(const llvm::StructType *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::StructType *type) {
   if (type->hasName()) {
-    return type->getStructName();
+    assert(canonicalNames.count(type));
+    return canonicalNames[type];
   }
 
   std::vector<std::string> types;
@@ -56,7 +54,7 @@ static std::string typeToString(const llvm::StructType *type) {
   return stream.str();
 }
 
-static std::string typeToString(const llvm::FunctionType *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::FunctionType *type) {
   std::vector<std::string> types;
   types.reserve(type->getFunctionNumParams());
   for (unsigned i = 0; i < type->getFunctionNumParams(); i++) {
@@ -71,7 +69,7 @@ static std::string typeToString(const llvm::FunctionType *type) {
   return stream.str();
 }
 
-static std::string typeToString(const llvm::VectorType *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::VectorType *type) {
   std::stringstream stream;
   stream << "<";
   if (type->isScalable()) {
@@ -81,13 +79,13 @@ static std::string typeToString(const llvm::VectorType *type) {
   return stream.str();
 }
 
-static std::string typeToString(const llvm::ArrayType *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::ArrayType *type) {
   std::stringstream stream;
   stream << "[" << type->getNumElements() << " x " << typeToString(type->getElementType()) << "]";
   return stream.str();
 }
 
-static std::string typeToString(const llvm::Type *type) {
+std::string CPGTypeEmitter::typeToString(const llvm::Type *type) {
   switch (type->getTypeID()) {
   case llvm::Type::VoidTyID:
   case llvm::Type::HalfTyID:
@@ -120,7 +118,7 @@ static std::string typeToString(const llvm::Type *type) {
   }
 }
 
-CPGTypeEmitter::CPGTypeEmitter(CPGProtoBuilder &builder) : builder(builder) {
+CPGTypeEmitter::CPGTypeEmitter(CPGProtoBuilder &builder, CPGLogger &logger) : builder(builder), logger(logger) {
   recordType("ANY", "<global>");
 }
 
@@ -222,24 +220,92 @@ void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
   }
 }
 
+struct CanonicalNameCounter {
+  std::string name;
+  size_t counter;
+  explicit CanonicalNameCounter(std::string n) : name(std::move(n)), counter(0) {}
+  void bump() {
+    counter += 1;
+  }
+  std::string getName() {
+    if (counter == 0) {
+      return name;
+    } else {
+      return name + "_" + std::to_string(counter);
+    }
+  }
+};
+
+void CPGTypeEmitter::recordCanonicalStructNames(std::vector<const llvm::Module *> &modules) {
+  logger.uiInfo("Start type deduplication");
+  /// Struct types in C/C++/ObjC are named in the following way:
+  ///   - struct.Foo
+  ///   - struct.Foo.0
+  ///   - struct.Foo.152
+  /// We consider the 'Foo' part to be the canonical name.
+  /// There are cases in which structs of a different layout can have the same canonical names:
+  /// %struct.Foo = { i32, i32 }
+  /// %struct.Foo.120 = { float, float }
+  /// In this case we emit Foo and Foo_1 to distinguish the types
+  std::unordered_map<std::string, std::vector<const llvm::StructType *>> namedStructClusters;
+  std::vector<const llvm::StructType *> allTypes;
+  for (const llvm::Module *module : modules) {
+    for (const llvm::StructType *structType : module->getIdentifiedStructTypes()) {
+      allTypes.push_back(structType);
+      std::string name = llvm_ext::getCanonicalName(structType);
+      namedStructClusters[name].push_back(structType);
+    }
+  }
+
+  llvm_ext::TypesComparator typesComparator;
+
+  std::set<std::string> uniqCanonicalNames;
+  for (auto &pair : namedStructClusters) {
+    std::vector<const llvm::StructType *> &cluster = pair.second;
+    auto it = cluster.begin();
+    while (it != cluster.end()) {
+      it = std::partition(it, cluster.end(), [&](const llvm::StructType *type) -> bool {
+        return typesComparator.typesEqual(*it, type);
+      });
+    }
+
+    const llvm::StructType *currentStruct = cluster.front();
+    CanonicalNameCounter nameCounter(pair.first);
+    canonicalNames[currentStruct] = nameCounter.getName();
+    uniqCanonicalNames.insert(nameCounter.getName());
+    for (size_t i = 1; i < cluster.size(); i++) {
+      const llvm::StructType *nextStruct = cluster[i];
+      if (!typesComparator.typesEqual(currentStruct, nextStruct)) {
+        nameCounter.bump();
+        currentStruct = nextStruct;
+      }
+      canonicalNames[nextStruct] = nameCounter.getName();
+
+      uniqCanonicalNames.insert(nameCounter.getName());
+    }
+  }
+  logger.uiInfo("Finish type deduplication");
+}
+
 void CPGTypeEmitter::emitStructMembers(const llvm::Module *module) {
   for (const llvm::StructType *structType : module->getIdentifiedStructTypes()) {
     if (structType->isOpaque() || !structType->hasName()) {
       continue;
     }
-    CPGProtoNode *structDecl = emitTypeDecl(structType->getName(), "<global>");
-    emitType(structType->getName());
+    std::string canonicalName = typeToString(structType);
+    CPGProtoNode *structDecl = emitTypeDecl(canonicalName, "<global>");
+    emitType(canonicalName);
     assert(structDecl);
     for (unsigned i = 0; i < structType->getStructNumElements(); i++) {
-      std::string typeName = typeToString(structType->getStructElementType(i));
-      emitTypeDecl(typeName, "<global>");
-      emitType(typeName);
+      std::string memberTypeName = typeToString(structType->getStructElementType(i));
+      emitTypeDecl(memberTypeName, "<global>");
+      emitType(memberTypeName);
       std::string memberName = std::to_string(i);
       CPGProtoNode *member = builder.memberNode();
       (*member) //
           .setName(memberName)
           .setCode(memberName)
-          .setTypeFullName(typeName)
+          .setTypeFullName(memberTypeName)
           .setOrder(i);
       builder.connectAST(structDecl, member);
     }

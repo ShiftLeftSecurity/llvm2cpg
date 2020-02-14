@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string input = BitcodePaths[i];
     std::cout << "Processing " << input << "\n";
-    std::unique_ptr<llvm::Module> bitcode = loader.loadBitcode(input, context);
+    std::unique_ptr<llvm::Module> bitcode = loader.loadBitcode(input);
     transforms.transformBitcode(*bitcode);
     std::string outputFilename = getOutputFilename(input);
 

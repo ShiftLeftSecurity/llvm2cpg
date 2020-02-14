@@ -7,25 +7,23 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/SourceMgr.h>
-#include <sstream>
 #include <set>
+#include <sstream>
 
 using namespace llvm2cpg;
 
 BitcodeLoader::BitcodeLoader(CPGLogger &logger) : logger(logger) {}
 
-std::unique_ptr<llvm::Module> BitcodeLoader::loadBitcode(const std::string &path,
-                                                         llvm::LLVMContext &context) {
+std::unique_ptr<llvm::Module> BitcodeLoader::loadBitcode(const std::string &path) {
   auto memoryBuffer = llvm::MemoryBuffer::getFile(path);
   if (!memoryBuffer) {
     logger.uiWarning(std::string("Could not get file: " + path));
     return std::unique_ptr<llvm::Module>();
   }
-  return loadBitcode(*memoryBuffer.get(), context);
+  return loadBitcode(*memoryBuffer.get());
 }
 
-std::unique_ptr<llvm::Module> BitcodeLoader::loadIR(const std::string &path,
-                                                    llvm::LLVMContext &context) {
+std::unique_ptr<llvm::Module> BitcodeLoader::loadIR(const std::string &path) {
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> memoryBuffer =
       llvm::MemoryBuffer::getFile(path);
   if (!memoryBuffer) {
@@ -33,11 +31,10 @@ std::unique_ptr<llvm::Module> BitcodeLoader::loadIR(const std::string &path,
     return std::unique_ptr<llvm::Module>();
   }
 
-  return loadBitcode(*memoryBuffer.get(), context);
+  return loadBitcode(*memoryBuffer.get());
 }
 
-std::vector<std::unique_ptr<llvm::Module>>
-BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &context) {
+std::vector<std::unique_ptr<llvm::Module>> BitcodeLoader::extractBitcode(const std::string &path) {
   std::vector<std::unique_ptr<llvm::Module>> modules;
 
   ebc::BitcodeRetriever retriever(path);
@@ -98,7 +95,7 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
         logger.logWarning(std::string("Cannot create memory buffer"));
         continue;
       }
-      std::unique_ptr<llvm::Module> module = loadBitcode(*buffer, context);
+      std::unique_ptr<llvm::Module> module = loadBitcode(*buffer);
       if (module) {
         modules.push_back(std::move(module));
       }
@@ -108,12 +105,14 @@ BitcodeLoader::extractBitcode(const std::string &path, llvm::LLVMContext &contex
   return modules;
 }
 
-std::unique_ptr<llvm::Module> BitcodeLoader::loadBitcode(llvm::MemoryBuffer &buffer,
-                                                         llvm::LLVMContext &context) {
+std::unique_ptr<llvm::Module> BitcodeLoader::loadBitcode(llvm::MemoryBuffer &buffer) {
+  contexts.emplace_back(new llvm::LLVMContext);
   llvm::SMDiagnostic diagnostic;
   std::unique_ptr<llvm::Module> module =
-      llvm::parseIR(buffer.getMemBufferRef(), diagnostic, context);
+      llvm::parseIR(buffer.getMemBufferRef(), diagnostic, *contexts.back());
   if (!module) {
+    /// Destroy newly created context since it's not used
+    contexts.pop_back();
     std::string message;
     llvm::raw_string_ostream stream(message);
     diagnostic.print("Cannot load bitcode", stream, false, false);

@@ -39,9 +39,26 @@ const llvm::ConstantStruct *ObjCClassDefinition::getDefinition() {
   return definition;
 }
 
+static llvm::Type *findObjCClassType(const llvm::Module *bitcode, const std::string &typePrefix) {
+  for (llvm::StructType *type : bitcode->getIdentifiedStructTypes()) {
+    if (type->hasName() && type->getName().startswith(typePrefix)) {
+      return type;
+    }
+  }
+  return nullptr;
+}
+
+static llvm::Type *findObjCClassTType(const llvm::Module *bitcode) {
+  return findObjCClassType(bitcode, "struct._class_t");
+}
+
+static llvm::Type *findObjCClassROTType(const llvm::Module *bitcode) {
+  return findObjCClassType(bitcode, "struct._class_ro_t");
+}
+
 ObjCTraversal::ObjCTraversal(const llvm::Module *bitcode)
-    : bitcode(bitcode), class_t(bitcode->getTypeByName("struct._class_t")),
-      class_ro_t(bitcode->getTypeByName("struct._class_ro_t")) {}
+    : bitcode(bitcode), class_t(findObjCClassTType(bitcode)),
+      class_ro_t(findObjCClassROTType(bitcode)) {}
 
 std::vector<ObjCClassDefinition *> ObjCTraversal::objcClasses() {
   std::vector<ObjCClassDefinition *> classes;

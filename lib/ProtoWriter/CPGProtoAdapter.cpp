@@ -27,7 +27,13 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       .setFullName("<global>")
       .setOrder(0);
 
-  CPGTypeEmitter typeEmitter(builder);
+  CPGTypeEmitter typeEmitter(builder, logger);
+  std::vector<const llvm::Module *> modules;
+  for (const CPGFile &file : cpg.getFiles()) {
+    modules.push_back(file.getModule());
+  }
+  typeEmitter.recordCanonicalStructNames(modules);
+
   for (size_t index = 0; index < cpg.getFiles().size(); index++) {
     logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
                   std::to_string(cpg.getFiles().size()));

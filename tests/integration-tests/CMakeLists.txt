@@ -49,5 +49,8 @@ add_integration_test(CXX_ClassMethodNamesTest class_method_names_cpp_ll FLAGS -i
 add_integration_test(ObjC_ClassesTest objc_classes_ll_bc FLAGS -inline=false)
 add_integration_test(ObjC_MethodsTest objc_methods_ll_bc FLAGS -inline=false)
 add_integration_test(ObjC_ExternalClassTest objc_external_class_ll_bc FLAGS -inline=false)
+add_integration_test(ObjC_MultipleExternalClassesTest objc_external_class_ll_bc objc_external_class_2_ll_bc FLAGS -inline=false)
+
+add_integration_test(StructMerging_01_Test struct_merging_1_ll_bc struct_merging_2_ll_bc FLAGS -inline=false)
 
 enable_integration_tests()

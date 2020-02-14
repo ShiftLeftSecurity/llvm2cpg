@@ -18,11 +18,11 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
     topGepCall.name shouldBe "<operator>.memberAccess"
 
     val structGep = topGepCall.start.astChildren.isCall.head
-    structGep.typeFullName shouldBe "struct.kcdata_subtype_descriptor"
+    structGep.typeFullName shouldBe "kcdata_subtype_descriptor"
     structGep.name shouldBe "<operator>.computedMemberAccess"
 
     val arrayGep = structGep.start.astChildren.isCall.head
-    arrayGep.typeFullName shouldBe "[7 x struct.kcdata_subtype_descriptor]"
+    arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]"
     arrayGep.name shouldBe "<operator>.computedMemberAccess"
   }
 }
