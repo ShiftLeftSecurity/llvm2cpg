@@ -20,6 +20,6 @@ class LLVM_FenceTest extends CPGMatcher {
     f2.start.cfgNext.l.size shouldBe 1
     val f3 = f2.start.cfgNext.isCall.name("fence").head
     f3.start.cfgNext.l.size shouldBe 1
-    f3.start.cfgNext.isReturnNode.l.size shouldBe 1
+    f3.start.cfgNext.isReturn.l.size shouldBe 1
   }
 }

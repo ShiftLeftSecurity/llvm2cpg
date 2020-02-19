@@ -19,7 +19,7 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
     val block = method.start.block.head
     block.start.astChildren.l.size shouldBe 1
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     ret.start.astChildren.l.size shouldBe 1
     val zext = ret.start.astChildren.isCall.head
@@ -48,7 +48,7 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
   "CFG" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     val zext = ret.start.astChildren.isCall.head
     val icmp = zext.start.astChildren.isCall.head
     val icmpBitcast = icmp.start.astChildren.isCall.head

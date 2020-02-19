@@ -140,7 +140,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     assignGEP_Y.start.cfgNext.head shouldBe refY
 
     // ret void
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     assignStoreY.start.cfgNext.head shouldBe ret
   }
 

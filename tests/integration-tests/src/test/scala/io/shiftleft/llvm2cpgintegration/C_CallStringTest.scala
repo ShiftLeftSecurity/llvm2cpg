@@ -62,7 +62,7 @@ class C_CallStringTest extends CPGMatcher {
     addressOf.start.cfgNext.head shouldBe call
     call.start.cfgNext.head shouldBe assignCall
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     assignCall.start.cfgNext.head shouldBe ret
   }
 

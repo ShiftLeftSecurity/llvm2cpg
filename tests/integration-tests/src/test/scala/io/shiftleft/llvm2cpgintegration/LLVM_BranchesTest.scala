@@ -23,7 +23,7 @@ class LLVM_BranchesTest extends CPGMatcher {
     noop2.code shouldBe "noop"
     noop1.getId shouldNot be(noop2.getId)
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
   }
 
@@ -33,7 +33,7 @@ class LLVM_BranchesTest extends CPGMatcher {
 
     val noop1 = block.start.astChildren.head.asInstanceOf[Expression]
     val noop2 = block.start.astChildren.l.apply(2).asInstanceOf[Expression]
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     method.start.cfgFirst.head shouldBe noop1
     noop1.start.cfgNext.head shouldBe noop2
@@ -58,7 +58,7 @@ class LLVM_BranchesTest extends CPGMatcher {
     noop2.getId shouldNot be(noop3.getId)
     noop3.getId shouldNot be(noop1.getId)
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
   }
 
@@ -69,7 +69,7 @@ class LLVM_BranchesTest extends CPGMatcher {
     val noop1 = block.start.astChildren.head.asInstanceOf[Expression]
     val noop2 = block.start.astChildren.l.apply(1).asInstanceOf[Expression]
     val noop3 = block.start.astChildren.l.apply(2).asInstanceOf[Expression]
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     method.start.cfgFirst.head shouldBe noop1
     noop1.start.cfgNext.toSet shouldBe Set(noop2, noop3)
@@ -89,7 +89,7 @@ class LLVM_BranchesTest extends CPGMatcher {
     noop2.code shouldBe "noop"
     noop1.getId shouldNot be(noop2.getId)
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
   }
 
@@ -99,7 +99,7 @@ class LLVM_BranchesTest extends CPGMatcher {
 
     val noop1 = block.start.astChildren.head.asInstanceOf[Expression]
     val noop2 = block.start.astChildren.l.apply(1).asInstanceOf[Expression]
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     method.start.cfgFirst.head shouldBe noop1
     noop1.start.cfgNext.head shouldBe noop2

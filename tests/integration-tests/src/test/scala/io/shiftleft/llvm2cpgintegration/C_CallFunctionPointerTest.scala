@@ -46,7 +46,7 @@ class C_CallFunctionPointerTest extends CPGMatcher {
     val assignLoadCall = block.start.astChildren.isCall.l.apply(1)
     val ptrCall = block.start.astChildren.isCall.l.apply(2)
     val receiver = ptrCall.start.receiver.isIdentifier.head
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     assignLoadCall.start.cfgNext.head shouldBe receiver
     receiver.start.cfgNext.head shouldBe ptrCall

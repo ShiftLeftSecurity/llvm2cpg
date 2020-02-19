@@ -23,7 +23,7 @@ class LLVM_UnreachableTest extends CPGMatcher {
     val unreachable = block.start.astChildren.l.apply(1).asInstanceOf[Unknown]
     unreachable.code shouldBe "unreachable"
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
   }
 
@@ -33,7 +33,7 @@ class LLVM_UnreachableTest extends CPGMatcher {
 
     val noop = block.start.astChildren.head.asInstanceOf[Expression]
     val unreachable = block.start.astChildren.l.apply(1).asInstanceOf[Expression]
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     method.start.cfgFirst.head shouldBe noop
     noop.start.cfgNext.head shouldBe unreachable

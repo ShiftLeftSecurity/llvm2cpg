@@ -29,7 +29,7 @@ class LLVM_SwitchesTest extends CPGMatcher {
     val default = block.start.astChildren.l.apply(3).asInstanceOf[Unknown]
     default.code shouldBe "noop"
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
   }
 
@@ -41,7 +41,7 @@ class LLVM_SwitchesTest extends CPGMatcher {
     val first = block.start.astChildren.l.apply(1).asInstanceOf[Expression]
     val second = block.start.astChildren.l.apply(2).asInstanceOf[Expression]
     val default = block.start.astChildren.l.apply(3).asInstanceOf[Expression]
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     method.start.cfgFirst.head shouldBe switch
     switch.start.cfgNext.toSet shouldBe Set(first, second, default)

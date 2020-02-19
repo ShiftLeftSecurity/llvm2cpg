@@ -23,7 +23,7 @@ class LLVM_SelectInstTest extends CPGMatcher {
     val sel = block.start.local.head
     sel.name shouldBe "sel"
 
-    block.start.astChildren.isReturnNode.l.size shouldBe 1
+    block.start.astChildren.isReturn.l.size shouldBe 1
     block.start.astChildren.isCall.l.size shouldBe 1
 
     val assignSelect = block.start.astChildren.isCall.head
@@ -48,7 +48,7 @@ class LLVM_SelectInstTest extends CPGMatcher {
     selectFalse.code shouldBe "17"
     selectFalse.typeFullName shouldBe "i32"
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     val retRef = ret.start.astChildren.isIdentifier.head
     retRef.name shouldBe "sel"
     retRef.start.refsTo.head shouldBe sel
@@ -68,7 +68,7 @@ class LLVM_SelectInstTest extends CPGMatcher {
     val selectCondition = selectCall.start.astChildren.isLiteral.l.head
     val selectTrue = selectCall.start.astChildren.isLiteral.l.apply(1)
     val selectFalse = selectCall.start.astChildren.isLiteral.l.apply(2)
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     val retRef = ret.start.astChildren.isIdentifier.head
 
     method.start.cfgFirst.head shouldBe selRef

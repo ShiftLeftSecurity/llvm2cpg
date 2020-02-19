@@ -59,7 +59,7 @@ class LLVM_GEPArrayTest extends CPGMatcher {
     indexAccessGEP.start.cfgNext.head shouldBe assignGEP
 
     // ret i32* %ptr
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     val retPtr = ret.start.astChildren.isIdentifier.head
     assignGEP.start.cfgNext.head shouldBe retPtr
   }

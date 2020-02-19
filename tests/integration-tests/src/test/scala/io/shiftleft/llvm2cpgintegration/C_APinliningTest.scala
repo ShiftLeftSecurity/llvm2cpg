@@ -15,10 +15,10 @@ class C_APinliningTest extends CPGMatcher {
     val alias_topnodes = cpg.method.name("nest_alias").block.astChildren.l
     alias_topnodes.size shouldBe 4
     alias_topnodes.filter{_.isInstanceOf[Local]}.size shouldBe 1
-    alias_topnodes.start.isReturnNode.l.size shouldBe 1
+    alias_topnodes.start.isReturn.l.size shouldBe 1
     alias_topnodes.start.isCall.name("<operator>.assignment").l.size shouldBe 2
     //nothing is inlined into the return Node
-    alias_topnodes.start.isReturnNode.astChildren.isIdentifier.l.size shouldBe 1
+    alias_topnodes.start.isReturn.astChildren.isIdentifier.l.size shouldBe 1
 
   }
 }

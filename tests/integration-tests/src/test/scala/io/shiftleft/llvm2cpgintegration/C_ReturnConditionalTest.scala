@@ -104,7 +104,7 @@ return:                                           ; preds = %if.end, %if.then
     val block = method.start.block.head
     block.start.astChildren.l.size shouldBe 12
     block.start.astChildren.isCall.l.size shouldBe 6
-    block.start.astChildren.isReturnNode.l.size shouldBe 1
+    block.start.astChildren.isReturn.l.size shouldBe 1
 
     val param = method.start.parameter.head
     val locals = block.start.local.l
@@ -323,7 +323,7 @@ return:                                           ; preds = %if.end, %if.then
 
     {
       // ret i32 %0
-      val ret = block.start.astChildren.isReturnNode.l.last
+      val ret = block.start.astChildren.isReturn.l.last
       ret.code shouldBe "return"
       ret.order shouldBe 7
       ret.argumentIndex shouldBe 7
@@ -351,7 +351,7 @@ return:                                           ; preds = %if.end, %if.then
     val assignStoreRetval42 = block.start.astChildren.isCall.l.apply(3)
     val assignStoreRetval36 = block.start.astChildren.isCall.l.apply(4)
     val assignLoadRetval = block.start.astChildren.isCall.l.apply(5)
-    val ret = block.start.astChildren.isReturnNode.l.last
+    val ret = block.start.astChildren.isReturn.l.last
 
 
     {

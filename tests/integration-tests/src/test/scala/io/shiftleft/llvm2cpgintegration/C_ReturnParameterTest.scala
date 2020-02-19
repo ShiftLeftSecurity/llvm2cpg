@@ -76,7 +76,7 @@ class C_ReturnParameterTest extends CPGMatcher {
     val block = method.start.block.head
     block.start.astChildren.l.size shouldBe 5
     block.start.astChildren.isCall.l.size shouldBe 2
-    block.start.astChildren.isReturnNode.l.size shouldBe 1
+    block.start.astChildren.isReturn.l.size shouldBe 1
 
     val param = method.start.parameter.head
     val locals = block.start.local.l
@@ -153,7 +153,7 @@ class C_ReturnParameterTest extends CPGMatcher {
 
     {
       // ret i32 %0
-      val ret = block.start.astChildren.isReturnNode.l.last
+      val ret = block.start.astChildren.isReturn.l.last
       ret.code shouldBe "return"
       ret.order shouldBe 3
       ret.argumentIndex shouldBe 3
@@ -211,7 +211,7 @@ class C_ReturnParameterTest extends CPGMatcher {
 
     {
       // ret i32 %0
-      val ret = block.start.astChildren.isReturnNode.l.last
+      val ret = block.start.astChildren.isReturn.l.last
       val retVal = ret.start.astChildren.isIdentifier.head
       retVal.start.cfgNext.head shouldBe ret
       assignLoadCall.start.cfgNext.head shouldBe retVal

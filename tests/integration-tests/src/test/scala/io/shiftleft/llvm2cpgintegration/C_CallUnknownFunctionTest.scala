@@ -55,7 +55,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     val call = assignCall.start.astChildren.isCall.head
     val callParam = call.start.astChildren.isIdentifier.head
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
 
     assignLoadCall.start.cfgNext.head shouldBe callValueRef
     callValueRef.start.cfgNext.head shouldBe callParam

@@ -22,7 +22,7 @@ class LLVM_AliasTest extends CPGMatcher {
   */
 
     val method = cpg.method.name(methodName).head
-    val ret = method.start.block.astChildren.isReturnNode.head
+    val ret = method.start.block.astChildren.isReturn.head
     val aliasRef = ret.start.astChildren.isIdentifier.head
     aliasRef.code shouldBe "y"
   }

@@ -50,7 +50,7 @@ class C_ReturnConstantTest extends CPGMatcher {
     val block = method.start.block.head
     block.start.astChildren.l.size shouldBe 1
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
 
     ret.start.astChildren.l.size shouldBe 1
@@ -65,7 +65,7 @@ class C_ReturnConstantTest extends CPGMatcher {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
-    val ret = block.start.astChildren.isReturnNode.head
+    val ret = block.start.astChildren.isReturn.head
     val retValue = ret.start.astChildren.isLiteral.head
     retValue.start.cfgNext.head shouldBe ret
     method.start.cfgFirst.head shouldBe retValue
