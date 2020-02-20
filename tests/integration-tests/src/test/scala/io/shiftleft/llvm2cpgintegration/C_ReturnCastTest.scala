@@ -18,7 +18,7 @@ class C_ReturnCastTest extends CPGMatcher {
   }
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8", "i32", "i8*", "i32 (i8)"))
+    validateTypes(cpg, List("ANY", "i8", "i32", "i8*", "i32 (i8)"))
   }
 
   "methods" in {

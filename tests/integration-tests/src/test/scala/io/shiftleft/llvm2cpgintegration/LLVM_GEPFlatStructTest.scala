@@ -18,7 +18,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
   private val methodName = "flat_struct"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "Point", "Point*", "i32", "i32*", "void", "void ()"))
+    validateTypes(cpg, List("ANY", "Point", "Point*", "i32", "i32*", "void", "void ()"))
   }
 
   "locals" in {
@@ -56,7 +56,7 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     xRef.name shouldBe "x"
     xRef.start.refsTo.head shouldBe x
 
-    val pRef = assignGEP_X.start.astChildren.isIdentifier.l.apply(1)
+    val pRef = assignGEP_X.start.ast.isIdentifier.l.apply(1)
     pRef.name shouldBe "p"
     pRef.start.refsTo.head shouldBe p
 
@@ -68,18 +68,13 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     yRef.start.refsTo.head shouldBe y
 
     val memberAccessGEP_Y = assignGEP_Y.start.astChildren.isCall.head
-    memberAccessGEP_Y.name shouldBe "<operator>.memberAccess"
+    memberAccessGEP_Y.name shouldBe "<operator>.getElementPtr"
 
-    val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.astChildren.isIdentifier.head
+    val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.argument(2).head
     memberAccessGEP_Y_memberRef.code shouldBe "1"
 
-    val indexAccessGEP_Y = memberAccessGEP_Y.start.astChildren.isCall.head
-    indexAccessGEP_Y.name shouldBe "<operator>.computedMemberAccess"
 
-    val indexAccessGEP_Y_index = indexAccessGEP_Y.start.astChildren.isLiteral.head
-    indexAccessGEP_Y_index.code shouldBe "0"
-
-    val pIdentifierY = indexAccessGEP_Y.start.astChildren.isIdentifier.head
+    val pIdentifierY = memberAccessGEP_Y.start.astChildren.isIdentifier.head
     pIdentifierY.name shouldBe "p"
     pIdentifierY.start.refsTo.head shouldBe p
   }
@@ -91,12 +86,17 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
 
     // %x = getelementptr %struct.Point, %struct.Point* %p, i32 0, i32 0
     val assignGEP_X = calls.apply(0)
-
     val xRef = assignGEP_X.start.astChildren.isIdentifier.head
-    val pRef = assignGEP_X.start.astChildren.isIdentifier.l.apply(1)
-
+    val gep = assignGEP_X.start.astChildren.isCall.head
+    val lit = gep.start.argument(2).l.head;
+    val pRef = gep.start.argument(1).l.head;
     xRef.start.cfgNext.head shouldBe pRef
-    pRef.start.cfgNext.head shouldBe assignGEP_X
+    pRef.start.cfgNext.head shouldBe lit
+    lit.start.cfgNext.head shouldBe gep
+
+
+
+    gep.start.cfgNext.head shouldBe assignGEP_X
 
     // store i32 127, i32* %x
     val assignStoreX = calls.apply(1)
@@ -114,16 +114,12 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val assignGEP_Y = calls.apply(2)
     val yRef = assignGEP_Y.start.astChildren.isIdentifier.head
     val memberAccessGEP_Y = assignGEP_Y.start.astChildren.isCall.head
-    val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.astChildren.isIdentifier.head
-    val indexAccessGEP_Y = memberAccessGEP_Y.start.astChildren.isCall.head
-    val indexAccessGEP_Y_index = indexAccessGEP_Y.start.astChildren.isLiteral.head
-    val pIdentifierY = indexAccessGEP_Y.start.astChildren.isIdentifier.head
+    val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.argument(2).head
+    val pIdentifierY = memberAccessGEP_Y.start.astChildren.isIdentifier.head
 
     assignStoreX.start.cfgNext.head shouldBe yRef
     yRef.start.cfgNext.head shouldBe pIdentifierY
-    pIdentifierY.start.cfgNext.head shouldBe indexAccessGEP_Y_index
-    indexAccessGEP_Y_index.start.cfgNext.head shouldBe indexAccessGEP_Y
-    indexAccessGEP_Y.start.cfgNext.head shouldBe memberAccessGEP_Y_memberRef
+    pIdentifierY.start.cfgNext.head shouldBe memberAccessGEP_Y_memberRef
     memberAccessGEP_Y_memberRef.start.cfgNext.head shouldBe memberAccessGEP_Y
     memberAccessGEP_Y.start.cfgNext.head shouldBe assignGEP_Y
 

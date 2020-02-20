@@ -51,7 +51,7 @@ class LLVM_PHINodeTest extends CPGMatcher {
   private val methodName = "foobar"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32*", "i32 ()"))
+    validateTypes(cpg, List("ANY", "i32", "i32*", "i32 ()"))
   }
 
   "AST" in {

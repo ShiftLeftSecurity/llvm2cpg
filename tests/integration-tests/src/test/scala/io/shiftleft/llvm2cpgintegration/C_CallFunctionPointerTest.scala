@@ -15,7 +15,7 @@ class C_CallFunctionPointerTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void (...)*", "void (...)**", "void", "void (void (...)*)"))
+    validateTypes(cpg, List("ANY", "void (...)*", "void (...)**", "void", "void (void (...)*)"))
   }
 
   "AST" in {

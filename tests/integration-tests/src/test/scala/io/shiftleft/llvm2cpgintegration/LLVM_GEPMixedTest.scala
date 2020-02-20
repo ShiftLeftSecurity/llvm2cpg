@@ -16,10 +16,13 @@ class LLVM_GEPMixedTest extends CPGMatcher {
   private val methodName = "gep_mixed"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8", "double", "ST*", "ST", "RT", "i32", "i32*", "i64", "[20 x i32]", "[10 x [20 x i32]]", "i32* (ST*)"))
-  }
+    validateTypes(cpg,
+      List("ANY", "RT", "ST", "ST*", "[10 x [20 x i32]]", "[20 x i32]", "double", "i32", "i32*", "i32* (ST*)", "i64", "i8")
+    )  }
 
-  "AST" in {
+
+
+  "AST and CFG" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
@@ -35,76 +38,43 @@ class LLVM_GEPMixedTest extends CPGMatcher {
 
     // i64 13
     val indexAccessGEP_13 = assignGEP.start.astChildren.isCall.head
-    indexAccessGEP_13.name shouldBe "<operator>.computedMemberAccess"
+    indexAccessGEP_13.name shouldBe "<operator>.indexAccess"
     indexAccessGEP_13.typeFullName shouldBe "i32*"
     val indexAccessGEP_13_index = indexAccessGEP_13.start.astChildren.isLiteral.head
     indexAccessGEP_13_index.code shouldBe "13"
 
     // i64 5
     val indexAccessGEP_5 = indexAccessGEP_13.start.astChildren.isCall.head
-    indexAccessGEP_5.name shouldBe "<operator>.computedMemberAccess"
+    indexAccessGEP_5.name shouldBe "<operator>.indexAccess"
     indexAccessGEP_5.typeFullName shouldBe "[20 x i32]"
     val indexAccessGEP_5_index = indexAccessGEP_5.start.astChildren.isLiteral.head
     indexAccessGEP_5_index.code shouldBe "5"
 
     // i32 1
     val indexAccessGEP_1 = indexAccessGEP_5.start.astChildren.isCall.head
-    indexAccessGEP_1.name shouldBe "<operator>.memberAccess"
+    indexAccessGEP_1.name shouldBe "<operator>.getElementPtr"
     indexAccessGEP_1.typeFullName shouldBe "[10 x [20 x i32]]"
-    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isIdentifier.head
+    val indexAccessGEP_1_index = indexAccessGEP_1.start.argument(2).head
     indexAccessGEP_1_index.code shouldBe "1"
 
     // i32 2
     val indexAccessGEP_2 = indexAccessGEP_1.start.astChildren.isCall.head
-    indexAccessGEP_2.name shouldBe "<operator>.memberAccess"
+    indexAccessGEP_2.name shouldBe "<operator>.getElementPtr"
     indexAccessGEP_2.typeFullName shouldBe "RT"
-    val indexAccessGEP_2_index = indexAccessGEP_2.start.astChildren.isIdentifier.head
+    val indexAccessGEP_2_index = indexAccessGEP_2.start.argument(2).head
     indexAccessGEP_2_index.code shouldBe "2"
-    indexAccessGEP_2_index.name shouldBe "2"
-    indexAccessGEP_2_index.typeFullName shouldBe "RT"
+
 
     // i64 4
     val indexAccessGEP_4 = indexAccessGEP_2.start.astChildren.isCall.head
-    indexAccessGEP_4.name shouldBe "<operator>.computedMemberAccess"
-    indexAccessGEP_4.typeFullName shouldBe "ST"
+    indexAccessGEP_4.name shouldBe "<operator>.pointerShift"
+    indexAccessGEP_4.typeFullName shouldBe "ST*"
     val indexAccessGEP_4_index = indexAccessGEP_4.start.astChildren.isLiteral.head
     indexAccessGEP_4_index.code shouldBe "4"
 
     val sIdentifier = indexAccessGEP_4.start.astChildren.isIdentifier.head
     sIdentifier.name shouldBe "s"
     sIdentifier.start.refsTo.head shouldBe s
-  }
-
-  "CFG" in {
-    val method = cpg.method.name(methodName).head
-    val block = method.start.block.head
-
-    // %index = getelementptr %struct.ST, %struct.ST* %s, i64 4, i32 2, i32 1, i64 5, i64 13
-    val assignGEP = block.start.astChildren.isCall.head
-
-    val indexRef = assignGEP.start.astChildren.isIdentifier.head
-
-    // i64 13
-    val indexAccessGEP_13 = assignGEP.start.astChildren.isCall.head
-    val indexAccessGEP_13_index = indexAccessGEP_13.start.astChildren.isLiteral.head
-
-    // i64 5
-    val indexAccessGEP_5 = indexAccessGEP_13.start.astChildren.isCall.head
-    val indexAccessGEP_5_index = indexAccessGEP_5.start.astChildren.isLiteral.head
-
-    // i32 1
-    val indexAccessGEP_1 = indexAccessGEP_5.start.astChildren.isCall.head
-    val indexAccessGEP_1_index = indexAccessGEP_1.start.astChildren.isIdentifier.head
-
-    // i32 2
-    val indexAccessGEP_2 = indexAccessGEP_1.start.astChildren.isCall.head
-    val indexAccessGEP_2_index = indexAccessGEP_2.start.astChildren.isIdentifier.head
-
-    // i64 4
-    val indexAccessGEP_4 = indexAccessGEP_2.start.astChildren.isCall.head
-    val indexAccessGEP_4_index = indexAccessGEP_4.start.astChildren.isLiteral.head
-
-    val sIdentifier = indexAccessGEP_4.start.astChildren.isIdentifier.head
 
     indexRef.start.cfgNext.head shouldBe sIdentifier
     sIdentifier.start.cfgNext.head shouldBe indexAccessGEP_4_index

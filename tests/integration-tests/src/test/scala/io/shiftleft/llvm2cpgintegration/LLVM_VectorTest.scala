@@ -10,7 +10,7 @@ class LLVM_VectorTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_VectorTestCPG)
 
   "types" in {
-    validateTypes(cpg, Set(
+    validateTypes(cpg, List(
         "<4 x i32>",
         "ANY",
         "<5 x i32>",
@@ -43,9 +43,9 @@ class LLVM_VectorTest extends CPGMatcher {
     val shuffle = cpg.method.name("findbyte").ast.isCall.name("<operator>.shufflevector").l.head
     val extract = cpg.method.name("extract").ast.isCall.code("extractelement").l.head
 
-    val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
-    val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
-    val gep3 = cpg.method.name("vectorGEP").ast.isIdentifier.name("C").astParent.isCall.argument.isCall.name("<operator>.computedMemberAccess").head
+    val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("<operator>.pointerShift").head
+    val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("<operator>.pointerShift").head
+    val gep3 = cpg.method.name("vectorGEP").ast.isIdentifier.name("C").astParent.isCall.argument.isCall.name("<operator>.pointerShift").head
 
     //Todo: use treedump-like?
     argSummary(insertv) shouldBe Set((1,"undef","<2 x float>"), (2,"x","float"), (3,"1","i8"))

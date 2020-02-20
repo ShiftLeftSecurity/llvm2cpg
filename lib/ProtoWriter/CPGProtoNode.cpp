@@ -28,6 +28,11 @@ CPGProtoNode &CPGProtoNode::setName(const std::string &name) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setCanonicalName(const std::string &name) {
+  setStringProperty(cpg::NodePropertyName::CANONICAL_NAME, name);
+  return *this;
+}
+
 CPGProtoNode &CPGProtoNode::setFullName(const std::string &name) {
   setStringProperty(cpg::NodePropertyName::FULL_NAME, name);
   return *this;

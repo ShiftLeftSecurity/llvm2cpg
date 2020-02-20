@@ -8,7 +8,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32", "i32 ()"))
+    validateTypes(cpg, List("ANY", "i32*", "i32", "i32 ()"))
   }
 
   "method AST" in {
@@ -52,7 +52,7 @@ class C_ReturnGlobalTest extends CPGMatcher {
       rhs.start.astChildren.isCall.l.size shouldBe 1
       val addressOf = rhs.start.astChildren.isCall.head
       addressOf.code shouldBe "addressOf"
-      addressOf.typeFullName shouldBe "ANY"
+      addressOf.typeFullName shouldBe "i32*"
       addressOf.order shouldBe 1
       addressOf.argumentIndex shouldBe 1
       val argument = addressOf.start.astChildren.isLiteral.head

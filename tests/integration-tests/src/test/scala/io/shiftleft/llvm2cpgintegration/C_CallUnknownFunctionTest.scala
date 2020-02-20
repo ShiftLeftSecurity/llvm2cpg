@@ -17,7 +17,7 @@ class C_CallUnknownFunctionTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "i8**", "i32", "void", "i32 (...)", "void ()"))
+    validateTypes(cpg, List("ANY", "i8*", "i8**", "i32", "void", "i32 (...)", "void ()"))
   }
 
   "AST" in {

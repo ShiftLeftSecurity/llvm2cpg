@@ -71,6 +71,10 @@ CPGProtoNode *CPGProtoBuilder::identifierNode() {
   return newNode(cpg::CpgStruct_Node_NodeType_IDENTIFIER);
 }
 
+CPGProtoNode *CPGProtoBuilder::fieldIdentifierNode() {
+  return newNode(cpg::CpgStruct_Node_NodeType_FIELD_IDENTIFIER);
+}
+
 CPGProtoNode *CPGProtoBuilder::methodRef() {
   return newNode(cpg::CpgStruct_Node_NodeType_METHOD_REF);
 }

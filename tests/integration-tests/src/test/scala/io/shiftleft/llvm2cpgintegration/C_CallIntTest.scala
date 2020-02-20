@@ -12,7 +12,7 @@ class C_CallIntTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "void", "i32", "void ()", "i32 (i32)"))
+    validateTypes(cpg, List("ANY", "void", "i32", "void ()", "i32 (i32)"))
   }
 
   "AST" in {

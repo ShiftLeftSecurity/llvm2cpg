@@ -8,7 +8,7 @@ class LLVM_FnegInstTest extends CPGMatcher {
   private val methodName = "negate"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "float", "float (float)"))
+    validateTypes(cpg, List("ANY", "float", "float (float)"))
   }
 
   "AST" in {

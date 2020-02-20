@@ -26,6 +26,7 @@ public:
   CPGProtoNode &setLanguage(cpg::LANGUAGES language);
   CPGProtoNode &setVersion(const std::string &version);
   CPGProtoNode &setName(const std::string &name);
+  CPGProtoNode &setCanonicalName(const std::string &name);
   CPGProtoNode &setFullName(const std::string &name);
   CPGProtoNode &setTypeDeclFullName(const std::string &name);
   CPGProtoNode &setASTParentType(const std::string &type);

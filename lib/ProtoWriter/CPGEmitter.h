@@ -109,7 +109,7 @@ private:
   CPGProtoNode *emitInsertElement(llvm::InsertElementInst *instruction);
   CPGProtoNode *emitShuffleVector(llvm::ShuffleVectorInst *instruction);
 
-  CPGProtoNode *emitAddressOf(CPGProtoNode *node);
+  CPGProtoNode *emitAddressOf(CPGProtoNode *node, const std::string &returnType);
 
   // sets lineInfo from instruction
   void updateLineInfo(const llvm::Instruction *inst);

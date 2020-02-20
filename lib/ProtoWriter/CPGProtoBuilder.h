@@ -27,6 +27,7 @@ public:
   CPGProtoNode *functionCallNode();
   CPGProtoNode *localVariableNode();
   CPGProtoNode *identifierNode();
+  CPGProtoNode *fieldIdentifierNode();
   CPGProtoNode *methodRef();
   CPGProtoNode *bindingNode();
   CPGProtoNode *memberNode();

@@ -8,7 +8,7 @@ class LLVM_StoreConstExprTest extends CPGMatcher {
   private val methodName = "store_const"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8", "i8*", "[11 x i8]", "i64", "void", "void ()"))
+    validateTypes(cpg, List("ANY", "i8", "i8*", "[11 x i8]",  "[11 x i8]*",  "i64", "void", "void ()"))
   }
 
   "AST" in {
@@ -23,7 +23,7 @@ class LLVM_StoreConstExprTest extends CPGMatcher {
     val assignStore = block.start.astChildren.isCall.head
     val store = assignStore.start.astChildren.isCall.head
     val rhs = store.start.astChildren.isCall.head
-    rhs.name shouldBe "<operator>.computedMemberAccess"
-    rhs.methodFullName shouldBe "<operator>.computedMemberAccess"
+    rhs.name shouldBe "<operator>.indexAccess"
+    rhs.methodFullName shouldBe "<operator>.indexAccess"
   }
 }

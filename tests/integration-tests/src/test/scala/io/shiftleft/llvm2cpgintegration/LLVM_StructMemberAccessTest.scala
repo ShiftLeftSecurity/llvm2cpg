@@ -7,6 +7,24 @@ import io.shiftleft.semanticcpg.layers.EnhancementRunner
 
 class LLVM_StructMemberAccessTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_StructMemberAccessTestCPG)
+  "member access2" in {
+    val enhancement = new EnhancementRunner()
+    enhancement.run(cpg, new SerializedCpg())
+
+    var gep = cpg.method.nameExact("test2").block.astChildren.isCall.head
+    gep = gep.start.astChildren.isCall.head
+    gep.typeFullName shouldBe "i8*"
+    gep.name shouldBe "<operator>.getElementPtr"
+
+    gep = gep.start.astChildren.isCall.head
+    gep.typeFullName shouldBe "{ i8, i8 }"
+    gep.name shouldBe "<operator>.getElementPtr"
+
+    gep = gep.start.astChildren.isCall.head
+    gep.typeFullName shouldBe "{ i8, { i8, i8 } }"
+    gep.name shouldBe "<operator>.getElementPtr"
+
+  }
 
   "member access" in {
     val enhancement = new EnhancementRunner()
@@ -15,14 +33,16 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
     val gepAssignment = cpg.method.nameExact("test").block.astChildren.isCall.head
     val topGepCall = gepAssignment.start.astChildren.isCall.head
     topGepCall.typeFullName shouldBe "i16*"
-    topGepCall.name shouldBe "<operator>.memberAccess"
+    topGepCall.name shouldBe "<operator>.getElementPtr"
 
     val structGep = topGepCall.start.astChildren.isCall.head
     structGep.typeFullName shouldBe "kcdata_subtype_descriptor"
-    structGep.name shouldBe "<operator>.computedMemberAccess"
+    structGep.name shouldBe "<operator>.indexAccess"
+
 
     val arrayGep = structGep.start.astChildren.isCall.head
-    arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]"
-    arrayGep.name shouldBe "<operator>.computedMemberAccess"
+    arrayGep.name shouldBe "<operator>.addressOf"
+    arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]*"
+
   }
 }

@@ -11,7 +11,7 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
   private val methodName = "__gthread_active_p()"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i1", "i8*", "i32", "i32*", "void (i8*)*", "i32 ()", "i32 (i32*, void (i8*)*)"))
+    validateTypes(cpg, List("ANY", "i1", "i8*", "i32", "i32*", "void (i8*)*", "i32 ()", "i32 (i32*, void (i8*)*)"))
   }
 
   "AST" in {

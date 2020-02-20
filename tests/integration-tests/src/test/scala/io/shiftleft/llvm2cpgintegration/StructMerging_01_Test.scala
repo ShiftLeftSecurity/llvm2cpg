@@ -14,7 +14,7 @@ class StructMerging_01_Test extends CPGMatcher with BeforeAndAfterAll {
   }
 
   "merge structs" in {
-    validateTypes(cpg, Set("ANY", "i32", "void",
+    validateTypes(cpg, List("ANY", "i32", "void",
       "Same", "Point", "TuplePair", "Point_1", "Point_2",
       "void (Same)", "void (Point)", "void (TuplePair)", "void (Point_1)", "void (Point_2)"))
   }

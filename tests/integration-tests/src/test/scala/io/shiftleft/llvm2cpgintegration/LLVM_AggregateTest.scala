@@ -10,7 +10,7 @@ class LLVM_AggregateTest extends CPGMatcher {
     private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AggregateTestCPG)
 
     "types" in {
-        validateTypes(cpg, Set(
+        validateTypes(cpg, List(
             "{ i8, i8, i8, [4 x i8] }",
             "ANY",
             "float",
@@ -48,117 +48,35 @@ class LLVM_AggregateTest extends CPGMatcher {
 
     "AST" in {
         val extract_B = cpg.method.name("extract").ast.isIdentifier.name("B").astParent.head
-        treeDump(extract_B) shouldBe (
-          "CALL",
-          "<operator>.assignment",
-          "<operator>.assignment",
-          "<operator>.assignment",
-          "i8",
-          List(
-              (1, ("IDENTIFIER", "B", "i8")),
-              (
-                2,
-                (
-                  "CALL",
-                  "<operator>.computedMemberAccess",
-                  "<operator>.computedMemberAccess",
-                  "extractvalue",
-                  "i8",
-                  List(
-                      (
-                        1,
-                        (
-                          "CALL",
-                          "<operator>.computedMemberAccess",
-                          "<operator>.computedMemberAccess",
-                          "extractvalue",
-                          "[4 x i8]",
-                          List(
-                              (
-                                1,
-                                (
-                                  "CALL",
-                                  "<operator>.computedMemberAccess",
-                                  "<operator>.computedMemberAccess",
-                                  "extractvalue",
-                                  "{ i8, i8, i8, [4 x i8] }",
-                                  List(
-                                      (
-                                        1,
-                                        (
-                                          "CALL",
-                                          "<operator>.computedMemberAccess",
-                                          "<operator>.computedMemberAccess",
-                                          "extractvalue",
-                                          "[3 x { i8, i8, i8, [4 x i8] }]",
-                                          List(
-                                              (
-                                                1,
-                                                (
-                                                  "CALL",
-                                                  "<operator>.computedMemberAccess",
-                                                  "<operator>.computedMemberAccess",
-                                                  "extractvalue",
-                                                  "{ [3 x { i8, i8, i8, [4 x i8] }] }",
-                                                  List(
-                                                      (
-                                                        1,
-                                                        (
-                                                          "LITERAL",
-                                                          "zero initialized",
-                                                          "{ i32, { [3 x { i8, i8, i8, [4 x i8] }] } }"
-                                                        )
-                                                      ),
-                                                      (2, ("LITERAL", "1", "i32"))
-                                                  )
-                                                )
-                                              ),
-                                              (2, ("LITERAL", "0", "i32"))
-                                          )
-                                        )
-                                      ),
-                                      (2, ("LITERAL", "2", "i32"))
-                                  )
-                                )
-                              ),
-                              (2, ("LITERAL", "3", "i32"))
-                          )
-                        )
-                      ),
-                      (2, ("LITERAL", "0", "i32"))
-                  )
-                )
-              )
-          )
-        )
+      treeDump(extract_B, new StringBuilder()).toString() shouldBe
+      """CALL name = <operator>.assignment fullname = <operator>.assignment return type = i8
+         |	IDENTIFIER code = B type = i8
+         |	CALL name = <operator>.indexAccess fullname = <operator>.indexAccess return type = i8
+         |		CALL name = <operator>.indexAccess fullname = <operator>.indexAccess return type = [4 x i8]
+         |			CALL name = <operator>.indexAccess fullname = <operator>.indexAccess return type = { i8, i8, i8, [4 x i8] }
+         |				CALL name = <operator>.indexAccess fullname = <operator>.indexAccess return type = [3 x { i8, i8, i8, [4 x i8] }]
+         |					CALL name = <operator>.indexAccess fullname = <operator>.indexAccess return type = { [3 x { i8, i8, i8, [4 x i8] }] }
+         |						LITERAL code = zero initialized type = { i32, { [3 x { i8, i8, i8, [4 x i8] }] } }
+         |						LITERAL code = 1 type = i32
+         |					LITERAL code = 0 type = i32
+         |				LITERAL code = 2 type = i32
+         |			LITERAL code = 3 type = i32
+         |		LITERAL code = 0 type = i32
+         |""".stripMargin
+
+
+
         val insert_agg3 = cpg.method.name("insert").ast.isIdentifier.name("agg3").astParent.head
-        treeDump(insert_agg3) shouldBe (
-          "CALL",
-          "<operator>.assignment",
-          "<operator>.assignment",
-          "<operator>.assignment",
-          "{ i32, { [1 x float] } }",
-          List(
-              (1, ("IDENTIFIER", "agg3", "{ i32, { [1 x float] } }")),
-              (
-                2,
-                (
-                  "CALL",
-                  "<operator>.insertValue",
-                  "<operator>.insertValue",
-                  "insertvalue",
-                  "{ i32, { [1 x float] } }",
-                  List(
-                      (1, ("LITERAL", "undef", "{ i32, { [1 x float] } }")),
-                      (2, ("IDENTIFIER", "val", "float")),
-                      (3, ("LITERAL", "1", "i32")),
-                      (4, ("LITERAL", "0", "i32")),
-                      (5, ("LITERAL", "0", "i32"))
-                  )
-                )
-              )
-          )
-        )
+      treeDump(insert_agg3, new StringBuilder()).toString() shouldBe
+      """CALL name = <operator>.assignment fullname = <operator>.assignment return type = { i32, { [1 x float] } }
+         |	IDENTIFIER code = agg3 type = { i32, { [1 x float] } }
+         |	CALL name = <operator>.insertValue fullname = <operator>.insertValue return type = { i32, { [1 x float] } }
+         |		LITERAL code = undef type = { i32, { [1 x float] } }
+         |		IDENTIFIER code = val type = float
+         |		LITERAL code = 1 type = i32
+         |		LITERAL code = 0 type = i32
+         |		LITERAL code = 0 type = i32
+       |""".stripMargin
 
     } // end AST
 }

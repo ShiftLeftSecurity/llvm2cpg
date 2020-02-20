@@ -14,7 +14,7 @@ class C_CallStringTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i8*", "void", "i32", "[6 x i8]", "i32 (i8*)", "void ()"))
+    validateTypes(cpg, List("ANY", "i8*", "void", "i32", "[6 x i8]*", "[6 x i8]", "i32 (i8*)", "void ()"))
   }
 
   "AST" in {
@@ -37,17 +37,21 @@ class C_CallStringTest extends CPGMatcher {
     call.typeFullName shouldBe "i32"
     call.signature shouldBe "i32 (i8*)"
 
-    val addressOf = call.start.astChildren.isCall.head
+    val indexAccess = call.start.astChildren.isCall.head
+    indexAccess.name shouldBe "<operator>.indexAccess"
+
+
+    val addressOf = indexAccess.start.astChildren.isCall.head
     addressOf.name shouldBe "<operator>.addressOf"
     addressOf.code shouldBe "addressOf"
-    addressOf.typeFullName shouldBe "ANY"
+    addressOf.typeFullName shouldBe "[6 x i8]*"
 
     val argument = addressOf.start.astChildren.isLiteral.head
     argument.code shouldBe "hello"
     argument.typeFullName shouldBe "[6 x i8]"
   }
 
-  "CPG" in {
+  "CFG" in {
     val method = cpg.method.name(methodName).head
     val block = method.start.block.head
 
@@ -57,7 +61,6 @@ class C_CallStringTest extends CPGMatcher {
     val addressOf = call.start.astChildren.isCall.head
     val argument = addressOf.start.astChildren.isLiteral.head
 
-    callValueRef.start.cfgNext.head shouldBe argument
     argument.start.cfgNext.head shouldBe addressOf
     addressOf.start.cfgNext.head shouldBe call
     call.start.cfgNext.head shouldBe assignCall

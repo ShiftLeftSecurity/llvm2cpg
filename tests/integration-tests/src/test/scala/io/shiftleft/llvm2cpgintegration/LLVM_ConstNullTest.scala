@@ -7,7 +7,7 @@ class LLVM_ConstNullTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_ConstNullTestCPG)
 
   "types" in {
-    validateTypes(cpg, Set("ANY", "i32*", "i32* ()"))
+    validateTypes(cpg, List("ANY", "i32*", "i32* ()"))
   }
 
   "AST" in {
