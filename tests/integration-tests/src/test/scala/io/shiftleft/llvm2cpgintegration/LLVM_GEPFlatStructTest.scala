@@ -73,8 +73,10 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.argument(2).head
     memberAccessGEP_Y_memberRef.code shouldBe "1"
 
+    val pointerShiftY = memberAccessGEP_Y.start.astChildren.isCall.head
+    pointerShiftY.name shouldBe "<operator>.pointerShift"
 
-    val pIdentifierY = memberAccessGEP_Y.start.astChildren.isIdentifier.head
+    val pIdentifierY = pointerShiftY.start.astChildren.isIdentifier.head
     pIdentifierY.name shouldBe "p"
     pIdentifierY.start.refsTo.head shouldBe p
   }
@@ -88,14 +90,15 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val assignGEP_X = calls.apply(0)
     val xRef = assignGEP_X.start.astChildren.isIdentifier.head
     val gep = assignGEP_X.start.astChildren.isCall.head
-    val lit = gep.start.argument(2).l.head;
-    val pRef = gep.start.argument(1).l.head;
+    val lit = gep.start.argument(2).l.head
+    val pointerShift = gep.start.argument(1).isCall.l.head
+    val pRef = pointerShift.start.argument(1).l.head
+    val shiftLit = pointerShift.start.argument(2).l.head
     xRef.start.cfgNext.head shouldBe pRef
-    pRef.start.cfgNext.head shouldBe lit
+    pRef.start.cfgNext.head shouldBe shiftLit
+    shiftLit.start.cfgNext.head shouldBe pointerShift
+    pointerShift.start.cfgNext.head shouldBe lit
     lit.start.cfgNext.head shouldBe gep
-
-
-
     gep.start.cfgNext.head shouldBe assignGEP_X
 
     // store i32 127, i32* %x
@@ -115,11 +118,15 @@ class LLVM_GEPFlatStructTest extends CPGMatcher {
     val yRef = assignGEP_Y.start.astChildren.isIdentifier.head
     val memberAccessGEP_Y = assignGEP_Y.start.astChildren.isCall.head
     val memberAccessGEP_Y_memberRef = memberAccessGEP_Y.start.argument(2).head
-    val pIdentifierY = memberAccessGEP_Y.start.astChildren.isIdentifier.head
+    val pointerShiftY = memberAccessGEP_Y.start.astChildren.isCall.head
+    val pointerShiftYLit = pointerShiftY.start.astChildren.isLiteral.head
+    val pIdentifierY = pointerShiftY.start.astChildren.isIdentifier.head
 
     assignStoreX.start.cfgNext.head shouldBe yRef
     yRef.start.cfgNext.head shouldBe pIdentifierY
-    pIdentifierY.start.cfgNext.head shouldBe memberAccessGEP_Y_memberRef
+    pIdentifierY.start.cfgNext.head shouldBe pointerShiftYLit
+    pointerShiftYLit.start.cfgNext.head shouldBe pointerShiftY
+    pointerShiftY.start.cfgNext.head shouldBe memberAccessGEP_Y_memberRef
     memberAccessGEP_Y_memberRef.start.cfgNext.head shouldBe memberAccessGEP_Y
     memberAccessGEP_Y.start.cfgNext.head shouldBe assignGEP_Y
 

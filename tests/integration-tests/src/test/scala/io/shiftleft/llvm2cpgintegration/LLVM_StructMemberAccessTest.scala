@@ -14,11 +14,11 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
     var gep = cpg.method.nameExact("test2").block.astChildren.isCall.head
     gep = gep.start.astChildren.isCall.head
     gep.typeFullName shouldBe "i8*"
-    gep.name shouldBe "<operator>.getElementPtr"
+    gep.name shouldBe "<operator>.indexAccess"
 
     gep = gep.start.astChildren.isCall.head
     gep.typeFullName shouldBe "{ i8, i8 }"
-    gep.name shouldBe "<operator>.getElementPtr"
+    gep.name shouldBe "<operator>.indexAccess"
 
     gep = gep.start.astChildren.isCall.head
     gep.typeFullName shouldBe "{ i8, { i8, i8 } }"
@@ -41,8 +41,8 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
 
 
     val arrayGep = structGep.start.astChildren.isCall.head
-    arrayGep.name shouldBe "<operator>.addressOf"
-    arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]*"
+    arrayGep.name shouldBe "<operator>.pointerShift"
+    arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]"
 
   }
 }

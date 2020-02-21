@@ -33,6 +33,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     modules.push_back(file.getModule());
   }
   typeEmitter.recordCanonicalStructNames(modules);
+  typeEmitter.emitStructMembers(modules);
 
   for (size_t index = 0; index < cpg.getFiles().size(); index++) {
     logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
@@ -61,7 +62,6 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     }
 
     typeEmitter.emitObjCMethodBindings(file.getModule(), emittedMethods);
-    typeEmitter.emitStructMembers(file.getModule());
   }
 
   typeEmitter.emitRecordedTypes();

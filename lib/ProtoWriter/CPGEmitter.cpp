@@ -480,13 +480,12 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
   case llvm::Value::ValueTy::ConstantPointerNullVal:
     literalNode->setCode("nullptr");
     break;
-  case llvm::Value::ValueTy::ConstantFPVal:
-    {
-      llvm::SmallVector<char, 16> tmp;
-      llvm::dyn_cast<llvm::ConstantFP>(value)->getValueAPF().toString(tmp);
-      literalNode->setCode(std::string(tmp.begin(), tmp.end()));
-      break;
-    }
+  case llvm::Value::ValueTy::ConstantFPVal: {
+    llvm::SmallVector<char, 16> tmp;
+    llvm::dyn_cast<llvm::ConstantFP>(value)->getValueAPF().toString(tmp);
+    literalNode->setCode(std::string(tmp.begin(), tmp.end()));
+    break;
+  }
   case llvm::Value::ValueTy::ConstantAggregateZeroVal:
     literalNode->setCode("zero initialized");
     break;
@@ -737,54 +736,56 @@ CPGProtoNode *CPGEmitter::emitGEP(const llvm::GetElementPtrInst *instruction) {
   /// If the GEP only has zero indices, then we emit the operand itself bypassing the GEP completely
 
   llvm::Value *element = instruction->getOperand(0);
-  
   llvm::Value *index = instruction->getOperand(1);
-  std::vector<llvm::Value *> idxs = { index };
+  std::vector<llvm::Value *> indexes = { index };
 
   llvm::Type *baseType = instruction->getSourceElementType();
-  llvm::Type *indexType = llvm::GetElementPtrInst::getIndexedType(baseType, idxs);
+  llvm::Type *indexType = llvm::GetElementPtrInst::getIndexedType(baseType, indexes);
   CPGProtoNode *access = nullptr;
-  
 
-  auto constInt = llvm::dyn_cast<llvm::ConstantInt>(index);
-  if(constInt && constInt->getValue().isNullValue()){
-    //skip
-    access = emitRefOrConstant(element);
-  }
-  else {
-    access = emitGenericOp("<operator>.pointerShift",
-                           "getelementptr",
-                           getTypeName(indexType->getPointerTo()),
-                           "ANY (ANY)");
-    resolveConnections(access, { emitRefOrConstant(element), emitRefOrConstant(index) });
-  }
-  // Skipping the pointer operand and the first index
   size_t numOperands = instruction->getNumOperands();
+  if (numOperands == 2) {
+    indexType = indexType->getPointerTo();
+  }
+
+  access = emitGenericOp(
+      "<operator>.pointerShift", "getelementptr", getTypeName(indexType), "ANY (ANY)");
+  resolveConnections(access, { emitRefOrConstant(element), emitRefOrConstant(index) });
+
   for (size_t i = 2; i < numOperands; i++) {
-        bool isMemberAccess = indexType->isStructTy();// &&
+    auto *structAccessType = llvm::dyn_cast<llvm::StructType>(indexType);
+    bool isMemberAccess = structAccessType != nullptr && structAccessType->hasName();
 
-        index = instruction->getOperand(i);
-        idxs.push_back(index);
-        indexType = llvm::GetElementPtrInst::getIndexedType(baseType, idxs);
+    index = instruction->getOperand(i);
+    indexes.push_back(index);
+    indexType = llvm::GetElementPtrInst::getIndexedType(baseType, indexes);
 
-        CPGProtoNode *lhs = access, *rhs = nullptr;
-        if (isMemberAccess) {
-          rhs = builder.fieldIdentifierNode();
-          rhs->setEntry(rhs->getID());
+    CPGProtoNode *lhs = access, *rhs = nullptr;
+    if (isMemberAccess) {
+      rhs = builder.fieldIdentifierNode();
+      rhs->setEntry(rhs->getID());
 
-          auto constIndex = llvm::cast<llvm::ConstantInt>(index);
-          std::string indexName = constantIntToString(constIndex->getValue());
-          (*rhs) //
-              .setCanonicalName(indexName)
-              .setCode(
-                  indexName); // todo: make this beautiful if we ever get human-readable field names
+      auto constIndex = llvm::cast<llvm::ConstantInt>(index);
+      uint64_t indexValue = *constIndex->getValue().getRawData();
+      std::vector<std::string> &structMembers = typeEmitter.getStructMembers(structAccessType);
+      std::string indexName;
+      if (indexValue < structMembers.size()) {
+        indexName = structMembers[indexValue];
+      } else {
+        indexName = constantIntToString(constIndex->getValue());
+      }
+
+      (*rhs) //
+          .setCanonicalName(indexName)
+          .setCode(indexName);
     } else {
       rhs = emitRefOrConstant(index);
     }
-    
+
     // the proper return type when nesting is the return type of the GEP, i.e. the pointer type
-    //fixme once this doesn't collide with type info anymore
-    access = emitGEPAccess(i == numOperands - 1 ? indexType->getPointerTo() : indexType, index, isMemberAccess); 
+    // fixme once this doesn't collide with type info anymore
+    access = emitGEPAccess(
+        i == numOperands - 1 ? indexType->getPointerTo() : indexType, index, isMemberAccess);
     resolveConnections(access, { lhs, rhs });
   }
 
@@ -844,7 +845,7 @@ CPGProtoNode *CPGEmitter::emitExtractValue(llvm::ExtractValueInst *instruction) 
 
 CPGProtoNode *CPGEmitter::emitGEPAccess(const llvm::Type *type, llvm::Value *index,
                                         bool memberAccess) {
-  std::string name("<operator>.indexAccess"); //todo: This is not entirely correct
+  std::string name("<operator>.indexAccess"); // todo: This is not entirely correct
   if (memberAccess) {
     name = "<operator>.getElementPtr";
   }
@@ -1200,7 +1201,8 @@ void CPGEmitter::setLineInfo(CPGProtoNode *node) {
   }
 }
 
-llvm2cpg::CPGProtoNode *CPGEmitter::emitAddressOf(llvm2cpg::CPGProtoNode *node, const std::string& returnTyp) {
+llvm2cpg::CPGProtoNode *CPGEmitter::emitAddressOf(llvm2cpg::CPGProtoNode *node,
+                                                  const std::string &returnTyp) {
   return resolveConnections(emitGenericOp("<operator>.addressOf", "addressOf", returnTyp, "ANY"),
                             { node });
 }

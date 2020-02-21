@@ -1,7 +1,8 @@
 #include "llvm2cpg/Transforms/Transforms.h"
 #include "llvm2cpg/Transforms/CustomPasses.h"
-
 #include "llvm2cpg/Logger/CPGLogger.h"
+
+#include <llvm/IR/DebugInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/Instructions.h>

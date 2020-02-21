@@ -40,8 +40,12 @@ class C_CallStringTest extends CPGMatcher {
     val indexAccess = call.start.astChildren.isCall.head
     indexAccess.name shouldBe "<operator>.indexAccess"
 
+    val pointerShift = indexAccess.start.astChildren.isCall.head
+    pointerShift.name shouldBe "<operator>.pointerShift"
+    pointerShift.code shouldBe "getelementptr"
+    pointerShift.typeFullName shouldBe "[6 x i8]"
 
-    val addressOf = indexAccess.start.astChildren.isCall.head
+    val addressOf = pointerShift.start.astChildren.isCall.head
     addressOf.name shouldBe "<operator>.addressOf"
     addressOf.code shouldBe "addressOf"
     addressOf.typeFullName shouldBe "[6 x i8]*"

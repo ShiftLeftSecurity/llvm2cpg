@@ -53,4 +53,8 @@ add_integration_test(ObjC_MultipleExternalClassesTest objc_external_class_ll_bc 
 
 add_integration_test(StructMerging_01_Test struct_merging_1_ll_bc struct_merging_2_ll_bc FLAGS -inline=false)
 
+add_integration_test(Debug_StructMembersTest debug_struct_members_c_ll FLAGS -inline=false)
+add_integration_test(Debug_AnonymousStructMembersTest debug_anonymous_struct_members_c_ll FLAGS -inline=false)
+add_integration_test(Debug_NestedStructMembersTest debug_nested_struct_members_c_ll FLAGS -inline=false)
+
 enable_integration_tests()

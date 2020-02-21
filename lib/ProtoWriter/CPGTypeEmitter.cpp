@@ -1,15 +1,20 @@
 #include "CPGTypeEmitter.h"
 #include "CPGProtoBuilder.h"
+#include <llvm/BinaryFormat/Dwarf.h>
+#include <llvm/IR/DebugInfo.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm2cpg/CPG/ObjCTypeHierarchy.h>
 #include <llvm2cpg/LLVMExt/TypeEquality.h>
-#include <llvm2cpg/Traversals/ObjCTraversal.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
-#include <sstream>
+#include <llvm2cpg/Traversals/ObjCTraversal.h>
+#include <queue>
 #include <set>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 
@@ -118,7 +123,8 @@ std::string CPGTypeEmitter::typeToString(const llvm::Type *type) {
   }
 }
 
-CPGTypeEmitter::CPGTypeEmitter(CPGProtoBuilder &builder, CPGLogger &logger) : builder(builder), logger(logger) {
+CPGTypeEmitter::CPGTypeEmitter(CPGProtoBuilder &builder, CPGLogger &logger)
+    : builder(builder), logger(logger) {
   recordType("ANY", "<global>");
 }
 
@@ -287,20 +293,49 @@ void CPGTypeEmitter::recordCanonicalStructNames(std::vector<const llvm::Module *
   logger.uiInfo("Finish type deduplication");
 }
 
-void CPGTypeEmitter::emitStructMembers(const llvm::Module *module) {
+void CPGTypeEmitter::emitStructMembers(std::vector<const llvm::Module *> &modules) {
+  std::unordered_set<std::string> emittedStructs;
+  for (const llvm::Module *module : modules) {
+    emitStructMembers(module, emittedStructs);
+  }
+}
+
+void CPGTypeEmitter::emitStructMembers(const llvm::Module *module,
+                                       std::unordered_set<std::string> &emittedStructs) {
+  recordStructInformation(module);
+
   for (const llvm::StructType *structType : module->getIdentifiedStructTypes()) {
     if (structType->isOpaque() || !structType->hasName()) {
       continue;
     }
+
     std::string canonicalName = typeToString(structType);
+    /// Because of type deduplication more than one llvm::struct may have the same canonical name
+    /// Normally this should not be the case, but it happens with anonymous structs emitted by clang
+    /// In this case we do want to emit members only once per canonical name
+    if (emittedStructs.count(canonicalName) != 0) {
+      continue;
+    }
+    emittedStructs.insert(canonicalName);
+
+    for (std::string &alias : typeAliases[canonicalName]) {
+      CPGProtoNode *aliasDecl = emitTypeDecl(alias, "<global>");
+      aliasDecl->setAliasTypeFullName(canonicalName);
+      emitType(alias);
+    }
+
     CPGProtoNode *structDecl = emitTypeDecl(canonicalName, "<global>");
     emitType(canonicalName);
     assert(structDecl);
+    std::vector<std::string> &members = getStructMembers(structType);
     for (unsigned i = 0; i < structType->getStructNumElements(); i++) {
       std::string memberTypeName = typeToString(structType->getStructElementType(i));
       emitTypeDecl(memberTypeName, "<global>");
       emitType(memberTypeName);
       std::string memberName = std::to_string(i);
+      if (i < members.size()) {
+        memberName = members[i];
+      }
       CPGProtoNode *member = builder.memberNode();
       (*member) //
           .setName(memberName)
@@ -308,6 +343,91 @@ void CPGTypeEmitter::emitStructMembers(const llvm::Module *module) {
           .setTypeFullName(memberTypeName)
           .setOrder(i);
       builder.connectAST(structDecl, member);
+    }
+  }
+}
+
+void CPGTypeEmitter::recordStructInformation(const llvm::Module *module) {
+  std::queue<llvm::DIType *> worklist;
+
+  llvm::StringRef debugDeclareName = llvm::Intrinsic::getName(llvm::Intrinsic::dbg_declare);
+  llvm::Function *debugDeclare = module->getFunction(debugDeclareName);
+  if (debugDeclare) {
+    for (auto user : debugDeclare->users()) {
+      if (auto call = llvm::dyn_cast<llvm::CallInst>(user)) {
+        assert(call->getNumOperands() >= 2);
+        auto *debugMetadata = llvm::dyn_cast<llvm::MetadataAsValue>(call->getOperand(1));
+        if (debugMetadata) {
+          auto variable = llvm::dyn_cast<llvm::DILocalVariable>(debugMetadata->getMetadata());
+          if (variable) {
+            worklist.push(variable->getType());
+          }
+        }
+      }
+    }
+  }
+
+  for (const llvm::Function &function : module->getFunctionList()) {
+    if (function.hasMetadata(0)) {
+      if (auto debug = llvm::dyn_cast<llvm::DISubprogram>(function.getMetadata(0))) {
+        worklist.push(debug->getType());
+      }
+    }
+  }
+
+  std::unordered_set<llvm::DIType *> visitedTypes;
+  std::vector<llvm::DICompositeType *> compositeTypes;
+  while (!worklist.empty()) {
+    llvm::DIType *type = worklist.front();
+    worklist.pop();
+    if (!type || visitedTypes.count(type) != 0) {
+      continue;
+    }
+    visitedTypes.insert(type);
+
+    if (auto compositeType = llvm::dyn_cast<llvm::DICompositeType>(type)) {
+      compositeTypes.push_back(compositeType);
+      for (auto element : compositeType->getElements()) {
+        if (auto elementType = llvm::dyn_cast<llvm::DIType>(element)) {
+          worklist.push(elementType);
+        }
+      }
+    } else if (auto derivedType = llvm::dyn_cast<llvm::DIDerivedType>(type)) {
+      llvm::DIType *baseType = derivedType->getBaseType();
+      worklist.push(baseType);
+      if (derivedType->getTag() == llvm::dwarf::DW_TAG_typedef && baseType) {
+        std::string baseName = baseType->getName();
+        std::string aliasName = derivedType->getName();
+        if (!baseName.empty() && !aliasName.empty()) {
+          typeAliases[baseName].push_back(aliasName);
+        }
+      }
+    } else if (auto functionType = llvm::dyn_cast<llvm::DISubroutineType>(type)) {
+      llvm::DITypeRefArray types = functionType->getTypeArray();
+      for (auto t : types) {
+        worklist.push(t);
+      }
+    }
+  }
+
+  for (llvm::DICompositeType *compositeType : compositeTypes) {
+    std::string name = compositeType->getName();
+    if (!name.empty()) {
+      structMemberNames[name] = std::vector<std::string>();
+      for (auto memberElement : compositeType->getElements()) {
+        if (auto memberType = llvm::dyn_cast<llvm::DIDerivedType>(memberElement)) {
+          structMemberNames[name].push_back(memberType->getName());
+        }
+      }
+    }
+  }
+
+  /// Sanity check
+  for (const llvm::StructType *type : module->getIdentifiedStructTypes()) {
+    std::string canonicalName = typeToString(type);
+    auto it = structMemberNames.find(canonicalName);
+    if (it != structMemberNames.end() && it->second.size() != type->getStructNumElements()) {
+      structMemberNames.erase(it);
     }
   }
 }
@@ -327,6 +447,11 @@ CPGProtoNode *CPGTypeEmitter::emitObjCType(ObjCClassDefinition *base,
 
 CPGProtoNode *CPGTypeEmitter::namedTypeDecl(const std::string &typeName) {
   return namedTypeDecls.at(typeName);
+}
+
+std::vector<std::string> &CPGTypeEmitter::getStructMembers(const llvm::StructType *structType) {
+  std::string canonicalName = typeToString(structType);
+  return structMemberNames[canonicalName];
 }
 
 CPGProtoNode *CPGTypeEmitter::emitType(const std::string &typeName) {

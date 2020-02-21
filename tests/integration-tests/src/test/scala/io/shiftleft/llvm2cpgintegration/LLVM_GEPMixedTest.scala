@@ -68,7 +68,7 @@ class LLVM_GEPMixedTest extends CPGMatcher {
     // i64 4
     val indexAccessGEP_4 = indexAccessGEP_2.start.astChildren.isCall.head
     indexAccessGEP_4.name shouldBe "<operator>.pointerShift"
-    indexAccessGEP_4.typeFullName shouldBe "ST*"
+    indexAccessGEP_4.typeFullName shouldBe "ST"
     val indexAccessGEP_4_index = indexAccessGEP_4.start.astChildren.isLiteral.head
     indexAccessGEP_4_index.code shouldBe "4"
 
