@@ -664,9 +664,14 @@ CPGProtoNode *CPGEmitter::emitCmpCall(const llvm::CmpInst *comparison) {
 
 CPGProtoNode *CPGEmitter::emitCast(const llvm::CastInst *instruction) {
   std::string name(castOperatorName(instruction));
+  /// Our policies expect the <operator>.cast to receive two arguments: the type of the cast and the
+  /// value being casted
+  CPGProtoNode *phonyArg = builder.unknownNode();
+  phonyArg->setCode(getTypeName(instruction->getDestTy()));
+  phonyArg->setEntry(phonyArg->getID());
   return resolveConnections(
-      emitGenericOp(name, name, getTypeName(instruction->getDestTy()), "ANY (ANY)"),
-      { emitRefOrConstant(instruction->getOperand(0)) });
+      emitGenericOp(name, name, getTypeName(instruction->getDestTy()), "ANY (ANY, ANY)"),
+      { phonyArg, emitRefOrConstant(instruction->getOperand(0)) });
 }
 
 CPGProtoNode *CPGEmitter::emitSelect(llvm::SelectInst *instruction) {

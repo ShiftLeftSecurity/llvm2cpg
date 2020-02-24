@@ -1,6 +1,7 @@
 package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
+import io.shiftleft.codepropertygraph.generated.nodes.Unknown
 import io.shiftleft.semanticcpg.language._
 
 class C_ReturnCastTest extends CPGMatcher {
@@ -181,17 +182,17 @@ class C_ReturnCastTest extends CPGMatcher {
       val rhs =  assignCall.start.astChildren.isCall.head
       rhs.name shouldBe "<operator>.cast"
       rhs.methodFullName shouldBe "<operator>.cast"
-      rhs.signature shouldBe "ANY (ANY)"
+      rhs.signature shouldBe "ANY (ANY, ANY)"
       rhs.typeFullName shouldBe "i32"
       rhs.order shouldBe 2
       rhs.argumentIndex shouldBe 2
-      rhs.start.astChildren.l.size shouldBe 1
+      rhs.start.astChildren.l.size shouldBe 2
       rhs.start.astChildren.isIdentifier.l.size shouldBe 1
       val cast = rhs.start.astChildren.isIdentifier.head
       cast.name shouldBe "tmp"
       cast.typeFullName shouldBe "i8"
-      cast.order shouldBe 1
-      cast.argumentIndex shouldBe 1
+      cast.order shouldBe 2
+      cast.argumentIndex shouldBe 2
       cast.start.refsTo.l.size shouldBe 1
       cast.start.refsTo.head shouldBe tmp
     }
@@ -259,12 +260,14 @@ class C_ReturnCastTest extends CPGMatcher {
     {
       // %conv = sext i8 %tmp to i32
       val lhs =  assignCastCall.start.astChildren.isIdentifier.head
-      val rhs =  assignCastCall.start.astChildren.isCall.head
-      val ref = rhs.start.astChildren.isIdentifier.head
+      val castCall = assignCastCall.start.astChildren.isCall.head
+      val castType = castCall.start.argument.head
+      val ref = castCall.start.astChildren.isIdentifier.head
 
-      lhs.start.cfgNext.head shouldBe ref
-      ref.start.cfgNext.head shouldBe rhs
-      rhs.start.cfgNext.head shouldBe assignCastCall
+      lhs.start.cfgNext.head shouldBe castType
+      castType.start.cfgNext.head shouldBe ref
+      ref.start.cfgNext.head shouldBe castCall
+      castCall.start.cfgNext.head shouldBe assignCastCall
       assignLoadCall.start.cfgNext.head shouldBe lhs
     }
 

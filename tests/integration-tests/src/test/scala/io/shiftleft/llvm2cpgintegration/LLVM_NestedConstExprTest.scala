@@ -25,7 +25,7 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
     val zext = ret.start.astChildren.isCall.head
     zext.name shouldBe "<operator>.cast"
     zext.methodFullName shouldBe "<operator>.cast"
-    zext.start.astChildren.l.size shouldBe 1
+    zext.start.astChildren.l.size shouldBe 2
 
     val icmp = zext.start.astChildren.isCall.head
     icmp.name shouldBe "<operator>.notEquals"
@@ -35,7 +35,7 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
     val icmpBitcast = icmp.start.astChildren.isCall.head
     icmpBitcast.name shouldBe "<operator>.cast"
     icmpBitcast.methodFullName shouldBe "<operator>.cast"
-    icmpBitcast.start.astChildren.l.size shouldBe 1
+    icmpBitcast.start.astChildren.l.size shouldBe 2
 
     val bitcastArg = icmpBitcast.start.astChildren.isMethodRef.head
     bitcastArg.methodFullName shouldBe "__pthread_key_create"
@@ -50,12 +50,16 @@ class LLVM_NestedConstExprTest extends CPGMatcher {
     val block = method.start.block.head
     val ret = block.start.astChildren.isReturn.head
     val zext = ret.start.astChildren.isCall.head
-    val icmp = zext.start.astChildren.isCall.head
-    val icmpBitcast = icmp.start.astChildren.isCall.head
-    val bitcastArg = icmpBitcast.start.astChildren.head.asInstanceOf[Expression]
-    val icmpNull = icmp.start.astChildren.isLiteral.head
+    val zextType = zext.start.argument(1).head
+    val icmp = zext.start.argument(2).isCall.head
+    val icmpBitcast = icmp.start.argument(1).isCall.head
+    val bitcastType = icmpBitcast.start.argument(1).head
+    val bitcastArg = icmpBitcast.start.argument(2).head
+    val icmpNull = icmp.start.argument(2).head
 
-    method.start.cfgFirst.head shouldBe bitcastArg
+    method.start.cfgFirst.head shouldBe zextType
+    zextType.start.cfgNext.head shouldBe bitcastType
+    bitcastType.start.cfgNext.head shouldBe bitcastArg
     bitcastArg.start.cfgNext.head shouldBe icmpBitcast
     icmpBitcast.start.cfgNext.head shouldBe icmpNull
     icmpNull.start.cfgNext.head shouldBe icmp
