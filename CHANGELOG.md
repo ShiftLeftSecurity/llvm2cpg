@@ -1,3 +1,10 @@
+## [0.4.0] - 24 Feb 2020
+
+- Type deduplication: equal types from separate modules merged into one
+- Debug Info for struct/class members and arguments/local variables
+- Correct semantics for the bitcasts
+- Correct semantics for the getelemntptr
+
 ## [0.3.0] - 13 Jan 2020
 
 - String literals now emitted as part of CPG
