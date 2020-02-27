@@ -1,6 +1,7 @@
 set (SOURCES
   Demangler.cpp
   CPGDemangler.cpp
+  IntrinsicsDemangler.cpp
 )
 
 add_library(CPGDemangler ${SOURCES})
