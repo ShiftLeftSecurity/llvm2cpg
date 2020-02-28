@@ -76,6 +76,12 @@ void CPGInstVisitor::visitDbgVariableIntrinsic(llvm::DbgVariableIntrinsic &instr
   bool isComplex = instruction.getExpression()->isComplex();
   bool isptr = instruction.isAddressOfVariable();
   llvm::Value *ref = instruction.getVariableLocation();
+
+  /// After invoke/phi-node elimination it may point to empty metadata
+  if (!ref) {
+    return;
+  }
+
   if (llvm::isa<llvm::Function>(ref)) {
     return;
   }
