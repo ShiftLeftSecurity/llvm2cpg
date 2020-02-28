@@ -1,3 +1,8 @@
+## [0.4.1] - 28 Feb 2020
+
+- Lowers/removes exception handling that doesn't play well with Phi-node elimination
+- Introduces new command line option "-simplify" that runs some simplifying transformation on the bitcode before generating the CPG
+
 ## [0.4.0] - 24 Feb 2020
 
 - Type deduplication: equal types from separate modules merged into one
