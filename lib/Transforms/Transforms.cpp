@@ -2,6 +2,9 @@
 #include "llvm2cpg/Transforms/CustomPasses.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
 
+#include "llvm/Transforms/Scalar/DCE.h"
+#include "llvm/Transforms/Scalar/SimplifyCFG.h"
+#include "llvm/Transforms/Utils/LowerInvoke.h"
 #include <llvm/IR/DebugInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/InstIterator.h>
@@ -20,7 +23,8 @@
 
 using namespace llvm2cpg;
 
-Transforms::Transforms(CPGLogger &log, bool inlineAP) : logger(log), inlineAP(inlineAP) {}
+Transforms::Transforms(CPGLogger &log, bool inlineAP, bool simplify)
+    : logger(log), inlineAP(inlineAP), simplify(simplify) {}
 
 void Transforms::transformBitcode(llvm::Module &bitcode) {
   markObjCRootClasses(bitcode);
@@ -30,25 +34,12 @@ void Transforms::transformBitcode(llvm::Module &bitcode) {
     if (function.isDeclaration()) {
       continue;
     }
-    destructPHINodes(function);
   }
-  calculateInlining(bitcode);
+  runPasses(bitcode);
 
   logger.doNothing();
 }
 
-void Transforms::destructPHINodes(llvm::Function &function) {
-  std::vector<llvm::PHINode *> worklist;
-  for (llvm::Instruction &instruction : llvm::instructions(function)) {
-    if (auto phi = llvm::dyn_cast<llvm::PHINode>(&instruction)) {
-      worklist.push_back(phi);
-    }
-  }
-
-  for (llvm::PHINode *phi : worklist) {
-    llvm::DemotePHIToStack(phi);
-  }
-}
 
 static void markAsRoot(llvm::GlobalVariable &global) {
   llvm::LLVMContext &context = global.getContext();
@@ -161,10 +152,7 @@ void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
   }
 }
 
-void Transforms::calculateInlining(llvm::Module &bitcode) {
-  if (!inlineAP) {
-    return;
-  }
+void Transforms::runPasses(llvm::Module &bitcode) {
 
   llvm::PassBuilder passBuilder;
   bool DebugPM = false;
@@ -189,11 +177,15 @@ void Transforms::calculateInlining(llvm::Module &bitcode) {
   llvm::ModulePassManager modulePassManager(DebugPM);
 
   modulePassManager.addPass(llvm::VerifierPass());
+  modulePassManager.addPass(customPasses::StripOptNonePass());
   {
     llvm::FunctionPassManager FPM(DebugPM);
+    FPM.addPass(llvm::LowerInvokePass());
+    if (simplify) {
+      FPM.addPass(llvm::DCEPass());
+    }
     modulePassManager.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
   }
-  modulePassManager.addPass(customPasses::StripOptNonePass());
 
   // More or less cribbed from standard pipeline. The passes are supposed to run in exactly this
   // order. optionally could run multiple times.
@@ -207,11 +199,19 @@ void Transforms::calculateInlining(llvm::Module &bitcode) {
   {
     llvm::FunctionPassManager FPM(DebugPM);
     FPM.addPass(customPasses::DemotePhiPass());
+    if (simplify) {
+      FPM.addPass(
+          llvm::SimplifyCFGPass(llvm::SimplifyCFGOptions(1, false, false, false, false, nullptr)));
+      FPM.addPass(llvm::DCEPass());
+      // SimplifyCFGPass could maybe re-introduce phis
+      FPM.addPass(customPasses::DemotePhiPass());
+    }
+
     if (inlineAP) {
       FPM.addPass(customPasses::LoadInlinePass());
     }
     modulePassManager.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
   }
-
+  modulePassManager.addPass(llvm::VerifierPass());
   modulePassManager.run(bitcode, moduleAnalysisManager);
 }

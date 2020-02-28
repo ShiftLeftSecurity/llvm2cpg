@@ -12,7 +12,7 @@ class Module;
 namespace llvm2cpg {
 class CPG {
 public:
-  CPG(CPGLogger &logger, bool inlineAP);
+  CPG(CPGLogger &logger, bool inlineAP, bool simplify);
   const std::vector<CPGFile> &getFiles() const;
   void addBitcode(llvm::Module *bitcode);
 

@@ -34,6 +34,10 @@ llvm::cl::opt<bool>
               llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
               llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(true));
 
+llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
+                               llvm::cl::desc("Enable simplification of bitcode"),
+                               llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(false));
+
 int main(int argc, char **argv) {
   llvm::cl::SetVersionPrinter(llvm2cpg::printVersionInformationStream);
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
@@ -50,7 +54,7 @@ int main(int argc, char **argv) {
   llvm2cpg::BitcodeLoader loader(logger);
   std::vector<std::unique_ptr<llvm::Module>> modules;
 
-  llvm2cpg::CPG cpg(logger, APInliner.getValue());
+  llvm2cpg::CPG cpg(logger, APInliner.getValue(), SimplifyBC.getValue());
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string path = BitcodePaths[i];
     logger.uiInfo(std::string("Loading ") + path);

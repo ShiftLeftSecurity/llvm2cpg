@@ -22,6 +22,10 @@ llvm::cl::opt<bool>
               llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
               llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(true));
 
+llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
+                               llvm::cl::desc("Enable simplification of bitcode"),
+                               llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(false));
+
 static std::string getOutputFilename(const std::string &input) {
   std::string inputFilename = llvm::sys::path::stem(input);
   std::string extension = llvm::sys::path::extension(input);
@@ -40,7 +44,7 @@ int main(int argc, char **argv) {
   llvm::LLVMContext context;
   llvm2cpg::CPGLogger log = llvm2cpg::CPGLogger();
   llvm2cpg::BitcodeLoader loader(log);
-  llvm2cpg::Transforms transforms(log, APInliner.getValue());
+  llvm2cpg::Transforms transforms(log, APInliner.getValue(), SimplifyBC.getValue());
 
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string input = BitcodePaths[i];

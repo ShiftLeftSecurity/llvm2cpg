@@ -3,7 +3,8 @@
 
 using namespace llvm2cpg;
 
-CPG::CPG(CPGLogger &log, bool inlineAP) : transforms(log, inlineAP), logger(log) {}
+CPG::CPG(CPGLogger &log, bool inlineAP, bool simplify)
+    : transforms(log, inlineAP, simplify), logger(log) {}
 
 const std::vector<CPGFile> &CPG::getFiles() const {
   return files;
