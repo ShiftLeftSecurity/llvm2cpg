@@ -24,6 +24,7 @@ set (SOURCES
 
   ${CMAKE_CURRENT_LIST_DIR}/struct_merging_1.ll
   ${CMAKE_CURRENT_LIST_DIR}/struct_merging_2.ll
+  ${CMAKE_CURRENT_LIST_DIR}/self_referencing_global.ll
   )
 
 foreach(source ${SOURCES})

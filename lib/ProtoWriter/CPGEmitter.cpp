@@ -406,7 +406,8 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
 
   if (isGlobal(value)) {
     auto global = llvm::dyn_cast<llvm::GlobalVariable>(value);
-    if (global && global->hasInitializer()) {
+    if (global && global->hasInitializer() &&
+        !llvm::isa<llvm::ConstantExpr>(global->getInitializer())) {
       return emitAddressOf(emitRefOrConstant(global->getInitializer()),
                            getTypeName(global->getType()));
     }
