@@ -314,3 +314,32 @@ TEST(ComplexTypeEquality, nestedOpaqueStructs) {
   ASSERT_FALSE(comparator.typesEqual(wrapper_1, wrapper_2));
   ASSERT_FALSE(comparator.typesEqual(wrapper_1, wrapper_3));
 }
+
+TEST(ComplexTypeEquality, nestedUnnamedOpaqueStructs) {
+  llvm_ext::TypesComparator comparator;
+  llvm::LLVMContext context;
+  llvm::StructType *opaque_0 = llvm::StructType::create(context);
+  llvm::StructType *opaque_1 = llvm::StructType::create(context);
+  llvm::StructType *opaque_2 = llvm::StructType::create(context, "named");
+
+  ASSERT_TRUE(opaque_0->isOpaque());
+  ASSERT_TRUE(opaque_1->isOpaque());
+  ASSERT_TRUE(opaque_2->isOpaque());
+
+  llvm::StructType *wrapper_0 =
+      llvm::StructType::create(context, { llvm::PointerType::get(opaque_0, 0) });
+  llvm::StructType *wrapper_1 =
+      llvm::StructType::create(context, { llvm::PointerType::get(opaque_1, 0) });
+  llvm::StructType *wrapper_2 =
+      llvm::StructType::create(context, { llvm::PointerType::get(opaque_0, 0) });
+  llvm::StructType *wrapper_3 =
+      llvm::StructType::create(context, { llvm::PointerType::get(opaque_2, 0) });
+
+  ASSERT_FALSE(comparator.typesEqual(wrapper_0, wrapper_1));
+  ASSERT_FALSE(comparator.typesEqual(wrapper_0, wrapper_3));
+  ASSERT_FALSE(comparator.typesEqual(wrapper_1, wrapper_2));
+  ASSERT_FALSE(comparator.typesEqual(wrapper_1, wrapper_3));
+  ASSERT_FALSE(comparator.typesEqual(wrapper_2, wrapper_3));
+
+  ASSERT_TRUE(comparator.typesEqual(wrapper_0, wrapper_2));
+}

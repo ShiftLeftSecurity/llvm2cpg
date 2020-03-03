@@ -51,7 +51,8 @@ static size_t getTypeId(const llvm::Type *type) {
 
 static std::vector<size_t>
 constructTypeVector(const llvm::Type *topType,
-                    std::unordered_map<std::string, size_t> &opaqueStructs) {
+                    std::unordered_map<std::string, size_t> &opaqueStructs,
+                    std::unordered_map<const llvm::StructType *, size_t> &unnamedStructs) {
   std::vector<size_t> result;
 
   // Using stack for pre-order traversal
@@ -95,12 +96,19 @@ constructTypeVector(const llvm::Type *topType,
     } break;
     case llvm::Type::StructTyID: {
       const auto *structType = llvm::cast<llvm::StructType>(type);
-      if (structType->isOpaque()) {
+      if (structType->isOpaque() && structType->hasName()) {
         std::string canonicalName = llvm_ext::getCanonicalName(structType);
         if (!opaqueStructs.count(canonicalName)) {
-          opaqueStructs.insert(std::make_pair(canonicalName, opaqueStructs.size()));
+          opaqueStructs.insert(
+              std::make_pair(canonicalName, opaqueStructs.size() + unnamedStructs.size()));
         }
         result.push_back(opaqueStructs[canonicalName]);
+      } else if (structType->isOpaque()) {
+        if (!unnamedStructs.count(structType)) {
+          unnamedStructs.insert(
+              std::make_pair(structType, opaqueStructs.size() + unnamedStructs.size()));
+        }
+        result.push_back(unnamedStructs[structType]);
       } else {
         unsigned elementsSize = type->getStructNumElements();
         result.push_back(elementsSize);
@@ -153,20 +161,10 @@ std::string llvm_ext::getCanonicalName(const llvm::StructType *type) {
   return name.substr(0, name.find_first_of('.', 0));
 }
 
-bool llvm_ext::typesEqual(const llvm::Type *lhs, const llvm::Type *rhs,
-                          std::unordered_map<std::string, size_t> &opaqueStructs) {
-  if (rhs == lhs) {
-    return true;
-  }
-
-  std::vector<size_t> lhsVector = constructTypeVector(lhs, opaqueStructs);
-  std::vector<size_t> rhsVector = constructTypeVector(rhs, opaqueStructs);
-  return lhsVector == rhsVector;
-}
-
-static size_t computeTypeHash(const llvm::Type *type,
-                              std::unordered_map<std::string, size_t> &opaqueStructs) {
-  std::vector<size_t> typeVector = constructTypeVector(type, opaqueStructs);
+static size_t
+computeTypeHash(const llvm::Type *type, std::unordered_map<std::string, size_t> &opaqueStructs,
+                std::unordered_map<const llvm::StructType *, size_t> &unnamedStructs) {
+  std::vector<size_t> typeVector = constructTypeVector(type, opaqueStructs, unnamedStructs);
   size_t seed = 0;
   for (auto &value : typeVector) {
     /// Inspired by the boost::hash_combine
@@ -176,12 +174,15 @@ static size_t computeTypeHash(const llvm::Type *type,
   return seed;
 }
 
+size_t llvm_ext::TypesComparator::computeHash(const llvm::Type *type) {
+  if (hashCache.count(type) == 0) {
+    hashCache.insert(std::make_pair(type, computeTypeHash(type, opaqueStructs, unnamedStructs)));
+  }
+  return hashCache[type];
+}
+
 bool llvm_ext::TypesComparator::typesEqual(const llvm::Type *lhs, const llvm::Type *rhs) {
-  if (hashCache.count(lhs) == 0) {
-    hashCache.insert(std::make_pair(lhs, computeTypeHash(lhs, opaqueStructs)));
-  }
-  if (hashCache.count(rhs) == 0) {
-    hashCache.insert(std::make_pair(rhs, computeTypeHash(rhs, opaqueStructs)));
-  }
-  return hashCache[lhs] == hashCache[rhs];
+  size_t lhsHash = computeHash(lhs);
+  size_t rhsHash = computeHash(rhs);
+  return lhsHash == rhsHash;
 }
