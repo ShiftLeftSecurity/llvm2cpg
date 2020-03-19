@@ -26,8 +26,8 @@ class CPGLogger;
 class CPGTypeEmitter {
 public:
   CPGTypeEmitter(CPGProtoBuilder &builder, CPGLogger &logger);
-  void emitObjCTypes(const llvm::Module &module);
-  void emitObjCMethodBindings(const llvm::Module *module,
+  void emitObjCTypes(std::vector<const llvm::Module *> &modules);
+  void emitObjCMethodBindings(std::vector<const llvm::Module *> &modules,
                               std::unordered_map<llvm::Function *, CPGProtoNode *> &emittedMethods);
   void emitStructMembers(std::vector<const llvm::Module *> &modules);
   void recordCanonicalStructNames(std::vector<const llvm::Module *> &modules);
@@ -41,7 +41,7 @@ private:
   std::string recordType(const std::string &typeName, const std::string &typeLocation);
   void emitStructMembers(const llvm::Module *module,
                          std::unordered_set<std::string> &emittedStructs);
-  CPGProtoNode *emitObjCType(ObjCClassDefinition *base, ObjCTypeHierarchy &typeHierarchy);
+  CPGProtoNode *emitObjCType(const std::string &base, ObjCTypeHierarchy &typeHierarchy);
 
   CPGProtoNode *emitTypeDecl(const std::string &typeName, const std::string &typeLocation);
   CPGProtoNode *emitType(const std::string &typeName);

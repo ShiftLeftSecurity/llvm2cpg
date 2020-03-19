@@ -19,6 +19,7 @@ set (IR_SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/objc_methods.ll
   ${CMAKE_CURRENT_LIST_DIR}/objc_external_class.ll
   ${CMAKE_CURRENT_LIST_DIR}/objc_external_class_2.ll
+  ${CMAKE_CURRENT_LIST_DIR}/objc_external_defined_class.ll
 )
 
 foreach(source ${IR_SOURCES})

@@ -24,7 +24,6 @@ private:
   bool inlineAP; // whether to inline access paths
   bool simplify; // whether to simplify code
   void runPasses(llvm::Module &bitcode);
-  void markObjCRootClasses(llvm::Module &bitcode);
   void markObjCTypeHints(llvm::Module &bitcode);
   void renameOpaqueObjCTypes(llvm::Module &bitcode);
 };

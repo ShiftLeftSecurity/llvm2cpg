@@ -14,34 +14,35 @@ class Function;
 
 namespace llvm2cpg {
 
+class CPGLogger;
+
 class ObjCTypeHierarchy {
 public:
-  explicit ObjCTypeHierarchy(const llvm::Module *module);
-  std::unordered_set<ObjCClassDefinition *> &getRootClasses();
-  std::unordered_set<ObjCClassDefinition *> &getClasses();
+  ObjCTypeHierarchy(CPGLogger &logger, std::vector<const llvm::Module *> &modules);
+  std::vector<std::string> getRootClasses();
+  std::vector<std::string> getClasses();
+  std::vector<std::string> getSubclasses(const std::string &objcClass);
+  std::string getMetaclass(const std::string &objcClass);
+  std::vector<ObjCMethod> getMethods(const std::string &objcClass);
 
-  ObjCClassDefinition *getMetaclass(ObjCClassDefinition *objcClass);
-  std::vector<ObjCClassDefinition *> &getSubclasses(ObjCClassDefinition *objcClass);
+  bool isExternal(const std::string &name) const;
+
   void propagateSubclassMethods();
 
-  std::vector<ObjCMethod> &getMethods(ObjCClassDefinition *objcClass);
-
 private:
-  void constructHierarchy();
-  void inherit(ObjCClassDefinition *base, ObjCClassDefinition *derived);
-  void fillInMethods(ObjCClassDefinition *base, ObjCClassDefinition *derived);
-  void recordObjCClass(ObjCClassDefinition *objcClass);
+  void constructHierarchy(std::vector<const llvm::Module *> &modules);
 
-  ObjCTraversal traversal;
+  void fillInMethods(const std::string &base, const std::string &derived);
 
-  std::unordered_set<ObjCClassDefinition *> rootClasses;
-  std::unordered_set<ObjCClassDefinition *> objcClasses;
-  std::unordered_set<ObjCClassDefinition *> objcMetaclasses;
+  CPGLogger &logger;
 
-  std::unordered_map<ObjCClassDefinition *, ObjCClassDefinition *> superclasses;
-  std::unordered_map<ObjCClassDefinition *, std::vector<ObjCClassDefinition *>> subclasses;
+  std::unordered_set<std::string> rootClasses;
+  std::unordered_set<std::string> objcClasses;
+  std::unordered_set<std::string> definedClasses;
 
-  std::unordered_map<ObjCClassDefinition *, std::vector<ObjCMethod>> methodMapping;
+  std::unordered_map<std::string, std::string> metaclassMapping;
+  std::unordered_map<std::string, std::unordered_set<std::string>> subclassMapping;
+  std::unordered_map<std::string, std::unordered_set<ObjCMethod, ObjCMethodHash>> methodMapping;
 };
 
 } // namespace llvm2cpg

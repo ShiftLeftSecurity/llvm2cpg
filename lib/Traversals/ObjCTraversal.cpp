@@ -65,11 +65,20 @@ std::vector<ObjCClassDefinition *> ObjCTraversal::objcClasses() {
   if (!class_t || !class_ro_t) {
     return classes;
   }
-
-  for (const llvm::GlobalObject &global : bitcode->global_objects()) {
-    if (global.hasName() && global.getName().startswith(ObjCClassPrefix) &&
-        !shouldSkipGlobal(&global)) {
-      classes.push_back(objcClassFromGlobalObject(&global));
+  const llvm::GlobalVariable *objcClassList =
+      bitcode->getGlobalVariable("OBJC_LABEL_CLASS_$", true);
+  if (!objcClassList) {
+    return classes;
+  }
+  assert(objcClassList->hasInitializer());
+  const auto *objcClasses = llvm::cast<llvm::ConstantArray>(objcClassList->getInitializer());
+  for (unsigned i = 0; i < objcClasses->getNumOperands(); i++) {
+    assert(llvm::isa<llvm::ConstantExpr>(objcClasses->getOperand(i)));
+    const auto *bitcast = llvm::cast<llvm::ConstantExpr>(objcClasses->getOperand(i));
+    assert(llvm::isa<llvm::GlobalVariable>(bitcast->getOperand(0)));
+    const auto *global = llvm::cast<llvm::GlobalVariable>(bitcast->getOperand(0));
+    if (!shouldSkipGlobal(global)) {
+      classes.push_back(objcClassFromGlobalObject(global));
     }
   }
   return classes;
@@ -81,37 +90,6 @@ bool ObjCTraversal::shouldSkipGlobal(const llvm::GlobalObject *global) {
   /// ignore for the time being
   /// TODO: check where the `glue_class_t` comes from
   return global->getType()->getPointerElementType() != class_t;
-}
-
-std::vector<ObjCClassDefinition *> ObjCTraversal::objcMetaclasses() {
-  std::vector<ObjCClassDefinition *> classes;
-  if (!class_t || !class_ro_t) {
-    return classes;
-  }
-
-  for (const llvm::GlobalObject &global : bitcode->global_objects()) {
-    if (global.hasName() && global.getName().startswith(ObjCMetaclassPrefix) &&
-        !shouldSkipGlobal(&global)) {
-      classes.push_back(objcClassFromGlobalObject(&global));
-    }
-  }
-  return classes;
-}
-
-std::vector<ObjCClassDefinition *> ObjCTraversal::objcRootClasses() {
-  std::vector<ObjCClassDefinition *> classes;
-  if (!class_t || !class_ro_t) {
-    return classes;
-  }
-
-  for (const llvm::GlobalObject &global : bitcode->global_objects()) {
-    llvm::LLVMContext &context = bitcode->getContext();
-    unsigned rootClassMD = context.getMDKindID("shiftleft.objc_root_class");
-    if (global.hasMetadata(rootClassMD) && !shouldSkipGlobal(&global)) {
-      classes.push_back(objcClassFromGlobalObject(&global));
-    }
-  }
-  return classes;
 }
 
 std::string ObjCTraversal::objcClassName(const llvm::ConstantStruct *objcClass) {
@@ -198,6 +176,10 @@ ObjCClassDefinition *ObjCTraversal::objcSuperclass(ObjCClassDefinition *objcClas
     return nullptr;
   }
   llvm::Constant *global = objcClass->getDefinition()->getAggregateElement(unsigned(1));
+  assert(global);
+  if (global->isNullValue()) {
+    return nullptr;
+  }
   return objcClassFromGlobalObject(llvm::cast<llvm::GlobalObject>(global));
 }
 
@@ -206,8 +188,11 @@ ObjCClassDefinition *ObjCTraversal::objcMetaclass(ObjCClassDefinition *objcClass
   if (objcClass->isExternal()) {
     return nullptr;
   }
-
   llvm::Constant *global = objcClass->getDefinition()->getAggregateElement(unsigned(0));
+  assert(global);
+  if (global->isNullValue()) {
+    return nullptr;
+  }
   return objcClassFromGlobalObject(llvm::cast<llvm::GlobalObject>(global));
 }
 

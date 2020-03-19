@@ -153,18 +153,17 @@ void CPGTypeEmitter::emitRecordedTypes() {
 }
 
 void CPGTypeEmitter::emitObjCMethodBindings(
-    const llvm::Module *module,
+    std::vector<const llvm::Module *> &modules,
     std::unordered_map<llvm::Function *, CPGProtoNode *> &emittedMethods) {
-  ObjCTypeHierarchy objCTypeHierarchy(module);
+  ObjCTypeHierarchy objCTypeHierarchy(logger, modules);
 
   /// Attach methods to the right classes
-  for (ObjCClassDefinition *objcClass : objCTypeHierarchy.getClasses()) {
-    if (objcClass->isExternal()) {
+  for (const std::string &className : objCTypeHierarchy.getClasses()) {
+    if (objCTypeHierarchy.isExternal(className)) {
       continue;
     }
 
-    std::string className = objcClass->getName();
-    for (ObjCMethod &method : objCTypeHierarchy.getMethods(objcClass)) {
+    for (ObjCMethod &method : objCTypeHierarchy.getMethods(className)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
       (*methodNode)
           .setName(method.name)
@@ -172,9 +171,8 @@ void CPGTypeEmitter::emitObjCMethodBindings(
           .setASTParentFullName(className);
     }
 
-    ObjCClassDefinition *objcMetaclass = objCTypeHierarchy.getMetaclass(objcClass);
-    std::string superclassName = objcMetaclass->getName();
-    for (ObjCMethod &method : objCTypeHierarchy.getMethods(objcMetaclass)) {
+    std::string metaclassName = objCTypeHierarchy.getMetaclass(className);
+    for (ObjCMethod &method : objCTypeHierarchy.getMethods(metaclassName)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
       (*methodNode)
           .setName(method.name)
@@ -186,15 +184,14 @@ void CPGTypeEmitter::emitObjCMethodBindings(
   objCTypeHierarchy.propagateSubclassMethods();
 
   /// Attach method bindings
-  for (ObjCClassDefinition *objcClass : objCTypeHierarchy.getClasses()) {
-    if (objcClass->isExternal()) {
+  for (const std::string &className : objCTypeHierarchy.getClasses()) {
+    if (objCTypeHierarchy.isExternal(className)) {
       continue;
     }
-    std::string className = objcClass->getName();
     CPGProtoNode *typeDecl = namedTypeDecl(className);
     CPGProtoNode *typeDeclPtr = emitTypeDecl(className + "*", "<global>");
 
-    for (ObjCMethod &method : objCTypeHierarchy.getMethods(objcClass)) {
+    for (ObjCMethod &method : objCTypeHierarchy.getMethods(className)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
       CPGProtoNode *binding = builder.bindingNode();
       (*binding).setName(method.name).setSignature("");
@@ -203,11 +200,10 @@ void CPGTypeEmitter::emitObjCMethodBindings(
       builder.connectBinding(typeDeclPtr, binding);
     }
 
-    ObjCClassDefinition *objcMetaclass = objCTypeHierarchy.getMetaclass(objcClass);
-    std::string superclassName = objcMetaclass->getName();
-    CPGProtoNode *superclassTypeDecl = namedTypeDecl(superclassName);
-    CPGProtoNode *superclassTypeDeclPtr = emitTypeDecl(superclassName + "*", "<global>");
-    for (ObjCMethod &method : objCTypeHierarchy.getMethods(objcMetaclass)) {
+    std::string metaclassName = objCTypeHierarchy.getMetaclass(className);
+    CPGProtoNode *superclassTypeDecl = namedTypeDecl(metaclassName);
+    CPGProtoNode *superclassTypeDeclPtr = emitTypeDecl(metaclassName + "*", "<global>");
+    for (ObjCMethod &method : objCTypeHierarchy.getMethods(metaclassName)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
       CPGProtoNode *binding = builder.bindingNode();
       (*binding).setName(method.name).setSignature("");
@@ -218,12 +214,24 @@ void CPGTypeEmitter::emitObjCMethodBindings(
   }
 }
 
-void CPGTypeEmitter::emitObjCTypes(const llvm::Module &module) {
-  ObjCTypeHierarchy objCTypeHierarchy(&module);
-
-  for (ObjCClassDefinition *objcClass : objCTypeHierarchy.getRootClasses()) {
+void CPGTypeEmitter::emitObjCTypes(std::vector<const llvm::Module *> &modules) {
+  ObjCTypeHierarchy objCTypeHierarchy(logger, modules);
+  for (const std::string &objcClass : objCTypeHierarchy.getRootClasses()) {
     emitObjCType(objcClass, objCTypeHierarchy);
   }
+}
+
+CPGProtoNode *CPGTypeEmitter::emitObjCType(const std::string &base,
+                                           ObjCTypeHierarchy &typeHierarchy) {
+  assert(!base.empty());
+  CPGProtoNode *baseNode = emitTypeDecl(base, "<global>");
+  baseNode->setIsExternal(typeHierarchy.isExternal(base));
+  emitType(base);
+  for (const std::string &subclass : typeHierarchy.getSubclasses(base)) {
+    CPGProtoNode *subclassNode = emitObjCType(subclass, typeHierarchy);
+    subclassNode->setInheritsFromTypeFullName(base);
+  }
+  return baseNode;
 }
 
 struct CanonicalNameCounter {
@@ -430,19 +438,6 @@ void CPGTypeEmitter::recordStructInformation(const llvm::Module *module) {
       structMemberNames.erase(it);
     }
   }
-}
-
-CPGProtoNode *CPGTypeEmitter::emitObjCType(ObjCClassDefinition *base,
-                                           ObjCTypeHierarchy &typeHierarchy) {
-  std::string baseName = base->getName();
-  emitType(baseName);
-  CPGProtoNode *baseNode = emitTypeDecl(baseName, "<global>");
-  baseNode->setIsExternal(base->isExternal());
-  for (ObjCClassDefinition *subclass : typeHierarchy.getSubclasses(base)) {
-    CPGProtoNode *subclassNode = emitObjCType(subclass, typeHierarchy);
-    subclassNode->setInheritsFromTypeFullName(baseName);
-  }
-  return baseNode;
 }
 
 CPGProtoNode *CPGTypeEmitter::namedTypeDecl(const std::string &typeName) {

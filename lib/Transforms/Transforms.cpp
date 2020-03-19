@@ -27,7 +27,6 @@ Transforms::Transforms(CPGLogger &log, bool inlineAP, bool simplify)
     : logger(log), inlineAP(inlineAP), simplify(simplify) {}
 
 void Transforms::transformBitcode(llvm::Module &bitcode) {
-  markObjCRootClasses(bitcode);
   renameOpaqueObjCTypes(bitcode);
   markObjCTypeHints(bitcode);
   for (llvm::Function &function : bitcode) {
@@ -38,52 +37,6 @@ void Transforms::transformBitcode(llvm::Module &bitcode) {
   runPasses(bitcode);
 
   logger.doNothing();
-}
-
-
-static void markAsRoot(llvm::GlobalVariable &global) {
-  llvm::LLVMContext &context = global.getContext();
-  std::string mdName("shiftleft.objc_root_class");
-  unsigned rootClassMD = context.getMDKindID(mdName);
-  llvm::MDNode *paylod = llvm::MDNode::get(context, { llvm::MDString::get(context, mdName) });
-  global.setMetadata(rootClassMD, paylod);
-}
-
-void Transforms::markObjCRootClasses(llvm::Module &bitcode) {
-  for (llvm::GlobalObject &global : bitcode.global_objects()) {
-    if (!global.hasName()) {
-      continue;
-    }
-
-    if (global.getName().startswith("OBJC_METACLASS_$")) {
-      auto &metaclass = llvm::cast<llvm::GlobalVariable>(global);
-      if (!metaclass.hasInitializer()) {
-        markAsRoot(metaclass);
-        continue;
-      }
-      auto *metaclassDefinition = llvm::cast<llvm::ConstantStruct>(metaclass.getInitializer());
-      llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
-      if (superclassSlot->isNullValue()) {
-        markAsRoot(metaclass);
-      }
-      if (auto superclass = llvm::dyn_cast<llvm::GlobalVariable>(superclassSlot)) {
-        if (superclass->hasName() && !superclass->getName().startswith("OBJC_METACLASS_$")) {
-          markAsRoot(metaclass);
-        }
-      }
-    } else if (global.getName().startswith("OBJC_CLASS_$")) {
-      auto &metaclass = llvm::cast<llvm::GlobalVariable>(global);
-      if (!metaclass.hasInitializer()) {
-        markAsRoot(metaclass);
-        continue;
-      }
-      auto *metaclassDefinition = llvm::cast<llvm::ConstantStruct>(metaclass.getInitializer());
-      llvm::Constant *superclassSlot = metaclassDefinition->getAggregateElement(1);
-      if (superclassSlot->isNullValue()) {
-        markAsRoot(metaclass);
-      }
-    }
-  }
 }
 
 void Transforms::markObjCTypeHints(llvm::Module &bitcode) {
@@ -144,8 +97,20 @@ void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
       llvm::FunctionType *type = method.function->getFunctionType();
       assert(type->getNumParams() >= 2 &&
              "ObjC method expected to have implicit parameters (self and _cmd)");
+
+      if (!llvm::isa<llvm::PointerType>(type->getParamType(0))) {
+        continue;
+      }
+
       auto *selfType = llvm::cast<llvm::PointerType>(type->getParamType(0));
+      if (!llvm::isa<llvm::StructType>(selfType->getPointerElementType())) {
+        continue;
+      }
+
       auto *selfStruct = llvm::cast<llvm::StructType>(selfType->getPointerElementType());
+      if (!selfStruct->isOpaque()) {
+        continue;
+      }
       assert(selfStruct->isOpaque() && "ObjC class types expected to be opaque");
       selfStruct->setName(className);
     }

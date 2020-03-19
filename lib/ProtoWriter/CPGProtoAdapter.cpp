@@ -21,7 +21,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       .setLanguage(cpg::LANGUAGES::C)
       .setVersion("0");
 
-  auto globalNamespaceBlockNode = builder.namespaceBlockNode();
+  CPGProtoNode *globalNamespaceBlockNode = builder.namespaceBlockNode();
   (*globalNamespaceBlockNode) //
       .setName("<global>")
       .setFullName("<global>")
@@ -34,13 +34,13 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   }
   typeEmitter.recordCanonicalStructNames(modules);
   typeEmitter.emitStructMembers(modules);
+  typeEmitter.emitObjCTypes(modules);
 
+  std::unordered_map<llvm::Function *, CPGProtoNode *> emittedMethods;
   for (size_t index = 0; index < cpg.getFiles().size(); index++) {
     logger.uiInfo(std::string("Emitting CPG ") + std::to_string(index + 1) + "/" +
                   std::to_string(cpg.getFiles().size()));
-    std::unordered_map<llvm::Function *, CPGProtoNode *> emittedMethods;
     const CPGFile &file = cpg.getFiles()[index];
-    typeEmitter.emitObjCTypes(*file.getModule());
     auto fileNode = builder.fileNode();
     (*fileNode) //
         .setName(file.getName())
@@ -60,9 +60,8 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
       CPGProtoNode *methodNode = emitter.emitMethod(method);
       emittedMethods.insert(std::make_pair(&method.getFunction(), methodNode));
     }
-
-    typeEmitter.emitObjCMethodBindings(file.getModule(), emittedMethods);
   }
+  typeEmitter.emitObjCMethodBindings(modules, emittedMethods);
 
   typeEmitter.emitRecordedTypes();
   saveToArchive();

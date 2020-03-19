@@ -18,6 +18,16 @@ namespace llvm2cpg {
 struct ObjCMethod {
   std::string name;
   llvm::Function *function;
+
+  bool operator==(const ObjCMethod &that) const {
+    return this->name == that.name;
+  }
+};
+
+struct ObjCMethodHash {
+  std::size_t operator()(const ObjCMethod &m) const {
+    return std::hash<std::string>{}(m.name);
+  }
 };
 
 class ObjCClassDefinition {
@@ -38,13 +48,10 @@ class ObjCTraversal {
 public:
   explicit ObjCTraversal(const llvm::Module *bitcode);
 
-  std::vector<ObjCClassDefinition *> objcRootClasses();
   std::vector<ObjCClassDefinition *> objcClasses();
-  std::vector<ObjCClassDefinition *> objcMetaclasses();
 
   ObjCClassDefinition *objcSuperclass(ObjCClassDefinition *objcClass);
   ObjCClassDefinition *objcMetaclass(ObjCClassDefinition *objcClass);
-
   std::vector<ObjCMethod> objcMethods(ObjCClassDefinition *objcClass);
 
   ObjCClassDefinition *objcClassFromGlobalObject(const llvm::GlobalObject *global);
