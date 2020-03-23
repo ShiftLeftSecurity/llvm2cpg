@@ -634,4 +634,94 @@ But different opaque structs get the same symbolic name as soon as the have the 
 ``` 
 Here, the canonical names for opaque structs are `A` (`%struct.A`, `%struct.A.0`) and `B` (`%struct.B`).
 Therefore, we consider the `%struct.A` and `%struct.A.0` as equal, while `%struct.B` is not equal to either of `A`s.
-Even though, all of the 3 structs can point to the same type, or to completely different types.  
+Even though, all of the 3 structs can point to the same type, or to completely different types.
+
+# ObjC Type Hierarchy
+
+### Classes and Metaclasses
+
+In Objective-C, there are two kinds of methods: instance methods and class methods. The class methods are similar to the
+static methods in C++, but, unlike in C++, class methods are dispatched dynamically, and the receiver is not always known at compile-time.
+
+In Objective-C terms, instance methods belong to a class, while class methods belong to a metaclass.
+Therefore, we emit two parallel type hierarchies: one for classes, and the other one for metaclasses.
+
+Example:
+
+```objectivec
+@interface Foo
+
++ (void)classMethod;
+- (void)instanceMethod;
+
+@end
+```
+
+For this snippet, we emit two typeDecls `Foo` and `Foo$` for class and metaclass, respectively.
+AST-wise, both methods belong to the `Foo` typeDecl, but bound differently. Example:
+
+```scala
+ocular> cpg.typeDecl.nameExact("Foo").method.fullName.p
+List(
+"+[Foo classMethod]",
+"-[Foo instanceMethod]"
+)
+
+ocular> cpg.typeDecl.nameExact("Foo$").method.fullName.p
+List()
+
+ocular> cpg.typeDecl.nameExact("Foo").methodBinding.boundMethod.fullName.p
+List(
+"-[Foo instanceMethod]"
+)
+
+ocular> cpg.typeDecl.nameExact("Foo$").methodBinding.boundMethod.fullName.p
+List(
+"+[Foo classMethod]"
+)
+```
+
+### Categories
+
+In Objective-C, classes may have extensions. In ObjC terms, they called Categories. 
+Example:
+
+```objectivec
+@interface Foo (SomeCategory)
+
++ (void)categoryClassMethod;
+- (void)categoryInstanceMethod;
+
+@end
+```
+
+For this snippet, we emit three typeDecls: one for the class, one for the metaclass, and one more for the category itself.
+AST-wise methods belong to the category typeDecl, but bound to the class and metaclass. Example:
+
+
+```scala
+ocular> cpg.typeDecl.nameExact("Foo").method.fullName.p
+List()
+
+ocular> cpg.typeDecl.nameExact("Foo$").method.fullName.p
+List()
+
+ocular> cpg.typeDecl.nameExact("Foo(SomeCategory)").method.fullName.p
+List(
+"+[Foo(SomeCategory) categoryClassMethod]",
+"-[Foo(SomeCategory) categoryInstanceMethod]"
+)
+
+ocular> cpg.typeDecl.nameExact("Foo").methodBinding.boundMethod.fullName.p
+List(
+"-[Foo(SomeCategory) categoryInstanceMethod]"
+)
+
+ocular> cpg.typeDecl.nameExact("Foo$").methodBinding.boundMethod.fullName.p
+List(
+"+[Foo(SomeCategory) categoryClassMethod]"
+)
+
+ocular> cpg.typeDecl.nameExact("Foo(SomeCategory)").methodBinding.boundMethod.fullName.p
+List()
+```
