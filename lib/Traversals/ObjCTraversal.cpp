@@ -39,6 +39,38 @@ const llvm::ConstantStruct *ObjCClassDefinition::getDefinition() {
   return definition;
 }
 
+/// ObjCCategoryDefinition
+
+ObjCCategoryDefinition::ObjCCategoryDefinition(std::string categoryClassName,
+                                               std::string categoryMetaclassName, std::string name,
+                                               ObjCClassDefinition *classDefinition,
+                                               const llvm::ConstantStruct *definition)
+    : categoryClassName(std::move(categoryClassName)),
+      categoryMetaclassName(std::move(categoryMetaclassName)), name(std::move(name)),
+      classDefinition(classDefinition), definition(definition) {}
+
+std::string &ObjCCategoryDefinition::getClassName() {
+  return categoryClassName;
+}
+
+std::string &ObjCCategoryDefinition::getMetaclassName() {
+  return categoryMetaclassName;
+}
+
+std::string &ObjCCategoryDefinition::getName() {
+  return name;
+}
+
+const llvm::ConstantStruct *ObjCCategoryDefinition::getDefinition() {
+  return definition;
+}
+
+ObjCClassDefinition *ObjCCategoryDefinition::getClassDefinition() {
+  return classDefinition;
+}
+
+/// Traversals
+
 static llvm::Type *findObjCClassType(const llvm::Module *bitcode, const std::string &typePrefix) {
   for (llvm::StructType *type : bitcode->getIdentifiedStructTypes()) {
     if (type->hasName() && type->getName().startswith(typePrefix)) {
@@ -56,9 +88,13 @@ static llvm::Type *findObjCClassROTType(const llvm::Module *bitcode) {
   return findObjCClassType(bitcode, "struct._class_ro_t");
 }
 
+static llvm::Type *findObjCCategoryType(const llvm::Module *bitcode) {
+  return findObjCClassType(bitcode, "struct._category_t");
+}
+
 ObjCTraversal::ObjCTraversal(const llvm::Module *bitcode)
     : bitcode(bitcode), class_t(findObjCClassTType(bitcode)),
-      class_ro_t(findObjCClassROTType(bitcode)) {}
+      class_ro_t(findObjCClassROTType(bitcode)), category_t(findObjCCategoryType(bitcode)) {}
 
 std::vector<ObjCClassDefinition *> ObjCTraversal::objcClasses() {
   std::vector<ObjCClassDefinition *> classes;
@@ -84,6 +120,28 @@ std::vector<ObjCClassDefinition *> ObjCTraversal::objcClasses() {
   return classes;
 }
 
+std::vector<ObjCCategoryDefinition *> ObjCTraversal::objcCategories() {
+  std::vector<ObjCCategoryDefinition *> categories;
+  if (!category_t) {
+    return categories;
+  }
+  const llvm::GlobalVariable *categoryList =
+      bitcode->getGlobalVariable("OBJC_LABEL_CATEGORY_$", true);
+  if (!categoryList) {
+    return categories;
+  }
+  assert(categoryList->hasInitializer());
+  const auto *objcClasses = llvm::cast<llvm::ConstantArray>(categoryList->getInitializer());
+  for (unsigned i = 0; i < objcClasses->getNumOperands(); i++) {
+    assert(llvm::isa<llvm::ConstantExpr>(objcClasses->getOperand(i)));
+    const auto *bitcast = llvm::cast<llvm::ConstantExpr>(objcClasses->getOperand(i));
+    assert(llvm::isa<llvm::GlobalVariable>(bitcast->getOperand(0)));
+    const auto *global = llvm::cast<llvm::GlobalVariable>(bitcast->getOperand(0));
+    categories.push_back(objcCategoryFromGlobalObject(global));
+  }
+  return categories;
+}
+
 bool ObjCTraversal::shouldSkipGlobal(const llvm::GlobalObject *global) {
   /// There is at least one case when a `glue_class_t` is used instead of `class_t`: libarclite
   /// It is not clear if the glue_class_t is libarclite specific, or may appear in other contexts
@@ -92,33 +150,37 @@ bool ObjCTraversal::shouldSkipGlobal(const llvm::GlobalObject *global) {
   return global->getType()->getPointerElementType() != class_t;
 }
 
+static std::string extractName(const llvm::ConstantStruct *objcObject, unsigned slot) {
+  llvm::Constant *nameSlot = objcObject->getAggregateElement(slot);
+
+  auto *nameConstExpr = llvm::cast<llvm::ConstantExpr>(nameSlot)->getAsInstruction();
+  auto *nameRef = llvm::cast<llvm::GetElementPtrInst>(nameConstExpr);
+  assert(nameRef->getNumIndices() == 2);
+  assert(nameRef->getNumOperands() == 3);
+  assert(llvm::cast<llvm::ConstantInt>(nameRef->getOperand(1))->isZero());
+  assert(llvm::cast<llvm::ConstantInt>(nameRef->getOperand(2))->isZero());
+
+  auto *nameDecl = llvm::cast<llvm::GlobalVariable>(nameRef->getOperand(0));
+  assert(nameDecl->hasInitializer() && "ObjC classes/categories should have name");
+  nameConstExpr->deleteValue();
+
+  auto *nameData = llvm::cast<llvm::ConstantDataArray>(nameDecl->getInitializer());
+  return nameData->getAsCString();
+}
+
 std::string ObjCTraversal::objcClassName(const llvm::ConstantStruct *objcClass) {
   assert(objcClass);
   assert(objcClass->getType() == class_ro_t);
-  llvm::Constant *classNameSlot = objcClass->getAggregateElement(4);
-
-  auto *classNameConstExpr = llvm::cast<llvm::ConstantExpr>(classNameSlot)->getAsInstruction();
-  auto *classNameRef = llvm::cast<llvm::GetElementPtrInst>(classNameConstExpr);
-  assert(classNameRef->getNumIndices() == 2);
-  assert(classNameRef->getNumOperands() == 3);
-  assert(llvm::cast<llvm::ConstantInt>(classNameRef->getOperand(1))->isZero());
-  assert(llvm::cast<llvm::ConstantInt>(classNameRef->getOperand(2))->isZero());
-
-  auto *classNameDecl = llvm::cast<llvm::GlobalVariable>(classNameRef->getOperand(0));
-  assert(classNameDecl->hasInitializer() && "ObjC classes should have name");
-  classNameConstExpr->deleteValue();
-
-  auto *classNameData = llvm::cast<llvm::ConstantDataArray>(classNameDecl->getInitializer());
-  return classNameData->getAsCString();
+  return extractName(objcClass, 4);
 }
 
-std::vector<ObjCMethod> ObjCTraversal::objcMethods(ObjCClassDefinition *objcClass) {
-  assert(objcClass);
-  if (objcClass->isExternal()) {
-    return std::vector<ObjCMethod>();
-  }
-  const llvm::ConstantStruct *objcClassRO = objcClassROCounterpart(objcClass->getDefinition());
-  llvm::Constant *methodsListSlot = objcClassRO->getAggregateElement(5);
+std::string ObjCTraversal::objcCategoryName(const llvm::ConstantStruct *objcCategory) {
+  assert(objcCategory);
+  assert(objcCategory->getType() == category_t);
+  return extractName(objcCategory, 0);
+}
+
+static std::vector<ObjCMethod> objcMethods(llvm::Constant *methodsListSlot) {
   if (methodsListSlot->isNullValue()) {
     return std::vector<ObjCMethod>();
   }
@@ -156,6 +218,29 @@ std::vector<ObjCMethod> ObjCTraversal::objcMethods(ObjCClassDefinition *objcClas
   }
 
   return methods;
+}
+
+std::vector<ObjCMethod> ObjCTraversal::objcClassMethods(ObjCClassDefinition *objcClass) {
+  assert(objcClass);
+  if (objcClass->isExternal()) {
+    return std::vector<ObjCMethod>();
+  }
+  const llvm::ConstantStruct *objcClassRO = objcClassROCounterpart(objcClass->getDefinition());
+  return objcMethods(objcClassRO->getAggregateElement(5));
+}
+
+std::vector<ObjCMethod>
+ObjCTraversal::objcCategoryClassMethods(llvm2cpg::ObjCCategoryDefinition *objcCategory) {
+  assert(objcCategory);
+  assert(objcCategory->getDefinition());
+  return objcMethods(objcCategory->getDefinition()->getAggregateElement(3));
+}
+
+std::vector<ObjCMethod>
+ObjCTraversal::objcCategoryInstanceMethods(llvm2cpg::ObjCCategoryDefinition *objcCategory) {
+  assert(objcCategory);
+  assert(objcCategory->getDefinition());
+  return objcMethods(objcCategory->getDefinition()->getAggregateElement(2));
 }
 
 const llvm::ConstantStruct *
@@ -202,8 +287,8 @@ ObjCClassDefinition *ObjCTraversal::objcClassFromGlobalObject(const llvm::Global
   assert(global->getName().startswith(ObjCClassPrefix) ||
          global->getName().startswith(ObjCMetaclassPrefix));
 
-  if (cache.count(global)) {
-    return cache.at(global);
+  if (classCache.count(global)) {
+    return classCache.at(global);
   }
 
   const llvm::ConstantStruct *definition = nullptr;
@@ -219,8 +304,33 @@ ObjCClassDefinition *ObjCTraversal::objcClassFromGlobalObject(const llvm::Global
     className = variable->getName().substr(prefix);
   }
 
-  ownedDefinitions.emplace_back(new ObjCClassDefinition(className, metaclass, definition));
-  cache[global] = ownedDefinitions.back().get();
+  ownedClassDefinitions.emplace_back(new ObjCClassDefinition(className, metaclass, definition));
+  classCache[global] = ownedClassDefinitions.back().get();
 
-  return ownedDefinitions.back().get();
+  return ownedClassDefinitions.back().get();
+}
+
+ObjCCategoryDefinition *
+ObjCTraversal::objcCategoryFromGlobalObject(const llvm::GlobalObject *global) {
+  assert(global);
+  assert(global->hasName());
+
+  if (categoryCache.count(global)) {
+    return categoryCache.at(global);
+  }
+
+  auto *variable = llvm::cast<llvm::GlobalVariable>(global);
+  const auto *definition = llvm::cast<const llvm::ConstantStruct>(variable->getInitializer());
+  const auto *classDefinition =
+      llvm::cast<llvm::GlobalObject>(definition->getAggregateElement(unsigned(1)));
+  ObjCClassDefinition *objcClass = objcClassFromGlobalObject(classDefinition);
+  ownedCategoryDefinitions.emplace_back(
+      new ObjCCategoryDefinition(className(objcClass->getName(), false),
+                                 className(objcClass->getName(), true),
+                                 objcCategoryName(definition),
+                                 objcClass,
+                                 definition));
+  categoryCache[global] = ownedCategoryDefinitions.back().get();
+
+  return ownedCategoryDefinitions.back().get();
 }

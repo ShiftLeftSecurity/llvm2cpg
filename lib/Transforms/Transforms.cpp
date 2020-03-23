@@ -93,7 +93,7 @@ void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
 
   for (ObjCClassDefinition *objcClass : worklist) {
     std::string className = objcClass->getName();
-    for (auto &method : traversal.objcMethods(objcClass)) {
+    for (auto &method : traversal.objcClassMethods(objcClass)) {
       llvm::FunctionType *type = method.function->getFunctionType();
       assert(type->getNumParams() >= 2 &&
              "ObjC method expected to have implicit parameters (self and _cmd)");

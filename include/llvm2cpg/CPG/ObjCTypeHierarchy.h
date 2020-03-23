@@ -21,6 +21,7 @@ public:
   ObjCTypeHierarchy(CPGLogger &logger, std::vector<const llvm::Module *> &modules);
   std::vector<std::string> getRootClasses();
   std::vector<std::string> getClasses();
+  std::vector<std::string> getCategories();
   std::vector<std::string> getSubclasses(const std::string &objcClass);
   std::string getMetaclass(const std::string &objcClass);
   std::vector<ObjCMethod> getMethods(const std::string &objcClass);
@@ -38,6 +39,7 @@ private:
 
   std::unordered_set<std::string> rootClasses;
   std::unordered_set<std::string> objcClasses;
+  std::unordered_set<std::string> objcCategories;
   std::unordered_set<std::string> definedClasses;
 
   std::unordered_map<std::string, std::string> metaclassMapping;

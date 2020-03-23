@@ -29,6 +29,14 @@ std::vector<std::string> ObjCTypeHierarchy::getClasses() {
   return result;
 }
 
+std::vector<std::string> ObjCTypeHierarchy::getCategories() {
+  std::vector<std::string> result;
+  for (auto &pair : objcCategories) {
+    result.push_back(pair);
+  }
+  return result;
+}
+
 std::vector<std::string> ObjCTypeHierarchy::getSubclasses(const std::string &objcClass) {
   std::vector<std::string> result;
   for (auto &pair : subclassMapping[objcClass]) {
@@ -92,11 +100,29 @@ void ObjCTypeHierarchy::constructHierarchy(std::vector<const llvm::Module *> &mo
         objcClasses.insert(superClass->getName());
       }
 
-      for (ObjCMethod &method : traversal.objcMethods(objcClass)) {
+      for (ObjCMethod &method : traversal.objcClassMethods(objcClass)) {
         methodMapping[objcClass->getName()].insert(method);
       }
-      for (ObjCMethod &method : traversal.objcMethods(metaClass)) {
+      for (ObjCMethod &method : traversal.objcClassMethods(metaClass)) {
         methodMapping[metaClass->getName()].insert(method);
+      }
+    }
+    for (ObjCCategoryDefinition *category : traversal.objcCategories()) {
+      std::string categoryName = category->getClassName() + "(" + category->getName() + ")";
+      objcClasses.insert(category->getClassName());
+      if (category->getClassDefinition()->isExternal()) {
+        rootClasses.insert(category->getClassName());
+        rootClasses.insert(category->getMetaclassName());
+        metaclassMapping[category->getClassName()] = category->getMetaclassName();
+      }
+      objcCategories.insert(categoryName);
+      for (ObjCMethod &method : traversal.objcCategoryInstanceMethods(category)) {
+        methodMapping[category->getClassName()].insert(method);
+        methodMapping[categoryName].insert(method);
+      }
+      for (ObjCMethod &method : traversal.objcCategoryClassMethods(category)) {
+        methodMapping[category->getMetaclassName()].insert(method);
+        methodMapping[categoryName].insert(method);
       }
     }
   }
