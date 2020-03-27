@@ -103,6 +103,11 @@ CPGProtoNode &CPGProtoNode::setAliasTypeFullName(const std::string &name) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setFileName(const std::string &name) {
+  setStringProperty(cpg::NodePropertyName::FILENAME, name);
+  return *this;
+}
+
 CPGProtoNode &CPGProtoNode::setIsExternal(bool isExternal) {
   setBooleanProperty(cpg::NodePropertyName::IS_EXTERNAL, isExternal);
   return *this;

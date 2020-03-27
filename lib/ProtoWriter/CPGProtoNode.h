@@ -47,6 +47,7 @@ public:
   CPGProtoNode &setInheritsFromTypeFullName(const std::string &name);
   CPGProtoNode &setDynamicTypeHintFullName(const std::string &name);
   CPGProtoNode &setAliasTypeFullName(const std::string &name);
+  CPGProtoNode &setFileName(const std::string &name);
 
 private:
   cpg::CpgStruct_Node *cpgNode;

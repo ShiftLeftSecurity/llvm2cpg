@@ -50,6 +50,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
     (*namespaceBlockNode) //
         .setName(file.getGlobalNamespaceName())
         .setFullName(file.getGlobalNamespaceName())
+        .setFileName(file.getName())
         .setOrder(0);
 
     builder.connectAST(fileNode, namespaceBlockNode);
@@ -58,6 +59,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 
     for (auto &method : file.getMethods()) {
       CPGProtoNode *methodNode = emitter.emitMethod(method);
+      methodNode->setFileName(file.getName());
       emittedMethods.insert(std::make_pair(&method.getFunction(), methodNode));
     }
   }
