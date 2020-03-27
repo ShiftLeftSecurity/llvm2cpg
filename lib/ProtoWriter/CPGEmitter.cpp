@@ -189,9 +189,17 @@ CPGProtoNode *CPGEmitter::visitDbgVariableIntrinsic(llvm::DbgVariableIntrinsic &
 CPGProtoNode *CPGEmitter::visitStoreInst(llvm::StoreInst &instruction) {
   llvm::Value *value = instruction.getValueOperand();
   llvm::Value *pointer = instruction.getPointerOperand();
+  CPGProtoNode *valueNode = nullptr;
+  if (instruction.hasMetadata()) {
+    if (llvm::MDNode *md = instruction.getMetadata("shiftleft.inline_string_literal")) {
+      valueNode = emitInlineString(md, 0);
+      assert(valueNode);
+    }
+  }
+  valueNode = valueNode ? valueNode : emitRefOrConstant(value);
   return emitAssignCall(value->getType(),
                         emitIndirectionCall(value->getType(), emitRefOrConstant(pointer)),
-                        emitRefOrConstant(value));
+                        valueNode);
 }
 
 CPGProtoNode *CPGEmitter::visitLoadInst(llvm::LoadInst &instruction) {
@@ -391,6 +399,22 @@ CPGProtoNode *CPGEmitter::emitMethodBlock(const CPGMethod &method) {
   return blockNode;
 }
 
+llvm2cpg::CPGProtoNode *CPGEmitter::emitInlineString(llvm::MDNode *metadata, unsigned index) {
+  assert(metadata);
+  assert(index < metadata->getNumOperands());
+  llvm::Metadata *initMD = metadata->getOperand(index).get();
+  assert(initMD);
+  assert(llvm::isa<llvm::ConstantAsMetadata>(initMD));
+  auto *initMDConstant = llvm::cast<llvm::ConstantAsMetadata>(initMD);
+  llvm::Constant *initValue = initMDConstant->getValue();
+  if (initValue->isNullValue()) {
+    return nullptr;
+  }
+  assert(llvm::isa<llvm::ConstantDataArray>(initValue));
+  auto *init = llvm::cast<llvm::ConstantDataArray>(initMDConstant->getValue());
+  return emitConstant(init);
+}
+
 CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   if (auto inst = llvm::dyn_cast<llvm::Instruction>(value)) {
     if (inst->getMetadata(inlineMD) != nullptr) {
@@ -406,10 +430,17 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
 
   if (isGlobal(value)) {
     auto global = llvm::dyn_cast<llvm::GlobalVariable>(value);
-    if (global && global->hasInitializer() &&
-        !llvm::isa<llvm::ConstantExpr>(global->getInitializer())) {
-      return emitAddressOf(emitRefOrConstant(global->getInitializer()),
-                           getTypeName(global->getType()));
+    if (global) {
+      llvm::LLVMContext &context = global->getContext();
+      std::string mdName("shiftleft.inline_string_literal");
+      unsigned inlineStringMD = context.getMDKindID(mdName);
+      if (global->hasMetadata(inlineStringMD)) {
+        return emitInlineString(global->getMetadata(inlineStringMD), 0);
+      }
+      if (global->hasInitializer() && !llvm::isa<llvm::ConstantExpr>(global->getInitializer())) {
+        return emitAddressOf(emitRefOrConstant(global->getInitializer()),
+                             getTypeName(global->getType()));
+      }
     }
   }
 
@@ -634,6 +665,11 @@ CPGProtoNode *CPGEmitter::emitIndirectionCall(const llvm::Type *type, CPGProtoNo
 }
 
 CPGProtoNode *CPGEmitter::emitDereference(llvm::LoadInst *load) {
+  if (load->hasMetadata()) {
+    if (llvm::MDNode *md = load->getMetadata("shiftleft.inline_string_literal")) {
+      return emitInlineString(md, 0);
+    }
+  }
   CPGProtoNode *dereference =
       emitGenericOp("<operator>.indirection", "load", getTypeName(load->getType()), "ANY (ANY)");
   /// Special-casing here to handle the class method call resolution in ObjC
@@ -878,6 +914,17 @@ CPGProtoNode *CPGEmitter::emitUnaryOperator(const llvm::UnaryOperator *instructi
       { emitRefOrConstant(instruction->getOperand(0)) });
 }
 
+CPGProtoNode *CPGEmitter::emitFunctionCallArgument(llvm::CallBase *instruction, unsigned index) {
+  CPGProtoNode *argumentNode = nullptr;
+  if (instruction->hasMetadata()) {
+    if (llvm::MDNode *metadata = instruction->getMetadata("shiftleft.inline_string_literal")) {
+      argumentNode = emitInlineString(metadata, index);
+    }
+  }
+  argumentNode = argumentNode ? argumentNode : emitRefOrConstant(instruction->getArgOperand(index));
+  return argumentNode;
+}
+
 CPGProtoNode *CPGEmitter::emitFunctionCall(llvm::CallBase *instruction) {
   if (!instruction->getCalledFunction()) {
     return emitIndirectFunctionCall(instruction);
@@ -952,8 +999,8 @@ CPGProtoNode *CPGEmitter::emitIndirectFunctionCall(llvm::CallBase *instruction) 
   builder.connectReceiver(callNode, receiver);
 
   std::vector<CPGProtoNode *> children({ receiver });
-  for (const llvm::Use &argument : instruction->args()) {
-    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+  for (unsigned index = 0; index < instruction->arg_size(); index++) {
+    CPGProtoNode *arg = emitFunctionCallArgument(instruction, index);
     children.push_back(arg);
   }
   resolveConnections(callNode, children);
@@ -974,8 +1021,8 @@ CPGProtoNode *CPGEmitter::emitDirectFunctionCall(llvm::CallBase *instruction) {
 
   setLineInfo(call);
   std::vector<CPGProtoNode *> children;
-  for (const llvm::Use &argument : instruction->args()) {
-    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+  for (unsigned index = 0; index < instruction->arg_size(); index++) {
+    CPGProtoNode *arg = emitFunctionCallArgument(instruction, index);
     children.push_back(arg);
   }
 
@@ -1061,8 +1108,7 @@ CPGProtoNode *CPGEmitter::emitObjCFunctionCall(llvm::CallBase *instruction) {
   std::vector<CPGProtoNode *> children({ receiverNode });
 
   for (unsigned i = 1; i < instruction->arg_size(); i++) {
-    llvm::Value *argument = instruction->getArgOperand(i);
-    CPGProtoNode *arg = emitRefOrConstant(argument);
+    CPGProtoNode *arg = emitFunctionCallArgument(instruction, i);
     children.push_back(arg);
   }
 
@@ -1088,8 +1134,8 @@ CPGProtoNode *CPGEmitter::emitCastFunctionCall(llvm::CallBase *instruction) {
   setLineInfo(callNode);
 
   std::vector<CPGProtoNode *> children;
-  for (const llvm::Use &argument : instruction->args()) {
-    CPGProtoNode *arg = emitRefOrConstant(argument.get());
+  for (unsigned index = 0; index < instruction->arg_size(); index++) {
+    CPGProtoNode *arg = emitFunctionCallArgument(instruction, index);
     children.push_back(arg);
   }
   resolveConnections(callNode, children);

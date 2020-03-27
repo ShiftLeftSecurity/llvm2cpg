@@ -7,7 +7,7 @@ class C_CallMalformedUTFStringTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_CallMalformedUTFStringTestCPG)
 
   "literals" in {
-    cpg.literal.code.l.sorted shouldBe List("0", "0", "0x060x090x860x01")
+    cpg.literal.code.l.sorted shouldBe List("0x060x090x860x01")
   }
 
 }

@@ -1,14 +1,9 @@
 #include "llvm2cpg/Transforms/Transforms.h"
-#include "llvm2cpg/Transforms/CustomPasses.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
+#include "llvm2cpg/Transforms/CustomPasses.h"
 
-#include "llvm/Transforms/Scalar/DCE.h"
-#include "llvm/Transforms/Scalar/SimplifyCFG.h"
-#include "llvm/Transforms/Utils/LowerInvoke.h"
 #include <llvm/IR/DebugInfo.h>
 #include <llvm/IR/Function.h>
-#include <llvm/IR/InstIterator.h>
-#include <llvm/IR/Instructions.h>
 #include <llvm/IR/IntrinsicInst.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/PassManager.h>
@@ -18,17 +13,23 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Transforms/IPO/FunctionAttrs.h>
 #include <llvm/Transforms/IPO/InferFunctionAttrs.h>
+#include <llvm/Transforms/Scalar/DCE.h>
+#include <llvm/Transforms/Scalar/SimplifyCFG.h>
 #include <llvm/Transforms/Utils/Local.h>
+#include <llvm/Transforms/Utils/LowerInvoke.h>
 #include <llvm2cpg/Traversals/ObjCTraversal.h>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace llvm2cpg;
 
-Transforms::Transforms(CPGLogger &log, bool inlineAP, bool simplify)
-    : logger(log), inlineAP(inlineAP), simplify(simplify) {}
+Transforms::Transforms(CPGLogger &log, bool inlineAP, bool simplify, bool inlineStrings)
+    : logger(log), inlineAP(inlineAP), simplify(simplify), inlineStrings(inlineStrings) {}
 
 void Transforms::transformBitcode(llvm::Module &bitcode) {
   renameOpaqueObjCTypes(bitcode);
   markObjCTypeHints(bitcode);
+  inlineGlobalStrings(bitcode);
   for (llvm::Function &function : bitcode) {
     if (function.isDeclaration()) {
       continue;
@@ -179,4 +180,211 @@ void Transforms::runPasses(llvm::Module &bitcode) {
   }
   modulePassManager.addPass(llvm::VerifierPass());
   modulePassManager.run(bitcode, moduleAnalysisManager);
+}
+
+static std::unordered_set<llvm::Type *> findObjCStringTagTypes(llvm::Module &bitcode) {
+  std::unordered_set<llvm::Type *> types;
+  for (llvm::StructType *type : bitcode.getIdentifiedStructTypes()) {
+    if (type->hasName() && !type->isOpaque() &&
+        type->getName().startswith("struct.__NSConstantString_tag")) {
+      types.insert(type);
+    }
+  }
+  return types;
+}
+
+static bool isInlineableConstGEP(llvm::Value *value) {
+  if (!value) {
+    return false;
+  }
+  auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(value);
+  if (constExpr && constExpr->getOpcode() == llvm::Instruction::GetElementPtr) {
+    // We expect to see a const getelementptr @str, 0, 0
+    llvm::Constant *index_0 = constExpr->getOperand(1);
+    llvm::Constant *index_1 = constExpr->getOperand(2);
+    if (index_0->isNullValue() && index_1->isNullValue()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool isInlineableConstBitcast(llvm::Value *value) {
+  if (value) {
+    auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(value);
+    if (constExpr && constExpr->getOpcode() == llvm::Instruction::BitCast) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool isInlineableStringUserInstruction(llvm::Value *value) {
+  if (value) {
+    return llvm::isa<llvm::LoadInst>(value) || llvm::isa<llvm::StoreInst>(value) ||
+           llvm::isa<llvm::CallBase>(value);
+  }
+  return false;
+}
+
+/// Extracts the pointer operand from the const GEP expression
+/// Extracts the pointer only if there are two 0 indices
+static llvm::Value *getGEPPointer(llvm::Value *value) {
+  if (isInlineableConstGEP(value)) {
+    return llvm::cast<llvm::ConstantExpr>(value)->getOperand(0);
+  }
+  return nullptr;
+}
+
+void Transforms::inlineGlobalStrings(llvm::Module &bitcode) {
+  if (!inlineStrings) {
+    return;
+  }
+  // clang-format off
+  /// There are three cases in which we want to inline strings:
+  ///
+  /// 1. A global variable initialized as a string:
+  ///   @.str.1 = private unnamed_addr constant [6 x i8] c"Hello\00"
+  ///
+  /// 2. ObjC string wrapped into a __NSConstantString_tag struct:
+  ///   @.str.1 = private unnamed_addr constant [6 x i8] c"Hello\00"
+  ///   @_unnamed_cfstring_ = private global %struct.__NSConstantString_tag {
+  ///     i32* getelementptr inbounds ([0 x i32], [0 x i32]* @__CFConstantStringClassReference, i32 0, i32 0),
+  ///     i32 1992,
+  ///     i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0),
+  ///     i64 5
+  ///   }
+  ///
+  /// 3. ObjC selectors referenced indirectly:
+  ///   @OBJC_METH_VAR_NAME_ = private unnamed_addr constant [13 x i8] c"createObject\00"
+  ///   @OBJC_SELECTOR_REFERENCES_ = private externally_initialized global i8* getelementptr inbounds ([13 x i8], [13 x i8]* @OBJC_METH_VAR_NAME_, i32 0, i32 0)
+  ///
+  /// Each inlineable string appears in a ConstantExpr (either within a bitcast or within a getelementptr) or as an operand of Load/Store/Call instruction.
+  /// The ConstantExpr's may appear in several contexts, but we inline them only within load, store, and call instructions.
+  /// If an inlineable string is not wrapped into a ConstantExpr and appears within a load/store/call instruction, then we also inline it.
+  /// Examples:
+  /// 1.
+  ///   @global = constant [6 x i8] c"Hello\00"
+  ///   %x = load bitcast @global
+  ///   Not-inlined: <operator>.assignment(x, <operator>.indirection(<operator>.cast(<operator>.addressOf(@global)))
+  ///   Inlined: <operator>.assignment(x, "Hello")
+  ///
+  /// 2.
+  ///   @global = constant [6 x i8] c"Hello\00"
+  ///   %x = load @global
+  ///   Not-inlined: <operator>.assignment(x, <operator>.indirection(<operator>.addressOf(@global))
+  ///   Inlined: <operator>.assignment(x, "Hello")
+  ///
+  /// 3.
+  ///   @global = constant [6 x i8] c"Hello\00"
+  ///   %x = load getelementptr @global, 0, 0
+  ///   Not-inlined: <operator>.assignment(x, <operator>.pointerShift(<operator>.pointerShift(<operator>.addressOf(@global), 0), 0))
+  ///   Inlined: <operator>.assignment(x, "Hello")
+  ///
+  /// 4.
+  ///   @.str.1 = private unnamed_addr constant [6 x i8] c"Hello\00"
+  ///   @_unnamed_cfstring_ = private global %struct.__NSConstantString_tag {
+  ///     i32* getelementptr inbounds ([0 x i32], [0 x i32]* @__CFConstantStringClassReference, i32 0, i32 0),
+  ///     i32 1992,
+  ///     i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0),
+  ///     i64 5
+  ///   }
+  ///   store %opaque* bitcast (%struct.__NSConstantString_tag* @_unnamed_cfstring_ to %0*), %opaque** %x
+  ///   Not-inlined: <operator>.assignment(<operator>.indirection(x), <operator>.cast(<operator>.addressOf(@_unnamed_cfstring_)))
+  ///   Inlined: <operator>.assignment(<operator>.indirection(x), "Hello")
+  ///
+  /// 5.
+  ///   @str = private unnamed_addr constant [6 x i8] c"Hello\00"
+  ///   call i32 @printf(i8* getelementptr ([6 x i8], [6 x i8]* @str, i32 0, i32 0))
+  ///   Not-inlined: printf(<operator>.pointerShift(<operator>.pointerShift(<operator>.addressOf(@str), 0), 0))
+  ///   Inlined: printf("Hello")
+  ///
+  ///  **Notes**:
+  ///     - we do not inline GEPs that have more/less than 2 indices
+  ///     - we do not inline GEPs which have non-zero indices
+  // clang-format on
+
+  std::unordered_set<llvm::Type *> objcTypes = findObjCStringTagTypes(bitcode);
+  std::unordered_map<llvm::Value *, llvm::Constant *> inlines;
+  std::vector<llvm::GlobalVariable *> inlineableGlobals;
+
+  for (llvm::GlobalVariable &global : bitcode.globals()) {
+    if (global.hasInitializer()) {
+      if (auto *init = llvm::dyn_cast<llvm::ConstantDataArray>(global.getInitializer())) {
+        if (init->isCString()) {
+          inlines[&global] = init;
+        }
+      } else if (!objcTypes.empty() &&
+                 objcTypes.count(global.getType()->getPointerElementType()) != 0) {
+        inlineableGlobals.push_back(&global);
+      } else if (global.hasName() && global.getName().startswith("OBJC_SELECTOR_REFERENCES_")) {
+        inlineableGlobals.push_back(&global);
+      }
+    }
+  }
+
+  for (llvm::GlobalVariable *global : inlineableGlobals) {
+    assert(global->hasInitializer());
+    if (auto init = llvm::dyn_cast<llvm::ConstantStruct>(global->getInitializer())) {
+      // the __NSConstantString_tag should have 4 members
+      // the third member being the reference to a constant string
+      if (init->getNumOperands() == 4) {
+        llvm::Value *stringRef = getGEPPointer(init->getOperand(2));
+        if (inlines.count(stringRef)) {
+          inlines[global] = inlines[stringRef];
+        }
+      }
+    }
+    llvm::Value *stringRef = getGEPPointer(global->getInitializer());
+    if (inlines.count(stringRef)) {
+      inlines[global] = inlines[stringRef];
+    }
+  }
+
+  std::unordered_map<llvm::Instruction *, std::unordered_map<llvm::Value *, llvm::Constant *>>
+      inlineInstructions;
+  llvm::LLVMContext &context = bitcode.getContext();
+  std::string mdName("shiftleft.inline_string_literal");
+  unsigned inlineStringMD = context.getMDKindID(mdName);
+  for (auto &pair : inlines) {
+    auto *global = llvm::cast<llvm::GlobalVariable>(pair.first);
+    llvm::Constant *init = pair.second;
+    llvm::MDNode *payload = llvm::MDNode::get(context, { llvm::ConstantAsMetadata::get(init) });
+    global->setMetadata(inlineStringMD, payload);
+
+    for (llvm::User *user : global->users()) {
+      if (isInlineableConstGEP(user)) {
+        for (llvm::User *outerUser : user->users()) {
+          if (isInlineableStringUserInstruction(outerUser)) {
+            inlineInstructions[llvm::cast<llvm::Instruction>(outerUser)][user] = init;
+          }
+        }
+      } else if (isInlineableConstBitcast(user)) {
+        for (llvm::User *outerUser : user->users()) {
+          if (isInlineableStringUserInstruction(outerUser)) {
+            inlineInstructions[llvm::cast<llvm::Instruction>(outerUser)][user] = init;
+          }
+        }
+      } else if (isInlineableStringUserInstruction(user)) {
+        inlineInstructions[llvm::cast<llvm::Instruction>(user)][global] = init;
+      }
+    }
+  }
+
+  llvm::Constant *nullValue = llvm::Constant::getNullValue(llvm::Type::getInt8Ty(context));
+  llvm::ConstantAsMetadata *nullMetadata = llvm::ConstantAsMetadata::get(nullValue);
+  for (auto &topPair : inlineInstructions) {
+    llvm::Instruction *instruction = topPair.first;
+    std::vector<llvm::Metadata *> metadata;
+    std::unordered_map<llvm::Value *, llvm::Constant *> &initMapping = topPair.second;
+    for (llvm::Value *operand : instruction->operands()) {
+      if (initMapping.count(operand)) {
+        metadata.push_back(llvm::ConstantAsMetadata::get(initMapping[operand]));
+      } else {
+        metadata.push_back(nullMetadata);
+      }
+    }
+    llvm::MDNode *payload = llvm::MDNode::get(context, metadata);
+    instruction->setMetadata(inlineStringMD, payload);
+  }
 }

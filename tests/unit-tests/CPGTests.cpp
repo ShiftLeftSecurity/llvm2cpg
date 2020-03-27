@@ -10,7 +10,7 @@ using namespace llvm2cpg;
 TEST(CPG, empty) {
   CPGLogger logger;
 
-  CPG cpg(logger, false, false);
+  CPG cpg(logger, false, false, false);
   ASSERT_TRUE(cpg.getFiles().empty());
 }
 
@@ -21,7 +21,7 @@ TEST(CPG, addBitcode) {
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path());
   ASSERT_NE(bitcode.get(), nullptr);
 
-  CPG cpg(logger, false, false);
+  CPG cpg(logger, false, false, false);
   cpg.addBitcode(bitcode.get());
   ASSERT_EQ(cpg.getFiles().size(), size_t(1));
   auto &file = cpg.getFiles().front();

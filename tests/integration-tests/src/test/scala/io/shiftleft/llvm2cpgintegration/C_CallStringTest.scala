@@ -14,7 +14,7 @@ class C_CallStringTest extends CPGMatcher {
   private val methodName = "basic_c_support"
 
   "types" in {
-    validateTypes(cpg, List("ANY", "i8*", "void", "i32", "[6 x i8]*", "[6 x i8]", "i32 (i8*)", "void ()"))
+    validateTypes(cpg, List("ANY", "i8*", "void", "i32", "[6 x i8]", "i32 (i8*)", "void ()"))
   }
 
   "AST" in {
@@ -37,22 +37,7 @@ class C_CallStringTest extends CPGMatcher {
     call.typeFullName shouldBe "i32"
     call.signature shouldBe "i32 (i8*)"
 
-    val indexAccess = call.start.astChildren.isCall.head
-    indexAccess.name shouldBe "<operator>.indexAccess"
-
-    val pointerShift = indexAccess.start.astChildren.isCall.head
-    pointerShift.name shouldBe "<operator>.pointerShift"
-    pointerShift.code shouldBe "getelementptr"
-    pointerShift.typeFullName shouldBe "[6 x i8]"
-
-    val addressOf = pointerShift.start.astChildren.isCall.head
-    addressOf.name shouldBe "<operator>.addressOf"
-    addressOf.code shouldBe "addressOf"
-    addressOf.typeFullName shouldBe "[6 x i8]*"
-
-    val argument = addressOf.start.astChildren.isLiteral.head
-    argument.code shouldBe "hello"
-    argument.typeFullName shouldBe "[6 x i8]"
+    call.start.argument.isLiteral.code.head shouldBe "hello"
   }
 
   "CFG" in {
@@ -62,11 +47,9 @@ class C_CallStringTest extends CPGMatcher {
     val assignCall = block.start.astChildren.isCall.head
     val callValueRef = assignCall.start.astChildren.isIdentifier.head
     val call = assignCall.start.astChildren.isCall.head
-    val addressOf = call.start.astChildren.isCall.head
-    val argument = addressOf.start.astChildren.isLiteral.head
+    val argument = call.start.argument.isLiteral.head
 
-    argument.start.cfgNext.head shouldBe addressOf
-    addressOf.start.cfgNext.head shouldBe call
+    argument.start.cfgNext.head shouldBe call
     call.start.cfgNext.head shouldBe assignCall
 
     val ret = block.start.astChildren.isReturn.head

@@ -68,6 +68,7 @@ private:
   CPGProtoNode *emitMethodReturnNode(const CPGMethod &method);
   CPGProtoNode *emitMethodBlock(const CPGMethod &method);
 
+  CPGProtoNode *emitInlineString(llvm::MDNode *metadata, unsigned index);
   CPGProtoNode *emitRefOrConstant(llvm::Value *value);
   CPGProtoNode *emitConstant(llvm::Value *value);
   CPGProtoNode *emitConstant(unsigned int);
@@ -99,6 +100,7 @@ private:
   CPGProtoNode *emitAtomicCmpXchg(llvm::AtomicCmpXchgInst *instruction);
   CPGProtoNode *emitUnhandledCall(llvm::Instruction *instruction);
 
+  CPGProtoNode *emitFunctionCallArgument(llvm::CallBase *instruction, unsigned index);
   CPGProtoNode *emitFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitIndirectFunctionCall(llvm::CallBase *instruction);
   CPGProtoNode *emitDirectFunctionCall(llvm::CallBase *instruction);

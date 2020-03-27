@@ -53,6 +53,8 @@ add_integration_test(ObjC_MultipleExternalClassesTest objc_external_class_ll_bc 
 add_integration_test(ObjC_ExternallyDefinedClassTest objc_external_class_ll_bc objc_external_defined_class_ll_bc objc_external_class_ll_bc FLAGS -inline=false)
 add_integration_test(ObjC_CategoriesTest objc_categories_ll_bc FLAGS -inline=false)
 add_integration_test(ObjC_CategoriesExternalTest objc_categories_external_ll_bc FLAGS -inline=false)
+add_integration_test(ObjC_StringsTest objc_strings_ll_bc FLAGS -inline=true)
+add_integration_test(ObjC_StringsNoInlineTest objc_strings_ll_bc FLAGS -inline=true -inline-strings=false)
 
 add_integration_test(StructMerging_01_Test struct_merging_1_ll_bc struct_merging_2_ll_bc FLAGS -inline=false)
 

@@ -3,8 +3,8 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Path.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
-#include <llvm2cpg/Transforms/Transforms.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
+#include <llvm2cpg/Transforms/Transforms.h>
 
 llvm::cl::OptionCategory BitcodeTransformerCategory("bitcode-transformer");
 
@@ -21,6 +21,10 @@ llvm::cl::opt<bool>
     APInliner("inline", llvm::cl::Optional,
               llvm::cl::desc("Enable inlining of access paths (loads, pointer arithmetic)"),
               llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(true));
+
+llvm::cl::opt<bool> InlineStrings("inline-strings", llvm::cl::Optional,
+                                  llvm::cl::desc("Enable global strings inlining"),
+                                  llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(true));
 
 llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
                                llvm::cl::desc("Enable simplification of bitcode"),
@@ -44,7 +48,8 @@ int main(int argc, char **argv) {
   llvm::LLVMContext context;
   llvm2cpg::CPGLogger log = llvm2cpg::CPGLogger();
   llvm2cpg::BitcodeLoader loader(log);
-  llvm2cpg::Transforms transforms(log, APInliner.getValue(), SimplifyBC.getValue());
+  llvm2cpg::Transforms transforms(
+      log, APInliner.getValue(), SimplifyBC.getValue(), InlineStrings.getValue());
 
   for (size_t i = 0; i < BitcodePaths.size(); i++) {
     std::string input = BitcodePaths[i];
