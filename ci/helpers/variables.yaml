@@ -27,6 +27,7 @@ protobuf_dir: "{{ working_dir }}/protobuf-3.10.1"
 libzip_url: https://github.com/nih-at/libzip.git
 libzip_dir: "{{ working_dir }}/libzip"
 libzip_build_dir: "{{ working_dir }}/libzip.build.dir"
+libzip_gitref: rel-1-6-1
 
 source_dir: "{{ working_dir }}/llvm2cpg"
 debug_build_dir: "{{ working_dir }}/build.llvm2cpg.debug.dir"

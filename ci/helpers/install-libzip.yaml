@@ -3,6 +3,7 @@
   git:
     repo: "{{ libzip_url }}"
     dest: "{{ libzip_dir }}"
+    version: "{{ libzip_gitref }}"
 
 - name: Create libzip Build Directory
   file:
