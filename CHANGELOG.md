@@ -1,3 +1,10 @@
+## [0.5.0] - 30 Mar 2020
+
+- C/ObjC string inlining
+- Construct correct ObjC type hierarchy across several modules
+- ObjC categories now emitted as well
+- Methods and namespaces got the FILE property attached 
+
 ## [0.4.1] - 28 Feb 2020
 
 - Lowers/removes exception handling that doesn't play well with Phi-node elimination
