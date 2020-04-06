@@ -385,6 +385,10 @@ CPGProtoNode *CPGEmitter::emitMethodReturnNode(const CPGMethod &method) {
       .setTypeFullName(methodReturnType)
       .setCode(methodReturnType)
       .setEvaluationStrategy("BY_VALUE");
+  if (method.getReturnType()->isPointerTy() &&
+      method.getReturnType()->getPointerElementType()->isStructTy()) {
+    methodReturnNode->setDynamicTypeHintFullName(methodReturnType);
+  }
   return methodReturnNode;
 }
 
@@ -1009,6 +1013,10 @@ CPGProtoNode *CPGEmitter::emitIndirectFunctionCall(llvm::CallBase *instruction) 
 
 CPGProtoNode *CPGEmitter::emitDirectFunctionCall(llvm::CallBase *instruction) {
   assert(instruction->getCalledFunction());
+  if (instruction->getCalledFunction()->hasName() &&
+      instruction->getCalledFunction()->getName().equals("objc_opt_new")) {
+    return emitObjCOptNewCall(instruction);
+  }
   CPGProtoNode *call = builder.functionCallNode();
   DemangledName demangledName = demangler.demangleFunctionName(instruction->getCalledFunction());
   (*call) //
@@ -1111,6 +1119,33 @@ CPGProtoNode *CPGEmitter::emitObjCFunctionCall(llvm::CallBase *instruction) {
     CPGProtoNode *arg = emitFunctionCallArgument(instruction, i);
     children.push_back(arg);
   }
+
+  resolveConnections(callNode, children);
+  return callNode;
+}
+
+CPGProtoNode *CPGEmitter::emitObjCOptNewCall(llvm::CallBase *instruction) {
+  llvm::Value *receiver = instruction->getArgOperand(0);
+
+  CPGProtoNode *callNode = builder.functionCallNode();
+  std::string name = "new";
+  (*callNode) //
+      .setName(name)
+      .setCode(name)
+      .setTypeFullName(getTypeName(receiver->getType()))
+      .setSignature("")
+      .setDispatchType("DYNAMIC_DISPATCH");
+
+  setLineInfo(callNode);
+  CPGProtoNode *receiverNode = emitRefOrConstant(receiver);
+  builder.connectReceiver(callNode, receiverNode);
+
+  CPGProtoNode *selector = builder.literalNode();
+  resolveConnections(selector, {});
+  (*selector) //
+      .setCode(name)
+      .setTypeFullName("ANY");
+  std::vector<CPGProtoNode *> children({ receiverNode, selector });
 
   resolveConnections(callNode, children);
   return callNode;
