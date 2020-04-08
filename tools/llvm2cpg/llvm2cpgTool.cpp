@@ -1,18 +1,22 @@
 #include "FileType.h"
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/Path.h>
 #include <llvm2cpg/CPG/BitcodeLoader.h>
 #include <llvm2cpg/CPG/CPG.h>
 #include <llvm2cpg/CPG/Version.h>
 #include <llvm2cpg/CPGWriter/CPGProtoWriter.h>
 #include <llvm2cpg/Logger/CPGLogger.h>
+#include <set>
 #include <sstream>
 #include <string>
 
 llvm::cl::OptionCategory CPGProtoWriterCategory("llvm2cpg");
 
-llvm::cl::list<std::string> BitcodePaths(llvm::cl::Positional, llvm::cl::OneOrMore,
-                                         llvm::cl::desc("Bitcode files"),
-                                         llvm::cl::cat(CPGProtoWriterCategory));
+llvm::cl::list<std::string> BitcodePaths(
+    llvm::cl::Positional, llvm::cl::OneOrMore,
+    llvm::cl::desc("Input: maybe one or more of any .bc, .ll, executables, or directories"),
+    llvm::cl::cat(CPGProtoWriterCategory));
 
 llvm::cl::opt<std::string>
     OutputDirectory("output-dir", llvm::cl::Optional,
@@ -42,6 +46,65 @@ llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
                                llvm::cl::desc("Enable simplification of bitcode"),
                                llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(false));
 
+static std::set<std::string> getInputFilePaths(llvm2cpg::CPGLogger &logger) {
+  std::set<std::string> files;
+
+  std::vector<std::string> worklist;
+
+  for (size_t i = 0; i < BitcodePaths.size(); i++) {
+    std::string path = BitcodePaths[i];
+    if (llvm::sys::fs::is_directory(path)) {
+      logger.uiInfo("Scanning directory for bitcode files: " + path);
+      std::error_code errorCode;
+      llvm::sys::fs::recursive_directory_iterator end;
+      llvm::sys::fs::recursive_directory_iterator dir(llvm::Twine(path), errorCode);
+      while (!errorCode && dir != end) {
+        worklist.push_back(dir->path());
+        dir.increment(errorCode);
+      }
+      if (errorCode) {
+        logger.uiWarning("Skipping " + path + "Reason: " + errorCode.message());
+      }
+    } else {
+      worklist.push_back(path);
+    }
+  }
+
+  for (const std::string &path : worklist) {
+    if (llvm::sys::fs::is_directory(path)) {
+      continue;
+    }
+
+    /// Doesn't seem to be small, but the API forces us to use this type here
+    llvm::SmallString<4096> realPath;
+    std::error_code error = llvm::sys::fs::real_path(path, realPath);
+    if (error) {
+      logger.uiWarning("Skipping " + path + " Reason:" + error.message());
+      continue;
+    }
+
+    std::string filePath = realPath.str();
+    llvm2cpg::FileType type = getFileType(logger, filePath);
+    switch (type) {
+    case llvm2cpg::FileType::Unsupported:
+      break;
+
+    case llvm2cpg::FileType::Bitcode:
+    case llvm2cpg::FileType::Binary:
+      files.insert(filePath);
+      break;
+
+    case llvm2cpg::FileType::LLVM_IR:
+      if (llvm::StringRef(filePath).endswith(".ll")) {
+        files.insert(filePath);
+      }
+      break;
+    }
+  }
+
+  return files;
+}
+
 int main(int argc, char **argv) {
   llvm::cl::SetVersionPrinter(llvm2cpg::printVersionInformationStream);
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
@@ -59,8 +122,7 @@ int main(int argc, char **argv) {
   std::vector<std::unique_ptr<llvm::Module>> modules;
 
   llvm2cpg::CPG cpg(logger, APInliner.getValue(), SimplifyBC.getValue(), InlineStrings.getValue());
-  for (size_t i = 0; i < BitcodePaths.size(); i++) {
-    std::string path = BitcodePaths[i];
+  for (const std::string &path : getInputFilePaths(logger)) {
     logger.uiInfo(std::string("Loading ") + path);
     llvm2cpg::FileType type = getFileType(logger, path);
     switch (type) {
