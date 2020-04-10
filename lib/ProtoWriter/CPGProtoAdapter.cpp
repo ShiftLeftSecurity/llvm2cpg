@@ -106,6 +106,9 @@ void CPGProtoAdapter::saveToArchive() {
     zip_source_free(source);
     zip_discard(archive);
     return;
+  } else {
+    // default libzip uses compression level 9
+    zip_set_file_compression(archive, fileIndex, ZIP_CM_DEFLATE, 6);
   }
 
   if (zip_close(archive) == -1) {
