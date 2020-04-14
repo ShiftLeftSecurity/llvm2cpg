@@ -1,3 +1,8 @@
+## [0.6.0] - 14 Apr 2020
+
+- Strict mode added (`-strict-mode`)
+- Added warnings for missing debug information and for the missing 'recommended flags' 
+
 ## [0.5.0] - 30 Mar 2020
 
 - C/ObjC string inlining
