@@ -17,6 +17,7 @@ public:
   void addBitcode(llvm::Module *bitcode);
 
 private:
+  void validateBitcode(llvm::Module *bitcode);
   Transforms transforms;
   std::vector<CPGFile> files;
   CPGLogger &logger;

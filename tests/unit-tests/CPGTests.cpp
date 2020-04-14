@@ -8,7 +8,7 @@
 using namespace llvm2cpg;
 
 TEST(CPG, empty) {
-  CPGLogger logger;
+  CPGLogger logger(false);
 
   CPG cpg(logger, false, false, false);
   ASSERT_TRUE(cpg.getFiles().empty());
@@ -16,7 +16,7 @@ TEST(CPG, empty) {
 
 TEST(CPG, addBitcode) {
   llvm::LLVMContext context;
-  CPGLogger logger;
+  CPGLogger logger(false);
   BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path());
   ASSERT_NE(bitcode.get(), nullptr);

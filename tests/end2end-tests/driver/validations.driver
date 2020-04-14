@@ -1,0 +1,19 @@
+RUN: %clang -S -emit-llvm %p/sample.c -o %t.no.dbg.ll
+RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.no.dbg.ll 2>&1 | %FileCheck %s --match-full-lines --check-prefix CHECK-NO-DBG
+CHECK-NO-DBG:{{.*}}[warning] There is no debug information. Recompile your code with '-g'.
+
+RUN: %clang -g -S -emit-llvm %p/sample.c -o %t.no.cli.ll
+RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.no.cli.ll 2>&1 | %FileCheck %s --match-full-lines --check-prefix CHECK-NO-CLI
+CHECK-NO-CLI:{{.*}}[warning] There are no CLI options recorded. Recompile your code with '-grecord-command-line'.
+
+RUN: %clang -g -grecord-command-line -S -emit-llvm %p/sample.c -o %t.no.recommended.ll
+RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.no.recommended.ll 2>&1 | %FileCheck %s --match-full-lines --check-prefix CHECK-NO-RECOMMENDED
+CHECK-NO-RECOMMENDED:{{.*}}[warning] It is recommended to compile your code with the following flags '-fno-inline-functions -fno-builtin'.
+
+RUN: %clang -g -grecord-command-line -fno-builtin -S -emit-llvm %p/sample.c -o %t.no.recommended2.ll
+RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.no.recommended2.ll 2>&1 | %FileCheck %s --match-full-lines --check-prefix CHECK-NO-RECOMMENDED2
+CHECK-NO-RECOMMENDED2:{{.*}}[warning] It is recommended to compile your code with the following flags '-fno-inline-functions'.
+
+RUN: %clang -g -grecord-command-line -fno-inline-functions -fno-builtin -S -emit-llvm %p/sample.c -o %t.valid.ll
+RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.valid.ll 2>&1 | %FileCheck %s --match-full-lines --check-prefix CHECK-VALID
+CHECK-VALID-NOT:{{.*}}[warning]{{.*}}

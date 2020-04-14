@@ -46,6 +46,10 @@ llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
                                llvm::cl::desc("Enable simplification of bitcode"),
                                llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(false));
 
+llvm::cl::opt<bool> StrictMode("strict-mode", llvm::cl::Optional,
+                               llvm::cl::desc("Treat warnings as fatal errors"),
+                               llvm::cl::cat(CPGProtoWriterCategory), llvm::cl::init(false));
+
 static std::set<std::string> getInputFilePaths(llvm2cpg::CPGLogger &logger) {
   std::set<std::string> files;
 
@@ -110,7 +114,7 @@ int main(int argc, char **argv) {
   llvm::cl::HideUnrelatedOptions(CPGProtoWriterCategory);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  llvm2cpg::CPGLogger logger;
+  llvm2cpg::CPGLogger logger(StrictMode.getValue());
   logger.uiInfo(std::string("More details: ") + logger.getLogPath());
 
   std::stringstream logIntro;

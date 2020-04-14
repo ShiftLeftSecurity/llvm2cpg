@@ -1,0 +1,7 @@
+RUN: (%llvm2cpg %s 2>&1; test $? = 0) | %FileCheck %s --match-full-lines
+
+CHECK:{{.*}}[warning] No bitcode files found.
+
+RUN: (%llvm2cpg -strict-mode %s 2>&1; test $? = 1) | %FileCheck %s --match-full-lines --check-prefix CHECK-STRICT
+
+CHECK-STRICT:{{.*}}[critical] No bitcode files found.

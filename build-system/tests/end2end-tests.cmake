@@ -14,8 +14,8 @@ function(enable_end2end_tests)
     LLVM2CPG=$<TARGET_FILE:llvm2cpg>
     OCULAR_SH=${PATH_TO_OCULAR}/ocular.sh
     OCULAR_DIR=${PATH_TO_OCULAR}
-    CC=${PATH_TO_LLVM}/bin/clang
-    CXX=${PATH_TO_LLVM}/bin/clang++
+    CLANG=${PATH_TO_LLVM}/bin/clang
+    CLANGXX=${PATH_TO_LLVM}/bin/clang++
     FILECHECK=filecheck
     lit -vv
     ${CMAKE_CURRENT_SOURCE_DIR}

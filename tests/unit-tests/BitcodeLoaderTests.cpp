@@ -7,7 +7,7 @@ using namespace llvm2cpg;
 
 TEST(BitcodeLoader, loadBitcode_invalidPath) {
   llvm::LLVMContext context;
-  CPGLogger logger;
+  CPGLogger logger(false);
   BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode("whatever");
   ASSERT_EQ(bitcode.get(), nullptr);
@@ -15,7 +15,7 @@ TEST(BitcodeLoader, loadBitcode_invalidPath) {
 
 TEST(BitcodeLoader, loadBitcode_validPath) {
   llvm::LLVMContext context;
-  CPGLogger logger;
+  CPGLogger logger(false);
   BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path());
 

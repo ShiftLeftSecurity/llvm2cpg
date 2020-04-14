@@ -20,8 +20,8 @@ static std::shared_ptr<spdlog::sinks::sink> fileSink(const std::string &path) {
   return std::make_shared<spdlog::sinks::basic_file_sink_mt>(path);
 }
 
-CPGLogger::CPGLogger()
-    : debugLogPath(getDebugLogPath()),
+CPGLogger::CPGLogger(bool strictMode)
+    : strictModeOn(strictMode), debugLogPath(getDebugLogPath()),
       stdoutLog(std::make_shared<spdlog::logger>("llvm2cpg", stdoutSink())),
       fileLog(std::make_shared<spdlog::logger>("file", fileSink(debugLogPath))) {
   fileLog->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
@@ -34,11 +34,17 @@ void CPGLogger::uiInfo(const std::string &message) {
 }
 
 void CPGLogger::uiWarning(const std::string &message) {
+  if (strictModeOn) {
+    uiFatal(message);
+  }
   stdoutLog->warn(message);
 }
 
 void CPGLogger::uiFatal(const std::string &message) {
   stdoutLog->critical(message);
+  if (strictModeOn) {
+    exit(1);
+  }
 }
 
 void CPGLogger::logInfo(const std::string &message) {

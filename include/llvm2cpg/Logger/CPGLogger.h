@@ -7,7 +7,7 @@ namespace llvm2cpg {
 
 class CPGLogger {
 public:
-  CPGLogger();
+  explicit CPGLogger(bool strictMode);
 
   void uiInfo(const std::string &message);
   void uiWarning(const std::string &message);
@@ -21,6 +21,7 @@ public:
   const std::string &getLogPath();
 
 private:
+  bool strictModeOn;
   std::string debugLogPath;
   std::shared_ptr<spdlog::logger> stdoutLog;
   std::shared_ptr<spdlog::logger> fileLog;

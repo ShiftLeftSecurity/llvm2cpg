@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
   llvm::LLVMContext context;
-  llvm2cpg::CPGLogger log = llvm2cpg::CPGLogger();
+  llvm2cpg::CPGLogger log(false);
   llvm2cpg::BitcodeLoader loader(log);
   llvm2cpg::Transforms transforms(
       log, APInliner.getValue(), SimplifyBC.getValue(), InlineStrings.getValue());

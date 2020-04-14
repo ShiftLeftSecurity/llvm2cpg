@@ -10,7 +10,7 @@ using namespace llvm2cpg;
 
 TEST(CPGMethod, basicProperties) {
   llvm::LLVMContext context;
-  CPGLogger logger;
+  CPGLogger logger(false);
   BitcodeLoader loader(logger);
   auto bitcode = loader.loadBitcode(fixtures::return_constant_c_bc_output_path());
   ASSERT_NE(bitcode.get(), nullptr);
