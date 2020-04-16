@@ -21,6 +21,13 @@
       - sbt
       - openjdk-8-jdk
       - openjdk-8-jre
+      - python3
+      - python3-pip
+      - python3-pkg-resources
+
+    python_packages:
+      - lit
+      - filecheck
 
   vars_files:
     - helpers/variables.yaml
@@ -47,6 +54,12 @@
         state: present
       become: true
 
+    - name: Install Python packages
+      pip:
+        name: "{{ python_packages }}"
+        state: present
+        executable: pip3
+
     - name: Download CMake
       get_url:
         url: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.sh
@@ -59,6 +72,9 @@
         creates: /usr/local/bin/cmake
       when: download_cmake.changed
       become: true
+
+    - name: Install Ocular
+      include: helpers/install-ocular.yaml
 
     - name: Install LLVM
       include: helpers/install-llvm.yaml

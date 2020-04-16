@@ -5,7 +5,7 @@
     state: directory
 
 - name: Prepare Build System ({{ build_type }})
-  command: cmake -DPATH_TO_LLVM={{ llvm_dir }} -DCMAKE_BUILD_TYPE={{ build_type }} -DCMAKE_CXX_FLAGS="{{ llvm2cpg_cxx_flags }}" {{ source_dir }}
+  command: cmake -DPATH_TO_LLVM={{ llvm_dir }} -DPATH_TO_OCULAR={{ ocular_dir }} -DCMAKE_BUILD_TYPE={{ build_type }} -DCMAKE_CXX_FLAGS="{{ llvm2cpg_cxx_flags }}" {{ source_dir }}
   args:
     chdir: "{{ build_dir }}"
     creates: "{{ build_dir }}/CMakeCache.txt"

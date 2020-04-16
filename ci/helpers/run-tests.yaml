@@ -11,3 +11,8 @@
   command: make run-integration-tests
   args:
     chdir: "{{ build_dir }}"
+
+- name: Run End2End Tests ({{ build_type }})
+  command: make run-end2end-tests
+  args:
+    chdir: "{{ build_dir }}"

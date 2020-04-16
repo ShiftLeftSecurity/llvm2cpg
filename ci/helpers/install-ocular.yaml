@@ -1,0 +1,26 @@
+---
+- name: Download Ocular ({{ ocular_version }})
+  get_url:
+    url: "{{ ocular_url }}"
+    dest: "{{ working_dir }}/ocular.zip"
+    timeout: 30
+  register: download_ocular
+
+- name: Extract Ocular ({{ ocular_version }})
+  no_log: true
+  unarchive:
+    src: "{{ working_dir }}/ocular.zip"
+    dest: "{{ working_dir }}"
+    remote_src: yes
+    extra_opts:
+      - '-P'
+      - "{{ lookup('env', 'OCULAR_ORG_PASSWORD') }}"
+  when: download_ocular.changed
+
+- name: Install Ocular ({{ ocular_version }})
+  command: sh {{ working_dir }}/ocular-distribution/install.sh --non-interactive
+  environment:
+    DEFAULT_INSTALL_DIR: "{{ ocular_dir }}"
+  args:
+    creates: "{{ ocular_dir }}"
+    chdir: "{{ working_dir }}/ocular-distribution"

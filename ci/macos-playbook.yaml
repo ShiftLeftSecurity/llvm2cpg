@@ -22,6 +22,10 @@
       - pkg-config
       - python3
 
+    python_packages:
+      - lit
+      - filecheck
+
   vars_files:
     - helpers/variables.yaml
 
@@ -43,11 +47,20 @@
       environment:
         HOMEBREW_NO_AUTO_UPDATE: 1
 
+    - name: Install Python packages
+      pip:
+        name: "{{ python_packages }}"
+        state: present
+        executable: pip3
+
     - name: Create a symbolic link for gnu-tar
       file:
         src: /usr/local/bin/gtar
         dest: /usr/local/bin/tar
         state: link
+
+    - name: Install Ocular
+      include: helpers/install-ocular.yaml
 
     - name: Install LLVM
       include: helpers/install-llvm.yaml
