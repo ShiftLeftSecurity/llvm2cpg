@@ -18,6 +18,7 @@
 #include <llvm/Transforms/Utils/Local.h>
 #include <llvm/Transforms/Utils/LowerInvoke.h>
 #include <llvm2cpg/Traversals/ObjCTraversal.h>
+#include <queue>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -114,6 +115,79 @@ void Transforms::renameOpaqueObjCTypes(llvm::Module &bitcode) {
       }
       assert(selfStruct->isOpaque() && "ObjC class types expected to be opaque");
       selfStruct->setName(className);
+    }
+  }
+
+  // clang-format off
+  /// The following code does some magic to further rename opaque ObjC types
+  /// Examlpe IR:
+  ///
+  ///   %0 = type opaque
+  ///   // ...
+  ///   %2 = alloca %0*, align 8
+  ///   call void @llvm.dbg.declare(metadata %0** %2, metadata !36, metadata !DIExpression()), !dbg !37
+  ///   // ...
+  ///   !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  ///   !20 = !DICompositeType(tag: DW_TAG_structure_type, name: "NSData", scope: !11, file: !21, line: 70, size: 64, elements: !22, runtimeLang: DW_LANG_ObjC)
+  ///   !36 = !DILocalVariable(name: "data", arg: 1, scope: !14, file: !11, line: 3, type: !19)
+  ///
+  /// The code looks at each call to llvm.dbg.declare and attempts to rename the type of the first
+  /// operand to the corresponding DICompositeType
+  // // clang-format on
+
+  std::vector<std::pair<llvm::StructType *, llvm::DIType *>> typeWorklist;
+
+  llvm::StringRef debugDeclareName = llvm::Intrinsic::getName(llvm::Intrinsic::dbg_declare);
+  llvm::Function *debugDeclare = bitcode.getFunction(debugDeclareName);
+  if (debugDeclare) {
+    for (auto user : debugDeclare->users()) {
+      if (auto call = llvm::dyn_cast<llvm::CallInst>(user)) {
+        assert(call->getNumOperands() >= 2);
+        auto *valueMetadata = llvm::dyn_cast<llvm::MetadataAsValue>(call->getOperand(0));
+        auto *debugMetadata = llvm::dyn_cast<llvm::MetadataAsValue>(call->getOperand(1));
+        if (valueMetadata && debugMetadata) {
+          auto value = llvm::dyn_cast<llvm::ValueAsMetadata>(valueMetadata->getMetadata());
+          auto variable = llvm::dyn_cast<llvm::DILocalVariable>(debugMetadata->getMetadata());
+          if (value && variable) {
+            auto *pointerToPointer = llvm::dyn_cast<llvm::PointerType>(value->getType());
+            if (pointerToPointer) {
+              auto *pointerToStruct =
+                  llvm::dyn_cast<llvm::PointerType>(pointerToPointer->getPointerElementType());
+              if (pointerToStruct) {
+                auto *structType =
+                    llvm::dyn_cast<llvm::StructType>(pointerToStruct->getPointerElementType());
+                if (structType && structType->isOpaque() && !structType->hasName()) {
+                  typeWorklist.emplace_back(structType, variable->getType());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  std::unordered_set<llvm::DIType *> visitedTypes;
+  for (auto &pair : typeWorklist) {
+    llvm::StructType *structType = pair.first;
+    if (structType->hasName()) {
+      continue;
+    }
+    std::queue<llvm::DIType *> diTypeWorklist;
+    diTypeWorklist.push(pair.second);
+    while (!diTypeWorklist.empty()) {
+      llvm::DIType *type = diTypeWorklist.front();
+      diTypeWorklist.pop();
+      if (visitedTypes.count(type) != 0) {
+        continue;
+      }
+      visitedTypes.insert(type);
+      if (auto compositeType = llvm::dyn_cast<llvm::DICompositeType>(type)) {
+        structType->setName(compositeType->getName());
+      } else if (auto derivedType = llvm::dyn_cast<llvm::DIDerivedType>(type)) {
+        llvm::DIType *baseType = derivedType->getBaseType();
+        diTypeWorklist.push(baseType);
+      }
     }
   }
 }

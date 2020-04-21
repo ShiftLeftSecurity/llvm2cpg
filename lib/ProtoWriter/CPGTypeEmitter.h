@@ -60,6 +60,7 @@ private:
   std::unordered_map<std::string, std::string> recordedTypes;
   std::unordered_map<std::string, CPGProtoNode *> namedTypeDecls;
   std::unordered_map<const llvm::StructType *, std::string> canonicalNames;
+  std::unordered_map<const llvm::StructType *, std::string> canonicalOpaqueNames;
   std::unordered_map<std::string, std::vector<std::string>> structMemberNames;
   std::unordered_map<std::string, std::vector<std::string>> typeAliases;
 };

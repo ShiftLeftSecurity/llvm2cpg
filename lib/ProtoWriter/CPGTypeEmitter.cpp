@@ -48,6 +48,14 @@ std::string CPGTypeEmitter::typeToString(const llvm::StructType *type) {
     return canonicalNames[type];
   }
 
+  if (type->isOpaque()) {
+    if (canonicalOpaqueNames.count(type) == 0) {
+      canonicalOpaqueNames[type] =
+          std::string("opaque") + std::to_string(canonicalOpaqueNames.size());
+    }
+    return canonicalOpaqueNames[type];
+  }
+
   std::vector<std::string> types;
   types.reserve(type->getNumElements());
   for (unsigned i = 0; i < type->getNumElements(); i++) {
