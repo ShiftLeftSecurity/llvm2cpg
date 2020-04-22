@@ -2,15 +2,15 @@
 RUN: %llvm2cpg --output=%t.cpg.bin.zip %p/objc_call_00_definition.ll %p/objc_call_00_usage.ll
 
 RUN: cd %OCULAR_DIR
-RUN: %ocular.sh --script %s --params cpgFilePath=%t.cpg.bin.zip | %FileCheck %s --match-full-lines
+RUN: %ocular.sh --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines
 */
 
 @main
 def exec(cpgFilePath: String) = {
   workspace.reset
   importCpg(cpgFilePath)
-  addOverlay("dataflow")
   addOverlay("semanticcpg")
+  addOverlay("dataflow")
 
   println(cpg.method.name("main").callOut.name("new").calledMethod.fullName.head)
   // CHECK: +[NSObject new]

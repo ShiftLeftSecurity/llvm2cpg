@@ -17,6 +17,7 @@ function(enable_end2end_tests)
     CLANG=${PATH_TO_LLVM}/bin/clang
     CLANGXX=${PATH_TO_LLVM}/bin/clang++
     FILECHECK=filecheck
+    TEST_DATA_DIR=${CMAKE_SOURCE_DIR}/tests/test-data
     lit -vv
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
