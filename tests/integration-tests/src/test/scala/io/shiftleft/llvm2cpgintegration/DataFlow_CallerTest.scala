@@ -1,16 +1,13 @@
 package io.shiftleft.llvm2cpgintegration
 
-import io.shiftleft.SerializedCpg
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.layers.EnhancementRunner
 
 class DataFlow_CallerTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.DataFlow_CallerTestCPG)
 
   "data flow" in {
-    val enhancement = new EnhancementRunner()
-    enhancement.run(cpg, new SerializedCpg())
+    CpgEnhancer.enhanceCPG(cpg)
 
     val resolver : ICallResolver = NoResolve
     val callee = cpg.method.name("foo").head

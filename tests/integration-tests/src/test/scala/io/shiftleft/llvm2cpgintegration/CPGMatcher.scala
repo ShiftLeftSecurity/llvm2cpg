@@ -1,10 +1,16 @@
 package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.Cpg
-import org.scalatest.{AppendedClues, Matchers, WordSpec}
-import io.shiftleft.semanticcpg.language._
 import io.shiftleft.codepropertygraph.generated.nodes._
-import io.shiftleft.semanticcpg.language.types.expressions.generalizations
+import io.shiftleft.semanticcpg.language._
+import io.shiftleft.semanticcpg.layers.{LayerCreatorContext, Scpg}
+import org.scalatest.{AppendedClues, Matchers, WordSpec}
+
+object CpgEnhancer {
+  def enhanceCPG(cpg: Cpg) {
+    new Scpg().run(new LayerCreatorContext(cpg))
+  }
+}
 
 abstract class CPGMatcher extends WordSpec with Matchers with AppendedClues {
   def validateTypes(cpg: Cpg, types: List[String]) {

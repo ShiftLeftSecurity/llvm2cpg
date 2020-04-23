@@ -1,15 +1,12 @@
 package io.shiftleft.llvm2cpgintegration
 
-import io.shiftleft.SerializedCpg
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.layers.EnhancementRunner
 
 class LLVM_StructMemberAccessTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_StructMemberAccessTestCPG)
   "member access2" in {
-    val enhancement = new EnhancementRunner()
-    enhancement.run(cpg, new SerializedCpg())
+    CpgEnhancer.enhanceCPG(cpg)
 
     var gep = cpg.method.nameExact("test2").block.astChildren.isCall.head
     gep = gep.start.astChildren.isCall.head
@@ -27,8 +24,7 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
   }
 
   "member access" in {
-    val enhancement = new EnhancementRunner()
-    enhancement.run(cpg, new SerializedCpg())
+    CpgEnhancer.enhanceCPG(cpg)
 
     val gepAssignment = cpg.method.nameExact("test").block.astChildren.isCall.head
     val topGepCall = gepAssignment.start.astChildren.isCall.head
@@ -43,6 +39,5 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
     val arrayGep = structGep.start.astChildren.isCall.head
     arrayGep.name shouldBe "<operator>.pointerShift"
     arrayGep.typeFullName shouldBe "[7 x kcdata_subtype_descriptor]"
-
   }
 }

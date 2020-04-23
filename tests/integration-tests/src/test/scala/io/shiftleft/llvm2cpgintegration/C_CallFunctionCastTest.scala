@@ -1,16 +1,13 @@
 package io.shiftleft.llvm2cpgintegration
 
-import io.shiftleft.SerializedCpg
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.layers.EnhancementRunner
 
 class C_CallFunctionCastTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_CallFunctionCastTestCPG)
 
   "calledMethod" in {
-    val enhancement = new EnhancementRunner()
-    enhancement.run(cpg, new SerializedCpg())
+    CpgEnhancer.enhanceCPG(cpg)
 
     cpg.method.nameExact("ecall").l.size shouldBe 1
     cpg.method.nameExact("use").l.size shouldBe 1
