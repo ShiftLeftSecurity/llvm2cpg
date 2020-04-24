@@ -24,6 +24,7 @@ public:
   int64_t getEntry() const;
 
   CPGProtoNode &setLanguage(cpg::LANGUAGES language);
+  CPGProtoNode &setPolicyDirectories(const std::vector<std::string> &policies);
   CPGProtoNode &setVersion(const std::string &version);
   CPGProtoNode &setName(const std::string &name);
   CPGProtoNode &setCanonicalName(const std::string &name);

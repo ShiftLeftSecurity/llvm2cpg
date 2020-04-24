@@ -17,6 +17,24 @@ CPGProtoNode &CPGProtoNode::setLanguage(cpg::LANGUAGES language) {
   return *this;
 }
 
+CPGProtoNode &CPGProtoNode::setPolicyDirectories(const std::vector<std::string> &policies) {
+  assert(cpgNode->type() == cpg::CpgStruct_Node_NodeType::CpgStruct_Node_NodeType_META_DATA);
+
+  cpg::CpgStruct_Node_Property *property = cpgNode->add_property();
+  property->set_name(cpg::NodePropertyName::POLICY_DIRECTORIES);
+
+  cpg::StringList *list = cpg::StringList::default_instance().New();
+  for (const std::string &policy : policies) {
+    list->add_values(policy);
+  }
+
+  cpg::PropertyValue *propertyValue = propertyBuilder.New();
+  propertyValue->set_allocated_string_list(list);
+  property->set_allocated_value(propertyValue);
+
+  return *this;
+}
+
 CPGProtoNode &CPGProtoNode::setVersion(const std::string &version) {
   assert(cpgNode->type() == cpg::CpgStruct_Node_NodeType::CpgStruct_Node_NodeType_META_DATA);
   setStringProperty(cpg::NodePropertyName::VERSION, version);

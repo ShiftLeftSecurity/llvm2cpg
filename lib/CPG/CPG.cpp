@@ -1,4 +1,5 @@
 #include "llvm2cpg/CPG/CPG.h"
+#include "llvm2cpg/Demangler/Demangler.h"
 #include <assert.h>
 #include <llvm/ADT/SetVector.h>
 #include <llvm/IR/DebugInfoMetadata.h>
@@ -9,6 +10,36 @@ using namespace llvm2cpg;
 
 CPG::CPG(CPGLogger &log, bool inlineAP, bool simplify, bool inlineStrings)
     : transforms(log, inlineAP, simplify, inlineStrings), logger(log) {}
+
+std::vector<std::string> CPG::detectLanguages() const {
+  const char *cLang = "C";
+  const char *objcLang = "OBJECTIVEC";
+  std::unordered_set<std::string> availableLanguages({ objcLang });
+
+  std::vector<std::string> languages({ cLang });
+
+  for (const CPGFile &file : files) {
+    for (const llvm::Function &function : file.getModule()->functions()) {
+      if (availableLanguages.empty()) {
+        break;
+      }
+      if (function.hasName()) {
+        ManglingResult manglingResult = demangleString(function.getName());
+        switch (manglingResult.type) {
+        case ManglingType::Unknown:
+        case ManglingType::CXX:
+          break;
+        case ManglingType::ObjC: {
+          languages.emplace_back(objcLang);
+          availableLanguages.erase(availableLanguages.find(objcLang));
+        } break;
+        }
+      }
+    }
+  }
+
+  return languages;
+}
 
 const std::vector<CPGFile> &CPG::getFiles() const {
   return files;

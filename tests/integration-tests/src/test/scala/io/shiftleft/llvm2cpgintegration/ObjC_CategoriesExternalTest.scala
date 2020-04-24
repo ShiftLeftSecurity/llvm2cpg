@@ -10,6 +10,10 @@ class ObjC_CategoriesExternalTest extends CPGMatcher with BeforeAndAfterAll {
     CpgEnhancer.enhanceCPG(cpg)
   }
 
+  "metadata" in {
+    cpg.metaData.head.policyDirectories.toSet shouldBe Set("C", "OBJECTIVEC")
+  }
+
   "class typeDecl" in {
     cpg.typeDecl.nameExact("RootClass").l.size shouldBe 1
     cpg.typeDecl.nameExact("RootClass").baseTypeDecl.l.size shouldBe 0

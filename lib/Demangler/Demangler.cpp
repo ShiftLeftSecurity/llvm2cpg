@@ -5,14 +5,7 @@
 
 using namespace llvm2cpg;
 
-enum class ManglingType { Unknown, CXX, ObjC };
-
-struct ManglingResult {
-  ManglingType type;
-  std::string result;
-};
-
-ManglingResult demangleString(const std::string &mangledName) {
+ManglingResult llvm2cpg::demangleString(const std::string &mangledName) {
   if (mangledName[0] == 1) {
     return ManglingResult{ .type = ManglingType::ObjC, .result = mangledName.substr(1) };
   }

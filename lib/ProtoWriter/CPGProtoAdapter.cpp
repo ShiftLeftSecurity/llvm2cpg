@@ -19,7 +19,8 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
   CPGProtoNode *metadata = builder.metadataNode();
   (*metadata) //
       .setLanguage(cpg::LANGUAGES::C)
-      .setVersion("0");
+      .setVersion("0")
+      .setPolicyDirectories(cpg.detectLanguages());
 
   CPGProtoNode *globalNamespaceBlockNode = builder.namespaceBlockNode();
   (*globalNamespaceBlockNode) //

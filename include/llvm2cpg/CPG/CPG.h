@@ -13,6 +13,7 @@ namespace llvm2cpg {
 class CPG {
 public:
   CPG(CPGLogger &logger, bool inlineAP, bool simplify, bool inlineStrings);
+  std::vector<std::string> detectLanguages() const;
   const std::vector<CPGFile> &getFiles() const;
   void addBitcode(llvm::Module *bitcode);
 
