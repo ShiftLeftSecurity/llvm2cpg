@@ -6,8 +6,6 @@ import io.shiftleft.semanticcpg.language._
 class LLVM_StructMemberAccessTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_StructMemberAccessTestCPG)
   "member access2" in {
-    CpgEnhancer.enhanceCPG(cpg)
-
     var gep = cpg.method.nameExact("test2").block.astChildren.isCall.head
     gep = gep.start.astChildren.isCall.head
     gep.typeFullName shouldBe "i8*"
@@ -24,8 +22,6 @@ class LLVM_StructMemberAccessTest extends CPGMatcher {
   }
 
   "member access" in {
-    CpgEnhancer.enhanceCPG(cpg)
-
     val gepAssignment = cpg.method.nameExact("test").block.astChildren.isCall.head
     val topGepCall = gepAssignment.start.astChildren.isCall.head
     topGepCall.typeFullName shouldBe "i16*"

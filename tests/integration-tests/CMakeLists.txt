@@ -10,14 +10,12 @@ add_integration_test(C_CallIntTest call_int_c_bc FLAGS -inline=false)
 add_integration_test(C_CallStringTest call_string_c_bc FLAGS -inline=false)
 add_integration_test(C_CallUnknownFunctionTest call_unknown_function_c_bc FLAGS -inline=false)
 add_integration_test(C_CallFunctionPointerTest call_function_pointer_c_bc FLAGS -inline=false)
-add_integration_test(C_CallFunctionCastTest call_cast_c_bc FLAGS -inline=false)
 add_integration_test(C_CallMalformedUTFStringTest call_malformed_utf_string_c_bc FLAGS -inline=false)
 
 add_integration_test(C_DbgVectorfindTest vectorfind_c_dbg_bc FLAGS -inline=false)
 add_integration_test(C_DbgVectorfindOptTest vectorfind_c_o3_dbg_bc FLAGS -inline=false)
 
 add_integration_test(C_APinliningTest APinlining_c_o3_bc FLAGS -inline=true)
-
 
 add_integration_test(LLVM_SelectInstTest select_inst_ll_bc FLAGS -inline=false)
 add_integration_test(LLVM_GEPFlatStructTest gep_flat_struct_ll_bc FLAGS -inline=false)
@@ -41,27 +39,8 @@ add_integration_test(LLVM_ConstantsTest constants_ll_bc FLAGS -inline=false)
 add_integration_test(LLVM_StructMembersTest llvm_structs_ll_bc FLAGS -inline=false)
 add_integration_test(LLVM_StructMemberAccessTest struct_member_access_ll_bc FLAGS -inline=false)
 
-add_integration_test(DataFlow_CallerTest dataflow_caller_c_bc FLAGS -inline=false)
-add_integration_test(DataFlow_CallerArgumentsTest dataflow_caller_arguments_c_bc FLAGS -inline=false)
-
 add_integration_test(CXX_ClassMethodNamesTest class_method_names_cpp_ll FLAGS -inline=false)
 
-add_integration_test(ObjC_ClassesTest objc_classes_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_MethodsTest objc_methods_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_ExternalClassTest objc_external_class_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_MultipleExternalClassesTest objc_external_class_ll_bc objc_external_class_2_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_ExternallyDefinedClassTest objc_external_class_ll_bc objc_external_defined_class_ll_bc objc_external_class_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_CategoriesTest objc_categories_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_CategoriesExternalTest objc_categories_external_ll_bc FLAGS -inline=false)
-add_integration_test(ObjC_StringsTest objc_strings_ll_bc FLAGS -inline=true)
-add_integration_test(ObjC_StringsNoInlineTest objc_strings_ll_bc FLAGS -inline=true -inline-strings=false)
-add_integration_test(ObjC_TypesFromDebugInfoTest objc_types_from_debug_info_ll_bc FLAGS -inline=true -inline-strings=false)
-
-
 add_integration_test(StructMerging_01_Test struct_merging_1_ll_bc struct_merging_2_ll_bc FLAGS -inline=false)
-
-add_integration_test(Debug_StructMembersTest debug_struct_members_c_ll FLAGS -inline=false)
-add_integration_test(Debug_AnonymousStructMembersTest debug_anonymous_struct_members_c_ll FLAGS -inline=false)
-add_integration_test(Debug_NestedStructMembersTest debug_nested_struct_members_c_ll FLAGS -inline=false)
 
 enable_integration_tests()

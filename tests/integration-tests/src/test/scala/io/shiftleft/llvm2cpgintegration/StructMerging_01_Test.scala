@@ -5,9 +5,6 @@ import org.scalatest.BeforeAndAfterAll
 
 class StructMerging_01_Test extends CPGMatcher with BeforeAndAfterAll {
   private val cpg = CpgLoader.load(TestCpgPaths.StructMerging_01_TestCPG)
-  override def beforeAll(): Unit = {
-    CpgEnhancer.enhanceCPG(cpg)
-  }
 
   "merge structs" in {
     validateTypes(cpg, List("ANY", "i32", "void",
