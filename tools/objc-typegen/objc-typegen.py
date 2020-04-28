@@ -2,7 +2,7 @@ import os
 import sys
 import re
 import clang.cindex
-from typing import Dict, List
+from typing import Dict, List, Set
 
 
 def get_framework_name(location: clang.cindex.SourceLocation, default: str) -> str:
@@ -98,9 +98,13 @@ class ObjCBackingStorage:
                  instance_methods: List[ObjCMethod], properties: List[ObjCProperty]):
         ObjCClass.counter += 1
         self.protocols = protocols
-        self.class_methods = class_methods
-        self.instance_methods = instance_methods
+        self.class_methods: List[ObjCMethod] = list()
+        self.instance_methods: List[ObjCMethod] = list()
         self.properties = properties
+        self.instance_methods_set: Set[str] = set()
+        self.class_methods_set: Set[str] = set()
+        for m in (instance_methods + class_methods):
+            self.add_method(m)
         self.__patch_property_getters()
 
     def __patch_property_getters(self) -> None:
@@ -127,11 +131,16 @@ class ObjCBackingStorage:
 
         return list(filter(f, self.class_methods)) + list(filter(f, self.instance_methods))
 
+    def __add_method(self, m: ObjCMethod, names: Set[str], methods: List[ObjCMethod]) -> None:
+        if m.name not in names:
+            names.add(m.name)
+            methods.append(m)
+
     def add_method(self, m: ObjCMethod) -> None:
         if m.is_class:
-            self.class_methods.append(m)
+            self.__add_method(m, self.class_methods_set, self.class_methods)
         else:
-            self.instance_methods.append(m)
+            self.__add_method(m, self.instance_methods_set, self.instance_methods)
 
 
 class ObjCClass:
@@ -346,7 +355,7 @@ class PolicyFormatter:
 
     @staticmethod
     def __bind(name: str, class_name: str, full_name: str) -> str:
-        return 'BIND -n "{}" -s "" METHOD -f "{}" TYPEDECL -f "{}"\n'.format(name, class_name, full_name)
+        return 'BIND -n "{}" -s "" METHOD -f "{}" TYPEDECL -f "{}"\n'.format(name, full_name, class_name)
 
     @staticmethod
     def __typeassert_ret(full_name: str, return_type: str, location: str) -> str:
@@ -562,7 +571,7 @@ def run_all():
 
 current = "MacOSX"
 sdk_path = get_sdk_path(current)
-# frameworks = ["Foundation"]
-frameworks = get_frameworks(sdk_path)
+frameworks = ["Foundation"]
+# frameworks = get_frameworks(sdk_path)
 process(current, sdk_path, defaultToolchain, frameworks)
 # run_all()
