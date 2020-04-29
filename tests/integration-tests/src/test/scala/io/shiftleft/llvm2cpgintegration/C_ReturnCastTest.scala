@@ -12,7 +12,7 @@ class C_ReturnCastTest extends CPGMatcher {
     cpg.metaData.l.size shouldBe 1
     cpg.metaData.head.language shouldBe "C"
     cpg.metaData.head.version shouldBe "0"
-    cpg.metaData.head.policyDirectories.toSet shouldBe Set("C")
+    cpg.metaData.head.policyDirectories.toSet shouldBe Set("c")
   }
 
   "files" in {

@@ -3,6 +3,7 @@ jobs:
   "ubuntu-1804":
     docker:
       - image: ubuntu:18.04
+    resource_class: "medium+"
     steps:
       - checkout
       - run:

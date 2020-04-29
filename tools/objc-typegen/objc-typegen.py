@@ -571,7 +571,7 @@ def run_all():
 
 current = "MacOSX"
 sdk_path = get_sdk_path(current)
-frameworks = ["Foundation"]
+frameworks = ["CoreData"]
 # frameworks = get_frameworks(sdk_path)
 process(current, sdk_path, defaultToolchain, frameworks)
 # run_all()

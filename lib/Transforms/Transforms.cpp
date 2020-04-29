@@ -31,6 +31,8 @@ void Transforms::transformBitcode(llvm::Module &bitcode) {
   renameOpaqueObjCTypes(bitcode);
   markObjCTypeHints(bitcode);
   inlineGlobalStrings(bitcode);
+  //  bitcode.print(llvm::errs(), nullptr);
+  //  exit(42);
   for (llvm::Function &function : bitcode) {
     if (function.isDeclaration()) {
       continue;
@@ -310,12 +312,26 @@ static llvm::Value *getGEPPointer(llvm::Value *value) {
   return nullptr;
 }
 
+static llvm::Value *getStringRefFromNSStringTag(llvm::GlobalVariable *global) {
+  if (!global->hasInitializer()) {
+    return nullptr;
+  }
+  if (auto initAsStruct = llvm::dyn_cast<llvm::ConstantStruct>(global->getInitializer())) {
+    // the __NSConstantString_tag should have 4 members
+    // the third member being the reference to a constant string
+    if (initAsStruct->getNumOperands() == 4) {
+      return getGEPPointer(initAsStruct->getOperand(2));
+    }
+  }
+  return nullptr;
+}
+
 void Transforms::inlineGlobalStrings(llvm::Module &bitcode) {
   if (!inlineStrings) {
     return;
   }
   // clang-format off
-  /// There are three cases in which we want to inline strings:
+  /// There are four cases in which we want to inline strings:
   ///
   /// 1. A global variable initialized as a string:
   ///   @.str.1 = private unnamed_addr constant [6 x i8] c"Hello\00"
@@ -329,7 +345,17 @@ void Transforms::inlineGlobalStrings(llvm::Module &bitcode) {
   ///     i64 5
   ///   }
   ///
-  /// 3. ObjC selectors referenced indirectly:
+  /// 3. ObjC strings referenced indirectly:
+  ///   @.str = private unnamed_addr constant [9 x i8] c"John Doe\00"
+  ///   @_unnamed_cfstring_ = private global %struct.__NSConstantString_tag {
+  ///     i32* getelementptr inbounds ([0 x i32], [0 x i32]* @__CFConstantStringClassReference, i32 0, i32 0),
+  ///     i32 1992,
+  ///     i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str, i32 0, i32 0),
+  ///     i64 8
+  ///   }
+  ///   @RealmCardName = internal constant %NSString* bitcast (%struct.__NSConstantString_tag* @_unnamed_cfstring_ to %NSString*)
+  ///
+  /// 4. ObjC selectors referenced indirectly:
   ///   @OBJC_METH_VAR_NAME_ = private unnamed_addr constant [13 x i8] c"createObject\00"
   ///   @OBJC_SELECTOR_REFERENCES_ = private externally_initialized global i8* getelementptr inbounds ([13 x i8], [13 x i8]* @OBJC_METH_VAR_NAME_, i32 0, i32 0)
   ///
@@ -383,15 +409,21 @@ void Transforms::inlineGlobalStrings(llvm::Module &bitcode) {
   std::vector<llvm::GlobalVariable *> inlineableGlobals;
 
   for (llvm::GlobalVariable &global : bitcode.globals()) {
-    if (global.hasInitializer()) {
-      if (auto *init = llvm::dyn_cast<llvm::ConstantDataArray>(global.getInitializer())) {
-        if (init->isCString()) {
-          inlines[&global] = init;
-        }
-      } else if (!objcTypes.empty() &&
-                 objcTypes.count(global.getType()->getPointerElementType()) != 0) {
-        inlineableGlobals.push_back(&global);
-      } else if (global.hasName() && global.getName().startswith("OBJC_SELECTOR_REFERENCES_")) {
+    if (!global.hasInitializer()) {
+      continue;
+    }
+    if (auto *initAsString = llvm::dyn_cast<llvm::ConstantDataArray>(global.getInitializer())) {
+      if (initAsString->isCString()) {
+        inlines[&global] = initAsString;
+      }
+    } else if (!objcTypes.empty() &&
+               objcTypes.count(global.getType()->getPointerElementType()) != 0) {
+      inlineableGlobals.push_back(&global);
+    } else if (global.hasName() && global.getName().startswith("OBJC_SELECTOR_REFERENCES_")) {
+      inlineableGlobals.push_back(&global);
+    } else if (auto *initAsConst = llvm::dyn_cast<llvm::ConstantExpr>(global.getInitializer())) {
+      if (initAsConst->isCast() && (initAsConst->getNumOperands() != 0) &&
+          (objcTypes.count(initAsConst->getOperand(0)->getType()->getPointerElementType()) != 0)) {
         inlineableGlobals.push_back(&global);
       }
     }
@@ -399,18 +431,18 @@ void Transforms::inlineGlobalStrings(llvm::Module &bitcode) {
 
   for (llvm::GlobalVariable *global : inlineableGlobals) {
     assert(global->hasInitializer());
-    if (auto init = llvm::dyn_cast<llvm::ConstantStruct>(global->getInitializer())) {
-      // the __NSConstantString_tag should have 4 members
-      // the third member being the reference to a constant string
-      if (init->getNumOperands() == 4) {
-        llvm::Value *stringRef = getGEPPointer(init->getOperand(2));
-        if (inlines.count(stringRef)) {
-          inlines[global] = inlines[stringRef];
-        }
-      }
+    llvm::Value *stringRef = getStringRefFromNSStringTag(global);
+    if (auto initAsConst = llvm::dyn_cast<llvm::ConstantExpr>(global->getInitializer())) {
+      assert(initAsConst->getNumOperands() != 0);
+      auto *refGlobal = llvm::cast<llvm::GlobalVariable>(initAsConst->getOperand(0));
+      assert(refGlobal->hasInitializer());
+      stringRef = getStringRefFromNSStringTag(refGlobal);
     }
-    llvm::Value *stringRef = getGEPPointer(global->getInitializer());
-    if (inlines.count(stringRef)) {
+    if (!stringRef) {
+      stringRef = getGEPPointer(global->getInitializer());
+    }
+
+    if (stringRef && inlines.count(stringRef)) {
       inlines[global] = inlines[stringRef];
     }
   }

@@ -9,8 +9,8 @@ def exec(cpgFilePath: String) = {
   importCpg(cpgFilePath)
 
   println(cpg.metaData.head.policyDirectories.toList.sorted.mkString("\n"))
-  // CHECK: C
-  // CHECK-NEXT: OBJECTIVEC
+  // CHECK: c
+  // CHECK-NEXT: objectivec
 
   // Class Type Decl
 

@@ -12,8 +12,8 @@ CPG::CPG(CPGLogger &log, bool inlineAP, bool simplify, bool inlineStrings)
     : transforms(log, inlineAP, simplify, inlineStrings), logger(log) {}
 
 std::vector<std::string> CPG::detectLanguages() const {
-  const char *cLang = "C";
-  const char *objcLang = "OBJECTIVEC";
+  const char *cLang = "c";
+  const char *objcLang = "objectivec";
   std::unordered_set<std::string> availableLanguages({ objcLang });
 
   std::vector<std::string> languages({ cLang });

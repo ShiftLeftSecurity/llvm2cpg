@@ -1,0 +1,337 @@
+# NSEntityDescription
+INHERIT TYPEDECL -f "NSEntityDescription" TYPE -f "NSObject"
+INHERIT TYPEDECL -f "NSEntityDescription*" TYPE -f "NSObject*"
+INHERIT TYPEDECL -f "NSEntityDescription$" TYPE -f "NSObject$"
+INHERIT TYPEDECL -f "NSEntityDescription$*" TYPE -f "NSObject$*"
+
+# +[NSEntityDescription alloc]
+BIND -n "alloc" -s "" METHOD -f "+[NSEntityDescription alloc]" TYPEDECL -f "NSEntityDescription$"
+BIND -n "alloc" -s "" METHOD -f "+[NSEntityDescription alloc]" TYPEDECL -f "NSEntityDescription$*"
+#EDGE BOTH AST -s METHOD -f "+[NSEntityDescription alloc]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription alloc]" RET SUBTYPE TYPE -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription alloc]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSEntityDescription alloc]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSEntityDescription allocWithZone:]
+BIND -n "allocWithZone:" -s "" METHOD -f "+[NSEntityDescription allocWithZone:]" TYPEDECL -f "NSEntityDescription$"
+BIND -n "allocWithZone:" -s "" METHOD -f "+[NSEntityDescription allocWithZone:]" TYPEDECL -f "NSEntityDescription$*"
+#EDGE BOTH AST -s METHOD -f "+[NSEntityDescription allocWithZone:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription allocWithZone:]" RET SUBTYPE TYPE -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription allocWithZone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSEntityDescription allocWithZone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSEntityDescription allocWithZone:]" PAR -i 3 SUBTYPE TYPE -f "struct _NSZone*"
+
+# +[NSEntityDescription entityForName:inManagedObjectContext:]
+BIND -n "entityForName:inManagedObjectContext:" -s "" METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" TYPEDECL -f "NSEntityDescription$"
+BIND -n "entityForName:inManagedObjectContext:" -s "" METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" TYPEDECL -f "NSEntityDescription$*"
+#EDGE BOTH AST -s METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "+[NSEntityDescription entityForName:inManagedObjectContext:]" PAR -i 4 SUBTYPE TYPE -f "NSManagedObjectContext*"
+
+# +[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]
+BIND -n "insertNewObjectForEntityForName:inManagedObjectContext:" -s "" METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" TYPEDECL -f "NSEntityDescription$"
+BIND -n "insertNewObjectForEntityForName:inManagedObjectContext:" -s "" METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" TYPEDECL -f "NSEntityDescription$*"
+#EDGE BOTH AST -s METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "+[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]" PAR -i 4 SUBTYPE TYPE -f "NSManagedObjectContext*"
+
+# +[NSEntityDescription new]
+BIND -n "new" -s "" METHOD -f "+[NSEntityDescription new]" TYPEDECL -f "NSEntityDescription$"
+BIND -n "new" -s "" METHOD -f "+[NSEntityDescription new]" TYPEDECL -f "NSEntityDescription$*"
+#EDGE BOTH AST -s METHOD -f "+[NSEntityDescription new]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription new]" RET SUBTYPE TYPE -f "NSEntityDescription"
+TYPEASSERT METHOD -f "+[NSEntityDescription new]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSEntityDescription new]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription attributesByName]
+BIND -n "attributesByName" -s "" METHOD -f "-[NSEntityDescription attributesByName]" TYPEDECL -f "NSEntityDescription"
+BIND -n "attributesByName" -s "" METHOD -f "-[NSEntityDescription attributesByName]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription attributesByName]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription attributesByName]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSEntityDescription attributesByName]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription attributesByName]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription compoundIndexes]
+BIND -n "compoundIndexes" -s "" METHOD -f "-[NSEntityDescription compoundIndexes]" TYPEDECL -f "NSEntityDescription"
+BIND -n "compoundIndexes" -s "" METHOD -f "-[NSEntityDescription compoundIndexes]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription compoundIndexes]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription compoundIndexes]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSEntityDescription compoundIndexes]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription compoundIndexes]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription coreSpotlightDisplayNameExpression]
+BIND -n "coreSpotlightDisplayNameExpression" -s "" METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" TYPEDECL -f "NSEntityDescription"
+BIND -n "coreSpotlightDisplayNameExpression" -s "" METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" RET SUBTYPE TYPE -f "NSExpression*"
+TYPEASSERT METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription coreSpotlightDisplayNameExpression]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription indexes]
+BIND -n "indexes" -s "" METHOD -f "-[NSEntityDescription indexes]" TYPEDECL -f "NSEntityDescription"
+BIND -n "indexes" -s "" METHOD -f "-[NSEntityDescription indexes]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription indexes]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription indexes]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSEntityDescription indexes]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription indexes]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription init]
+BIND -n "init" -s "" METHOD -f "-[NSEntityDescription init]" TYPEDECL -f "NSEntityDescription"
+BIND -n "init" -s "" METHOD -f "-[NSEntityDescription init]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription init]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription init]" RET SUBTYPE TYPE -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription init]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription init]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription isAbstract]
+BIND -n "isAbstract" -s "" METHOD -f "-[NSEntityDescription isAbstract]" TYPEDECL -f "NSEntityDescription"
+BIND -n "isAbstract" -s "" METHOD -f "-[NSEntityDescription isAbstract]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription isAbstract]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription isAbstract]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription isAbstract]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription isAbstract]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription isKindOfEntity:]
+BIND -n "isKindOfEntity:" -s "" METHOD -f "-[NSEntityDescription isKindOfEntity:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "isKindOfEntity:" -s "" METHOD -f "-[NSEntityDescription isKindOfEntity:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription isKindOfEntity:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription isKindOfEntity:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSEntityDescription isKindOfEntity:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription isKindOfEntity:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription isKindOfEntity:]" PAR -i 3 SUBTYPE TYPE -f "NSEntityDescription*"
+
+# -[NSEntityDescription managedObjectClassName]
+BIND -n "managedObjectClassName" -s "" METHOD -f "-[NSEntityDescription managedObjectClassName]" TYPEDECL -f "NSEntityDescription"
+BIND -n "managedObjectClassName" -s "" METHOD -f "-[NSEntityDescription managedObjectClassName]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription managedObjectClassName]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectClassName]" RET SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectClassName]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectClassName]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription managedObjectModel]
+BIND -n "managedObjectModel" -s "" METHOD -f "-[NSEntityDescription managedObjectModel]" TYPEDECL -f "NSEntityDescription"
+BIND -n "managedObjectModel" -s "" METHOD -f "-[NSEntityDescription managedObjectModel]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription managedObjectModel]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectModel]" RET SUBTYPE TYPE -f "NSManagedObjectModel*"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectModel]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription managedObjectModel]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription name]
+BIND -n "name" -s "" METHOD -f "-[NSEntityDescription name]" TYPEDECL -f "NSEntityDescription"
+BIND -n "name" -s "" METHOD -f "-[NSEntityDescription name]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription name]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription name]" RET SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSEntityDescription name]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription name]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription properties]
+BIND -n "properties" -s "" METHOD -f "-[NSEntityDescription properties]" TYPEDECL -f "NSEntityDescription"
+BIND -n "properties" -s "" METHOD -f "-[NSEntityDescription properties]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription properties]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription properties]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSEntityDescription properties]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription properties]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription propertiesByName]
+BIND -n "propertiesByName" -s "" METHOD -f "-[NSEntityDescription propertiesByName]" TYPEDECL -f "NSEntityDescription"
+BIND -n "propertiesByName" -s "" METHOD -f "-[NSEntityDescription propertiesByName]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription propertiesByName]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription propertiesByName]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSEntityDescription propertiesByName]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription propertiesByName]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription relationshipsByName]
+BIND -n "relationshipsByName" -s "" METHOD -f "-[NSEntityDescription relationshipsByName]" TYPEDECL -f "NSEntityDescription"
+BIND -n "relationshipsByName" -s "" METHOD -f "-[NSEntityDescription relationshipsByName]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription relationshipsByName]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsByName]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsByName]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsByName]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription relationshipsWithDestinationEntity:]
+BIND -n "relationshipsWithDestinationEntity:" -s "" METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "relationshipsWithDestinationEntity:" -s "" METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription relationshipsWithDestinationEntity:]" PAR -i 3 SUBTYPE TYPE -f "NSEntityDescription*"
+
+# -[NSEntityDescription renamingIdentifier]
+BIND -n "renamingIdentifier" -s "" METHOD -f "-[NSEntityDescription renamingIdentifier]" TYPEDECL -f "NSEntityDescription"
+BIND -n "renamingIdentifier" -s "" METHOD -f "-[NSEntityDescription renamingIdentifier]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription renamingIdentifier]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription renamingIdentifier]" RET SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSEntityDescription renamingIdentifier]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription renamingIdentifier]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription setAbstract:]
+BIND -n "setAbstract:" -s "" METHOD -f "-[NSEntityDescription setAbstract:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setAbstract:" -s "" METHOD -f "-[NSEntityDescription setAbstract:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setAbstract:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setAbstract:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setAbstract:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setAbstract:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setAbstract:]" PAR -i 3 SUBTYPE TYPE -f "BOOL"
+
+# -[NSEntityDescription setCompoundIndexes:]
+BIND -n "setCompoundIndexes:" -s "" METHOD -f "-[NSEntityDescription setCompoundIndexes:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setCompoundIndexes:" -s "" METHOD -f "-[NSEntityDescription setCompoundIndexes:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setCompoundIndexes:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCompoundIndexes:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCompoundIndexes:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCompoundIndexes:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCompoundIndexes:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSEntityDescription setCoreSpotlightDisplayNameExpression:]
+BIND -n "setCoreSpotlightDisplayNameExpression:" -s "" METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setCoreSpotlightDisplayNameExpression:" -s "" METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setCoreSpotlightDisplayNameExpression:]" PAR -i 3 SUBTYPE TYPE -f "NSExpression*"
+
+# -[NSEntityDescription setIndexes:]
+BIND -n "setIndexes:" -s "" METHOD -f "-[NSEntityDescription setIndexes:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setIndexes:" -s "" METHOD -f "-[NSEntityDescription setIndexes:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setIndexes:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setIndexes:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setIndexes:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setIndexes:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setIndexes:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSEntityDescription setManagedObjectClassName:]
+BIND -n "setManagedObjectClassName:" -s "" METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setManagedObjectClassName:" -s "" METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setManagedObjectClassName:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSEntityDescription setName:]
+BIND -n "setName:" -s "" METHOD -f "-[NSEntityDescription setName:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setName:" -s "" METHOD -f "-[NSEntityDescription setName:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setName:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setName:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setName:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setName:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setName:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSEntityDescription setProperties:]
+BIND -n "setProperties:" -s "" METHOD -f "-[NSEntityDescription setProperties:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setProperties:" -s "" METHOD -f "-[NSEntityDescription setProperties:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setProperties:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setProperties:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setProperties:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setProperties:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setProperties:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSEntityDescription setRenamingIdentifier:]
+BIND -n "setRenamingIdentifier:" -s "" METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setRenamingIdentifier:" -s "" METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setRenamingIdentifier:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSEntityDescription setSubentities:]
+BIND -n "setSubentities:" -s "" METHOD -f "-[NSEntityDescription setSubentities:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setSubentities:" -s "" METHOD -f "-[NSEntityDescription setSubentities:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setSubentities:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setSubentities:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setSubentities:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setSubentities:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setSubentities:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSEntityDescription setUniquenessConstraints:]
+BIND -n "setUniquenessConstraints:" -s "" METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setUniquenessConstraints:" -s "" METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUniquenessConstraints:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSEntityDescription setUserInfo:]
+BIND -n "setUserInfo:" -s "" METHOD -f "-[NSEntityDescription setUserInfo:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setUserInfo:" -s "" METHOD -f "-[NSEntityDescription setUserInfo:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setUserInfo:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUserInfo:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUserInfo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUserInfo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setUserInfo:]" PAR -i 3 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSEntityDescription setVersionHashModifier:]
+BIND -n "setVersionHashModifier:" -s "" METHOD -f "-[NSEntityDescription setVersionHashModifier:]" TYPEDECL -f "NSEntityDescription"
+BIND -n "setVersionHashModifier:" -s "" METHOD -f "-[NSEntityDescription setVersionHashModifier:]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription setVersionHashModifier:]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription setVersionHashModifier:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSEntityDescription setVersionHashModifier:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription setVersionHashModifier:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSEntityDescription setVersionHashModifier:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSEntityDescription subentities]
+BIND -n "subentities" -s "" METHOD -f "-[NSEntityDescription subentities]" TYPEDECL -f "NSEntityDescription"
+BIND -n "subentities" -s "" METHOD -f "-[NSEntityDescription subentities]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription subentities]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentities]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentities]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentities]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription subentitiesByName]
+BIND -n "subentitiesByName" -s "" METHOD -f "-[NSEntityDescription subentitiesByName]" TYPEDECL -f "NSEntityDescription"
+BIND -n "subentitiesByName" -s "" METHOD -f "-[NSEntityDescription subentitiesByName]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription subentitiesByName]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentitiesByName]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentitiesByName]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription subentitiesByName]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription superentity]
+BIND -n "superentity" -s "" METHOD -f "-[NSEntityDescription superentity]" TYPEDECL -f "NSEntityDescription"
+BIND -n "superentity" -s "" METHOD -f "-[NSEntityDescription superentity]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription superentity]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription superentity]" RET SUBTYPE TYPE -f "NSEntityDescription*"
+TYPEASSERT METHOD -f "-[NSEntityDescription superentity]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription superentity]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription uniquenessConstraints]
+BIND -n "uniquenessConstraints" -s "" METHOD -f "-[NSEntityDescription uniquenessConstraints]" TYPEDECL -f "NSEntityDescription"
+BIND -n "uniquenessConstraints" -s "" METHOD -f "-[NSEntityDescription uniquenessConstraints]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription uniquenessConstraints]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription uniquenessConstraints]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSEntityDescription uniquenessConstraints]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription uniquenessConstraints]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription userInfo]
+BIND -n "userInfo" -s "" METHOD -f "-[NSEntityDescription userInfo]" TYPEDECL -f "NSEntityDescription"
+BIND -n "userInfo" -s "" METHOD -f "-[NSEntityDescription userInfo]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription userInfo]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription userInfo]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSEntityDescription userInfo]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription userInfo]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription versionHash]
+BIND -n "versionHash" -s "" METHOD -f "-[NSEntityDescription versionHash]" TYPEDECL -f "NSEntityDescription"
+BIND -n "versionHash" -s "" METHOD -f "-[NSEntityDescription versionHash]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription versionHash]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHash]" RET SUBTYPE TYPE -f "NSData*"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHash]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHash]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSEntityDescription versionHashModifier]
+BIND -n "versionHashModifier" -s "" METHOD -f "-[NSEntityDescription versionHashModifier]" TYPEDECL -f "NSEntityDescription"
+BIND -n "versionHashModifier" -s "" METHOD -f "-[NSEntityDescription versionHashModifier]" TYPEDECL -f "NSEntityDescription*"
+#EDGE BOTH AST -s METHOD -f "-[NSEntityDescription versionHashModifier]" -d TYPEDECL -f "NSEntityDescription"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHashModifier]" RET SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHashModifier]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSEntityDescription versionHashModifier]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+

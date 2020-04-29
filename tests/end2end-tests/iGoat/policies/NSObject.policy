@@ -1,0 +1,1398 @@
+# NSObject
+# Root Class
+
+# +[NSObject alloc]
+BIND -n "alloc" -s "" METHOD -f "+[NSObject alloc]" TYPEDECL -f "NSObject$"
+BIND -n "alloc" -s "" METHOD -f "+[NSObject alloc]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject alloc]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject alloc]" RET SUBTYPE TYPE -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject alloc]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject alloc]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject allocWithZone:]
+BIND -n "allocWithZone:" -s "" METHOD -f "+[NSObject allocWithZone:]" TYPEDECL -f "NSObject$"
+BIND -n "allocWithZone:" -s "" METHOD -f "+[NSObject allocWithZone:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject allocWithZone:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject allocWithZone:]" RET SUBTYPE TYPE -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject allocWithZone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject allocWithZone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject allocWithZone:]" PAR -i 3 SUBTYPE TYPE -f "struct _NSZone*"
+
+# +[NSObject class]
+BIND -n "class" -s "" METHOD -f "+[NSObject class]" TYPEDECL -f "NSObject$"
+BIND -n "class" -s "" METHOD -f "+[NSObject class]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject class]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject class]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "+[NSObject class]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject class]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject conformsToProtocol:]
+BIND -n "conformsToProtocol:" -s "" METHOD -f "+[NSObject conformsToProtocol:]" TYPEDECL -f "NSObject$"
+BIND -n "conformsToProtocol:" -s "" METHOD -f "+[NSObject conformsToProtocol:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject conformsToProtocol:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject conformsToProtocol:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject conformsToProtocol:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject conformsToProtocol:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject conformsToProtocol:]" PAR -i 3 SUBTYPE TYPE -f "Protocol*"
+
+# +[NSObject copyWithZone:]
+BIND -n "copyWithZone:" -s "" METHOD -f "+[NSObject copyWithZone:]" TYPEDECL -f "NSObject$"
+BIND -n "copyWithZone:" -s "" METHOD -f "+[NSObject copyWithZone:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject copyWithZone:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject copyWithZone:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject copyWithZone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject copyWithZone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject copyWithZone:]" PAR -i 3 SUBTYPE TYPE -f "struct _NSZone*"
+
+# +[NSObject debugDescription]
+BIND -n "debugDescription" -s "" METHOD -f "+[NSObject debugDescription]" TYPEDECL -f "NSObject$"
+BIND -n "debugDescription" -s "" METHOD -f "+[NSObject debugDescription]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject debugDescription]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject debugDescription]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject debugDescription]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject debugDescription]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject description]
+BIND -n "description" -s "" METHOD -f "+[NSObject description]" TYPEDECL -f "NSObject$"
+BIND -n "description" -s "" METHOD -f "+[NSObject description]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject description]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject description]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject description]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject description]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject hash]
+BIND -n "hash" -s "" METHOD -f "+[NSObject hash]" TYPEDECL -f "NSObject$"
+BIND -n "hash" -s "" METHOD -f "+[NSObject hash]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject hash]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject hash]" RET SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "+[NSObject hash]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject hash]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject initialize]
+BIND -n "initialize" -s "" METHOD -f "+[NSObject initialize]" TYPEDECL -f "NSObject$"
+BIND -n "initialize" -s "" METHOD -f "+[NSObject initialize]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject initialize]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject initialize]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject initialize]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject initialize]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject instanceMethodForSelector:]
+BIND -n "instanceMethodForSelector:" -s "" METHOD -f "+[NSObject instanceMethodForSelector:]" TYPEDECL -f "NSObject$"
+BIND -n "instanceMethodForSelector:" -s "" METHOD -f "+[NSObject instanceMethodForSelector:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject instanceMethodForSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodForSelector:]" RET SUBTYPE TYPE -f "IMP"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodForSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodForSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodForSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject instanceMethodSignatureForSelector:]
+BIND -n "instanceMethodSignatureForSelector:" -s "" METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" TYPEDECL -f "NSObject$"
+BIND -n "instanceMethodSignatureForSelector:" -s "" METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject instanceMethodSignatureForSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject instancesRespondToSelector:]
+BIND -n "instancesRespondToSelector:" -s "" METHOD -f "+[NSObject instancesRespondToSelector:]" TYPEDECL -f "NSObject$"
+BIND -n "instancesRespondToSelector:" -s "" METHOD -f "+[NSObject instancesRespondToSelector:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject instancesRespondToSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject instancesRespondToSelector:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject instancesRespondToSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject instancesRespondToSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject instancesRespondToSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject isSubclassOfClass:]
+BIND -n "isSubclassOfClass:" -s "" METHOD -f "+[NSObject isSubclassOfClass:]" TYPEDECL -f "NSObject$"
+BIND -n "isSubclassOfClass:" -s "" METHOD -f "+[NSObject isSubclassOfClass:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject isSubclassOfClass:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject isSubclassOfClass:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject isSubclassOfClass:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject isSubclassOfClass:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject isSubclassOfClass:]" PAR -i 3 SUBTYPE TYPE -f "Class"
+
+# +[NSObject load]
+BIND -n "load" -s "" METHOD -f "+[NSObject load]" TYPEDECL -f "NSObject$"
+BIND -n "load" -s "" METHOD -f "+[NSObject load]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject load]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject load]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject load]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject load]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject mutableCopyWithZone:]
+BIND -n "mutableCopyWithZone:" -s "" METHOD -f "+[NSObject mutableCopyWithZone:]" TYPEDECL -f "NSObject$"
+BIND -n "mutableCopyWithZone:" -s "" METHOD -f "+[NSObject mutableCopyWithZone:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject mutableCopyWithZone:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject mutableCopyWithZone:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject mutableCopyWithZone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject mutableCopyWithZone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject mutableCopyWithZone:]" PAR -i 3 SUBTYPE TYPE -f "struct _NSZone*"
+
+# +[NSObject new]
+BIND -n "new" -s "" METHOD -f "+[NSObject new]" TYPEDECL -f "NSObject$"
+BIND -n "new" -s "" METHOD -f "+[NSObject new]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject new]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject new]" RET SUBTYPE TYPE -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject new]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject new]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject resolveClassMethod:]
+BIND -n "resolveClassMethod:" -s "" METHOD -f "+[NSObject resolveClassMethod:]" TYPEDECL -f "NSObject$"
+BIND -n "resolveClassMethod:" -s "" METHOD -f "+[NSObject resolveClassMethod:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject resolveClassMethod:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject resolveClassMethod:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject resolveClassMethod:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject resolveClassMethod:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject resolveClassMethod:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject resolveInstanceMethod:]
+BIND -n "resolveInstanceMethod:" -s "" METHOD -f "+[NSObject resolveInstanceMethod:]" TYPEDECL -f "NSObject$"
+BIND -n "resolveInstanceMethod:" -s "" METHOD -f "+[NSObject resolveInstanceMethod:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject resolveInstanceMethod:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject resolveInstanceMethod:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject resolveInstanceMethod:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject resolveInstanceMethod:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject resolveInstanceMethod:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# +[NSObject superclass]
+BIND -n "superclass" -s "" METHOD -f "+[NSObject superclass]" TYPEDECL -f "NSObject$"
+BIND -n "superclass" -s "" METHOD -f "+[NSObject superclass]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject superclass]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "+[NSObject superclass]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "+[NSObject superclass]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject superclass]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject allowsWeakReference]
+BIND -n "allowsWeakReference" -s "" METHOD -f "-[NSObject allowsWeakReference]" TYPEDECL -f "NSObject"
+BIND -n "allowsWeakReference" -s "" METHOD -f "-[NSObject allowsWeakReference]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject allowsWeakReference]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject allowsWeakReference]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject allowsWeakReference]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject allowsWeakReference]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject copy]
+BIND -n "copy" -s "" METHOD -f "-[NSObject copy]" TYPEDECL -f "NSObject"
+BIND -n "copy" -s "" METHOD -f "-[NSObject copy]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject copy]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject copy]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject copy]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject copy]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject dealloc]
+BIND -n "dealloc" -s "" METHOD -f "-[NSObject dealloc]" TYPEDECL -f "NSObject"
+BIND -n "dealloc" -s "" METHOD -f "-[NSObject dealloc]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject dealloc]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject dealloc]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject dealloc]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject dealloc]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject doesNotRecognizeSelector:]
+BIND -n "doesNotRecognizeSelector:" -s "" METHOD -f "-[NSObject doesNotRecognizeSelector:]" TYPEDECL -f "NSObject"
+BIND -n "doesNotRecognizeSelector:" -s "" METHOD -f "-[NSObject doesNotRecognizeSelector:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject doesNotRecognizeSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject doesNotRecognizeSelector:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject doesNotRecognizeSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject doesNotRecognizeSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject doesNotRecognizeSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject finalize]
+BIND -n "finalize" -s "" METHOD -f "-[NSObject finalize]" TYPEDECL -f "NSObject"
+BIND -n "finalize" -s "" METHOD -f "-[NSObject finalize]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject finalize]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject finalize]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject finalize]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject finalize]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject forwardInvocation:]
+BIND -n "forwardInvocation:" -s "" METHOD -f "-[NSObject forwardInvocation:]" TYPEDECL -f "NSObject"
+BIND -n "forwardInvocation:" -s "" METHOD -f "-[NSObject forwardInvocation:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject forwardInvocation:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject forwardInvocation:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject forwardInvocation:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject forwardInvocation:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject forwardInvocation:]" PAR -i 3 SUBTYPE TYPE -f "NSInvocation*"
+
+# -[NSObject forwardingTargetForSelector:]
+BIND -n "forwardingTargetForSelector:" -s "" METHOD -f "-[NSObject forwardingTargetForSelector:]" TYPEDECL -f "NSObject"
+BIND -n "forwardingTargetForSelector:" -s "" METHOD -f "-[NSObject forwardingTargetForSelector:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject forwardingTargetForSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject forwardingTargetForSelector:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject forwardingTargetForSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject forwardingTargetForSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject forwardingTargetForSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject init]
+BIND -n "init" -s "" METHOD -f "-[NSObject init]" TYPEDECL -f "NSObject"
+BIND -n "init" -s "" METHOD -f "-[NSObject init]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject init]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject init]" RET SUBTYPE TYPE -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject init]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject init]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject methodForSelector:]
+BIND -n "methodForSelector:" -s "" METHOD -f "-[NSObject methodForSelector:]" TYPEDECL -f "NSObject"
+BIND -n "methodForSelector:" -s "" METHOD -f "-[NSObject methodForSelector:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject methodForSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject methodForSelector:]" RET SUBTYPE TYPE -f "IMP"
+TYPEASSERT METHOD -f "-[NSObject methodForSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject methodForSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject methodForSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject methodSignatureForSelector:]
+BIND -n "methodSignatureForSelector:" -s "" METHOD -f "-[NSObject methodSignatureForSelector:]" TYPEDECL -f "NSObject"
+BIND -n "methodSignatureForSelector:" -s "" METHOD -f "-[NSObject methodSignatureForSelector:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject methodSignatureForSelector:]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject methodSignatureForSelector:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject methodSignatureForSelector:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject methodSignatureForSelector:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject methodSignatureForSelector:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject mutableCopy]
+BIND -n "mutableCopy" -s "" METHOD -f "-[NSObject mutableCopy]" TYPEDECL -f "NSObject"
+BIND -n "mutableCopy" -s "" METHOD -f "-[NSObject mutableCopy]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject mutableCopy]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject mutableCopy]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject mutableCopy]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject mutableCopy]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject retainWeakReference]
+BIND -n "retainWeakReference" -s "" METHOD -f "-[NSObject retainWeakReference]" TYPEDECL -f "NSObject"
+BIND -n "retainWeakReference" -s "" METHOD -f "-[NSObject retainWeakReference]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject retainWeakReference]" -d TYPEDECL -f "NSObject"
+TYPEASSERT METHOD -f "-[NSObject retainWeakReference]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject retainWeakReference]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject retainWeakReference]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSArchiverCallback)
+
+# -[NSObject(NSArchiverCallback) classForArchiver]
+BIND -n "classForArchiver" -s "" METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" TYPEDECL -f "NSObject"
+BIND -n "classForArchiver" -s "" METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" -d TYPEDECL -f "NSObject(NSArchiverCallback)"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) classForArchiver]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSArchiverCallback) replacementObjectForArchiver:]
+BIND -n "replacementObjectForArchiver:" -s "" METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" TYPEDECL -f "NSObject"
+BIND -n "replacementObjectForArchiver:" -s "" METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" -d TYPEDECL -f "NSObject(NSArchiverCallback)"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSArchiverCallback) replacementObjectForArchiver:]" PAR -i 3 SUBTYPE TYPE -f "NSArchiver*"
+
+# NSObject(NSClassDescriptionPrimitives)
+
+# -[NSObject(NSClassDescriptionPrimitives) attributeKeys]
+BIND -n "attributeKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" TYPEDECL -f "NSObject"
+BIND -n "attributeKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" -d TYPEDECL -f "NSObject(NSClassDescriptionPrimitives)"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) attributeKeys]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSClassDescriptionPrimitives) classDescription]
+BIND -n "classDescription" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" TYPEDECL -f "NSObject"
+BIND -n "classDescription" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" -d TYPEDECL -f "NSObject(NSClassDescriptionPrimitives)"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" RET SUBTYPE TYPE -f "NSClassDescription*"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) classDescription]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]
+BIND -n "inverseForRelationshipKey:" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" TYPEDECL -f "NSObject"
+BIND -n "inverseForRelationshipKey:" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" -d TYPEDECL -f "NSObject(NSClassDescriptionPrimitives)"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) inverseForRelationshipKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]
+BIND -n "toManyRelationshipKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" TYPEDECL -f "NSObject"
+BIND -n "toManyRelationshipKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" -d TYPEDECL -f "NSObject(NSClassDescriptionPrimitives)"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toManyRelationshipKeys]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]
+BIND -n "toOneRelationshipKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" TYPEDECL -f "NSObject"
+BIND -n "toOneRelationshipKeys" -s "" METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" -d TYPEDECL -f "NSObject(NSClassDescriptionPrimitives)"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" RET SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSClassDescriptionPrimitives) toOneRelationshipKeys]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSCoderMethods)
+
+# +[NSObject(NSCoderMethods) setVersion:]
+BIND -n "setVersion:" -s "" METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" TYPEDECL -f "NSObject$"
+BIND -n "setVersion:" -s "" METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" -d TYPEDECL -f "NSObject(NSCoderMethods)"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) setVersion:]" PAR -i 3 SUBTYPE TYPE -f "NSInteger"
+
+# +[NSObject(NSCoderMethods) version]
+BIND -n "version" -s "" METHOD -f "+[NSObject(NSCoderMethods) version]" TYPEDECL -f "NSObject$"
+BIND -n "version" -s "" METHOD -f "+[NSObject(NSCoderMethods) version]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSCoderMethods) version]" -d TYPEDECL -f "NSObject(NSCoderMethods)"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) version]" RET SUBTYPE TYPE -f "NSInteger"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) version]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSCoderMethods) version]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSCoderMethods) awakeAfterUsingCoder:]
+BIND -n "awakeAfterUsingCoder:" -s "" METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" TYPEDECL -f "NSObject"
+BIND -n "awakeAfterUsingCoder:" -s "" METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" -d TYPEDECL -f "NSObject(NSCoderMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) awakeAfterUsingCoder:]" PAR -i 3 SUBTYPE TYPE -f "NSCoder*"
+
+# -[NSObject(NSCoderMethods) classForCoder]
+BIND -n "classForCoder" -s "" METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" TYPEDECL -f "NSObject"
+BIND -n "classForCoder" -s "" METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" -d TYPEDECL -f "NSObject(NSCoderMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) classForCoder]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSCoderMethods) replacementObjectForCoder:]
+BIND -n "replacementObjectForCoder:" -s "" METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" TYPEDECL -f "NSObject"
+BIND -n "replacementObjectForCoder:" -s "" METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" -d TYPEDECL -f "NSObject(NSCoderMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSCoderMethods) replacementObjectForCoder:]" PAR -i 3 SUBTYPE TYPE -f "NSCoder*"
+
+# NSObject(NSComparisonMethods)
+
+# -[NSObject(NSComparisonMethods) doesContain:]
+BIND -n "doesContain:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" TYPEDECL -f "NSObject"
+BIND -n "doesContain:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) doesContain:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]
+BIND -n "isCaseInsensitiveLike:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" TYPEDECL -f "NSObject"
+BIND -n "isCaseInsensitiveLike:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isCaseInsensitiveLike:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSComparisonMethods) isEqualTo:]
+BIND -n "isEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "isEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isGreaterThan:]
+BIND -n "isGreaterThan:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" TYPEDECL -f "NSObject"
+BIND -n "isGreaterThan:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThan:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]
+BIND -n "isGreaterThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "isGreaterThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isGreaterThanOrEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isLessThan:]
+BIND -n "isLessThan:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" TYPEDECL -f "NSObject"
+BIND -n "isLessThan:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThan:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]
+BIND -n "isLessThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "isLessThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLessThanOrEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSComparisonMethods) isLike:]
+BIND -n "isLike:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" TYPEDECL -f "NSObject"
+BIND -n "isLike:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isLike:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSComparisonMethods) isNotEqualTo:]
+BIND -n "isNotEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "isNotEqualTo:" -s "" METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" -d TYPEDECL -f "NSObject(NSComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSComparisonMethods) isNotEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# NSObject(NSCopyLinkMoveHandler)
+
+# -[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]
+BIND -n "fileManager:shouldProceedAfterError:" -s "" METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" TYPEDECL -f "NSObject"
+BIND -n "fileManager:shouldProceedAfterError:" -s "" METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" -d TYPEDECL -f "NSObject(NSCopyLinkMoveHandler)"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" PAR -i 3 SUBTYPE TYPE -f "NSFileManager*"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:shouldProceedAfterError:]" PAR -i 4 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]
+BIND -n "fileManager:willProcessPath:" -s "" METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" TYPEDECL -f "NSObject"
+BIND -n "fileManager:willProcessPath:" -s "" METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" -d TYPEDECL -f "NSObject(NSCopyLinkMoveHandler)"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" PAR -i 3 SUBTYPE TYPE -f "NSFileManager*"
+TYPEASSERT METHOD -f "-[NSObject(NSCopyLinkMoveHandler) fileManager:willProcessPath:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# NSObject(NSDelayedPerforming)
+
+# +[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]
+BIND -n "cancelPreviousPerformRequestsWithTarget:" -s "" METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" TYPEDECL -f "NSObject$"
+BIND -n "cancelPreviousPerformRequestsWithTarget:" -s "" METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" -d TYPEDECL -f "NSObject(NSDelayedPerforming)"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# +[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]
+BIND -n "cancelPreviousPerformRequestsWithTarget:selector:object:" -s "" METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" TYPEDECL -f "NSObject$"
+BIND -n "cancelPreviousPerformRequestsWithTarget:selector:object:" -s "" METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" -d TYPEDECL -f "NSObject(NSDelayedPerforming)"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" PAR -i 4 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSDelayedPerforming) cancelPreviousPerformRequestsWithTarget:selector:object:]" PAR -i 5 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]
+BIND -n "performSelector:withObject:afterDelay:" -s "" METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" TYPEDECL -f "NSObject"
+BIND -n "performSelector:withObject:afterDelay:" -s "" METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" -d TYPEDECL -f "NSObject(NSDelayedPerforming)"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" PAR -i 4 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:]" PAR -i 5 SUBTYPE TYPE -f "NSTimeInterval"
+
+# -[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]
+BIND -n "performSelector:withObject:afterDelay:inModes:" -s "" METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" TYPEDECL -f "NSObject"
+BIND -n "performSelector:withObject:afterDelay:inModes:" -s "" METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" -d TYPEDECL -f "NSObject(NSDelayedPerforming)"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 4 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 5 SUBTYPE TYPE -f "NSTimeInterval"
+TYPEASSERT METHOD -f "-[NSObject(NSDelayedPerforming) performSelector:withObject:afterDelay:inModes:]" PAR -i 6 SUBTYPE TYPE -f "NSArray*"
+
+# NSObject(NSDeprecatedKeyValueCoding)
+
+# +[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]
+BIND -n "useStoredAccessor" -s "" METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" TYPEDECL -f "NSObject$"
+BIND -n "useStoredAccessor" -s "" METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueCoding) useStoredAccessor]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]
+BIND -n "handleQueryWithUnboundKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" TYPEDECL -f "NSObject"
+BIND -n "handleQueryWithUnboundKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleQueryWithUnboundKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]
+BIND -n "handleTakeValue:forUnboundKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" TYPEDECL -f "NSObject"
+BIND -n "handleTakeValue:forUnboundKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) handleTakeValue:forUnboundKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]
+BIND -n "storedValueForKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "storedValueForKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) storedValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]
+BIND -n "takeStoredValue:forKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "takeStoredValue:forKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeStoredValue:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]
+BIND -n "takeValue:forKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "takeValue:forKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]
+BIND -n "takeValue:forKeyPath:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "takeValue:forKeyPath:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValue:forKeyPath:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]
+BIND -n "takeValuesFromDictionary:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" TYPEDECL -f "NSObject"
+BIND -n "takeValuesFromDictionary:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) takeValuesFromDictionary:]" PAR -i 3 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]
+BIND -n "unableToSetNilForKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" TYPEDECL -f "NSObject"
+BIND -n "unableToSetNilForKey:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) unableToSetNilForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]
+BIND -n "valuesForKeys:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" TYPEDECL -f "NSObject"
+BIND -n "valuesForKeys:" -s "" METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDeprecatedKeyValueCoding) valuesForKeys:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# NSObject(NSDeprecatedKeyValueObservingCustomization)
+
+# +[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]
+BIND -n "setKeys:triggerChangeNotificationsForDependentKey:" -s "" METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" TYPEDECL -f "NSObject$"
+BIND -n "setKeys:triggerChangeNotificationsForDependentKey:" -s "" METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" -d TYPEDECL -f "NSObject(NSDeprecatedKeyValueObservingCustomization)"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedKeyValueObservingCustomization) setKeys:triggerChangeNotificationsForDependentKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# NSObject(NSDeprecatedMethods)
+
+# +[NSObject(NSDeprecatedMethods) poseAsClass:]
+BIND -n "poseAsClass:" -s "" METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" TYPEDECL -f "NSObject$"
+BIND -n "poseAsClass:" -s "" METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" -d TYPEDECL -f "NSObject(NSDeprecatedMethods)"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSDeprecatedMethods) poseAsClass:]" PAR -i 3 SUBTYPE TYPE -f "Class"
+
+# NSObject(NSDiscardableContentProxy)
+
+# -[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]
+BIND -n "autoContentAccessingProxy" -s "" METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" TYPEDECL -f "NSObject"
+BIND -n "autoContentAccessingProxy" -s "" METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" -d TYPEDECL -f "NSObject(NSDiscardableContentProxy)"
+TYPEASSERT METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDiscardableContentProxy) autoContentAccessingProxy]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSDistributedObjects)
+
+# -[NSObject(NSDistributedObjects) classForPortCoder]
+BIND -n "classForPortCoder" -s "" METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" TYPEDECL -f "NSObject"
+BIND -n "classForPortCoder" -s "" METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" -d TYPEDECL -f "NSObject(NSDistributedObjects)"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) classForPortCoder]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]
+BIND -n "replacementObjectForPortCoder:" -s "" METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" TYPEDECL -f "NSObject"
+BIND -n "replacementObjectForPortCoder:" -s "" METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" -d TYPEDECL -f "NSObject(NSDistributedObjects)"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSDistributedObjects) replacementObjectForPortCoder:]" PAR -i 3 SUBTYPE TYPE -f "NSPortCoder*"
+
+# NSObject(NSErrorRecoveryAttempting)
+
+# -[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]
+BIND -n "attemptRecoveryFromError:optionIndex:" -s "" METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" TYPEDECL -f "NSObject"
+BIND -n "attemptRecoveryFromError:optionIndex:" -s "" METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" -d TYPEDECL -f "NSObject(NSErrorRecoveryAttempting)"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" PAR -i 3 SUBTYPE TYPE -f "NSError*"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:]" PAR -i 4 SUBTYPE TYPE -f "NSUInteger"
+
+# -[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]
+BIND -n "attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:" -s "" METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" TYPEDECL -f "NSObject"
+BIND -n "attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:" -s "" METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" -d TYPEDECL -f "NSObject(NSErrorRecoveryAttempting)"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 3 SUBTYPE TYPE -f "NSError*"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 4 SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 5 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 6 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSErrorRecoveryAttempting) attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:]" PAR -i 7 SUBTYPE TYPE -f "void*"
+
+# NSObject(NSKeyValueCoding)
+
+# +[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]
+BIND -n "accessInstanceVariablesDirectly" -s "" METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" TYPEDECL -f "NSObject$"
+BIND -n "accessInstanceVariablesDirectly" -s "" METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueCoding) accessInstanceVariablesDirectly]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]
+BIND -n "dictionaryWithValuesForKeys:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" TYPEDECL -f "NSObject"
+BIND -n "dictionaryWithValuesForKeys:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) dictionaryWithValuesForKeys:]" PAR -i 3 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]
+BIND -n "mutableArrayValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "mutableArrayValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]
+BIND -n "mutableArrayValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "mutableArrayValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableArrayValueForKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]
+BIND -n "mutableOrderedSetValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "mutableOrderedSetValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]
+BIND -n "mutableOrderedSetValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "mutableOrderedSetValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableOrderedSetValueForKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) mutableSetValueForKey:]
+BIND -n "mutableSetValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "mutableSetValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]
+BIND -n "mutableSetValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "mutableSetValueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) mutableSetValueForKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) setNilValueForKey:]
+BIND -n "setNilValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "setNilValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setNilValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) setValue:forKey:]
+BIND -n "setValue:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "setValue:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) setValue:forKeyPath:]
+BIND -n "setValue:forKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "setValue:forKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forKeyPath:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]
+BIND -n "setValue:forUndefinedKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" TYPEDECL -f "NSObject"
+BIND -n "setValue:forUndefinedKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValue:forUndefinedKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]
+BIND -n "setValuesForKeysWithDictionary:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" TYPEDECL -f "NSObject"
+BIND -n "setValuesForKeysWithDictionary:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) setValuesForKeysWithDictionary:]" PAR -i 3 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSObject(NSKeyValueCoding) validateValue:forKey:error:]
+BIND -n "validateValue:forKey:error:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" TYPEDECL -f "NSObject"
+BIND -n "validateValue:forKey:error:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" PAR -i 3 SUBTYPE TYPE -f "id*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKey:error:]" PAR -i 5 SUBTYPE TYPE -f "NSError**"
+
+# -[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]
+BIND -n "validateValue:forKeyPath:error:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" TYPEDECL -f "NSObject"
+BIND -n "validateValue:forKeyPath:error:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" PAR -i 3 SUBTYPE TYPE -f "id*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) validateValue:forKeyPath:error:]" PAR -i 5 SUBTYPE TYPE -f "NSError**"
+
+# -[NSObject(NSKeyValueCoding) valueForKey:]
+BIND -n "valueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "valueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) valueForKeyPath:]
+BIND -n "valueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "valueForKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueCoding) valueForUndefinedKey:]
+BIND -n "valueForUndefinedKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" TYPEDECL -f "NSObject"
+BIND -n "valueForUndefinedKey:" -s "" METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" -d TYPEDECL -f "NSObject(NSKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueCoding) valueForUndefinedKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# NSObject(NSKeyValueObserverNotification)
+
+# -[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]
+BIND -n "didChange:valuesAtIndexes:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "didChange:valuesAtIndexes:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" PAR -i 3 SUBTYPE TYPE -f "NSKeyValueChange"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSIndexSet*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChange:valuesAtIndexes:forKey:]" PAR -i 5 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]
+BIND -n "didChangeValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "didChangeValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]
+BIND -n "didChangeValueForKey:withSetMutation:usingObjects:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" TYPEDECL -f "NSObject"
+BIND -n "didChangeValueForKey:withSetMutation:usingObjects:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 4 SUBTYPE TYPE -f "NSKeyValueSetMutationKind"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) didChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 5 SUBTYPE TYPE -f "NSSet*"
+
+# -[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]
+BIND -n "willChange:valuesAtIndexes:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "willChange:valuesAtIndexes:forKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" PAR -i 3 SUBTYPE TYPE -f "NSKeyValueChange"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSIndexSet*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChange:valuesAtIndexes:forKey:]" PAR -i 5 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]
+BIND -n "willChangeValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" TYPEDECL -f "NSObject"
+BIND -n "willChangeValueForKey:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]
+BIND -n "willChangeValueForKey:withSetMutation:usingObjects:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" TYPEDECL -f "NSObject"
+BIND -n "willChangeValueForKey:withSetMutation:usingObjects:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverNotification)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 4 SUBTYPE TYPE -f "NSKeyValueSetMutationKind"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverNotification) willChangeValueForKey:withSetMutation:usingObjects:]" PAR -i 5 SUBTYPE TYPE -f "NSSet*"
+
+# NSObject(NSKeyValueObserverRegistration)
+
+# -[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]
+BIND -n "addObserver:forKeyPath:options:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" TYPEDECL -f "NSObject"
+BIND -n "addObserver:forKeyPath:options:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverRegistration)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 3 SUBTYPE TYPE -f "NSObject*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 5 SUBTYPE TYPE -f "NSKeyValueObservingOptions"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) addObserver:forKeyPath:options:context:]" PAR -i 6 SUBTYPE TYPE -f "void*"
+
+# -[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]
+BIND -n "removeObserver:forKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" TYPEDECL -f "NSObject"
+BIND -n "removeObserver:forKeyPath:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverRegistration)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" PAR -i 3 SUBTYPE TYPE -f "NSObject*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]
+BIND -n "removeObserver:forKeyPath:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" TYPEDECL -f "NSObject"
+BIND -n "removeObserver:forKeyPath:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" -d TYPEDECL -f "NSObject(NSKeyValueObserverRegistration)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" PAR -i 3 SUBTYPE TYPE -f "NSObject*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserverRegistration) removeObserver:forKeyPath:context:]" PAR -i 5 SUBTYPE TYPE -f "void*"
+
+# NSObject(NSKeyValueObserving)
+
+# -[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]
+BIND -n "observeValueForKeyPath:ofObject:change:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" TYPEDECL -f "NSObject"
+BIND -n "observeValueForKeyPath:ofObject:change:context:" -s "" METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" -d TYPEDECL -f "NSObject(NSKeyValueObserving)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 4 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 5 SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObserving) observeValueForKeyPath:ofObject:change:context:]" PAR -i 6 SUBTYPE TYPE -f "void*"
+
+# NSObject(NSKeyValueObservingCustomization)
+
+# +[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]
+BIND -n "automaticallyNotifiesObserversForKey:" -s "" METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" TYPEDECL -f "NSObject$"
+BIND -n "automaticallyNotifiesObserversForKey:" -s "" METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObservingCustomization)"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) automaticallyNotifiesObserversForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# +[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]
+BIND -n "keyPathsForValuesAffectingValueForKey:" -s "" METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" TYPEDECL -f "NSObject$"
+BIND -n "keyPathsForValuesAffectingValueForKey:" -s "" METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" -d TYPEDECL -f "NSObject(NSKeyValueObservingCustomization)"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyValueObservingCustomization) keyPathsForValuesAffectingValueForKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSKeyValueObservingCustomization) observationInfo]
+BIND -n "observationInfo" -s "" METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" TYPEDECL -f "NSObject"
+BIND -n "observationInfo" -s "" METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" -d TYPEDECL -f "NSObject(NSKeyValueObservingCustomization)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" RET SUBTYPE TYPE -f "void*"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) observationInfo]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]
+BIND -n "setObservationInfo:" -s "" METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" TYPEDECL -f "NSObject"
+BIND -n "setObservationInfo:" -s "" METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" -d TYPEDECL -f "NSObject(NSKeyValueObservingCustomization)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyValueObservingCustomization) setObservationInfo:]" PAR -i 3 SUBTYPE TYPE -f "void*"
+
+# NSObject(NSKeyedArchiverObjectSubstitution)
+
+# +[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]
+BIND -n "classFallbacksForKeyedArchiver" -s "" METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" TYPEDECL -f "NSObject$"
+BIND -n "classFallbacksForKeyedArchiver" -s "" METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" -d TYPEDECL -f "NSObject(NSKeyedArchiverObjectSubstitution)"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedArchiverObjectSubstitution) classFallbacksForKeyedArchiver]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]
+BIND -n "classForKeyedArchiver" -s "" METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" TYPEDECL -f "NSObject"
+BIND -n "classForKeyedArchiver" -s "" METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" -d TYPEDECL -f "NSObject(NSKeyedArchiverObjectSubstitution)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) classForKeyedArchiver]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]
+BIND -n "replacementObjectForKeyedArchiver:" -s "" METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" TYPEDECL -f "NSObject"
+BIND -n "replacementObjectForKeyedArchiver:" -s "" METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" -d TYPEDECL -f "NSObject(NSKeyedArchiverObjectSubstitution)"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSKeyedArchiverObjectSubstitution) replacementObjectForKeyedArchiver:]" PAR -i 3 SUBTYPE TYPE -f "NSKeyedArchiver*"
+
+# NSObject(NSKeyedUnarchiverObjectSubstitution)
+
+# +[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]
+BIND -n "classForKeyedUnarchiver" -s "" METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" TYPEDECL -f "NSObject$"
+BIND -n "classForKeyedUnarchiver" -s "" METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" TYPEDECL -f "NSObject$*"
+#EDGE BOTH AST -s METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" -d TYPEDECL -f "NSObject(NSKeyedUnarchiverObjectSubstitution)"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" RET SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "+[NSObject(NSKeyedUnarchiverObjectSubstitution) classForKeyedUnarchiver]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSScriptClassDescription)
+
+# -[NSObject(NSScriptClassDescription) classCode]
+BIND -n "classCode" -s "" METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" TYPEDECL -f "NSObject"
+BIND -n "classCode" -s "" METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" -d TYPEDECL -f "NSObject(NSScriptClassDescription)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" RET SUBTYPE TYPE -f "FourCharCode"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) classCode]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSScriptClassDescription) className]
+BIND -n "className" -s "" METHOD -f "-[NSObject(NSScriptClassDescription) className]" TYPEDECL -f "NSObject"
+BIND -n "className" -s "" METHOD -f "-[NSObject(NSScriptClassDescription) className]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptClassDescription) className]" -d TYPEDECL -f "NSObject(NSScriptClassDescription)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) className]" RET SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) className]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptClassDescription) className]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSScriptKeyValueCoding)
+
+# -[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]
+BIND -n "coerceValue:forKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" TYPEDECL -f "NSObject"
+BIND -n "coerceValue:forKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) coerceValue:forKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]
+BIND -n "insertValue:atIndex:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "insertValue:atIndex:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:atIndex:inPropertyWithKey:]" PAR -i 5 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]
+BIND -n "insertValue:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "insertValue:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) insertValue:inPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]
+BIND -n "removeValueAtIndex:fromPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "removeValueAtIndex:fromPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) removeValueAtIndex:fromPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]
+BIND -n "replaceValueAtIndex:inPropertyWithKey:withValue:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" TYPEDECL -f "NSObject"
+BIND -n "replaceValueAtIndex:inPropertyWithKey:withValue:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" PAR -i 3 SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) replaceValueAtIndex:inPropertyWithKey:withValue:]" PAR -i 5 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]
+BIND -n "valueAtIndex:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "valueAtIndex:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "NSUInteger"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueAtIndex:inPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]
+BIND -n "valueWithName:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "valueWithName:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithName:inPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]
+BIND -n "valueWithUniqueID:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" TYPEDECL -f "NSObject"
+BIND -n "valueWithUniqueID:inPropertyWithKey:" -s "" METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" -d TYPEDECL -f "NSObject(NSScriptKeyValueCoding)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptKeyValueCoding) valueWithUniqueID:inPropertyWithKey:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# NSObject(NSScriptObjectSpecifiers)
+
+# -[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]
+BIND -n "indicesOfObjectsByEvaluatingObjectSpecifier:" -s "" METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" TYPEDECL -f "NSObject"
+BIND -n "indicesOfObjectsByEvaluatingObjectSpecifier:" -s "" METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" -d TYPEDECL -f "NSObject(NSScriptObjectSpecifiers)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) indicesOfObjectsByEvaluatingObjectSpecifier:]" PAR -i 3 SUBTYPE TYPE -f "NSScriptObjectSpecifier*"
+
+# -[NSObject(NSScriptObjectSpecifiers) objectSpecifier]
+BIND -n "objectSpecifier" -s "" METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" TYPEDECL -f "NSObject"
+BIND -n "objectSpecifier" -s "" METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" -d TYPEDECL -f "NSObject(NSScriptObjectSpecifiers)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" RET SUBTYPE TYPE -f "NSScriptObjectSpecifier*"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptObjectSpecifiers) objectSpecifier]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# NSObject(NSScripting)
+
+# -[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]
+BIND -n "copyScriptingValue:forKey:withProperties:" -s "" METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" TYPEDECL -f "NSObject"
+BIND -n "copyScriptingValue:forKey:withProperties:" -s "" METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" -d TYPEDECL -f "NSObject(NSScripting)"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" PAR -i 3 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) copyScriptingValue:forKey:withProperties:]" PAR -i 5 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]
+BIND -n "newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:" -s "" METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" TYPEDECL -f "NSObject"
+BIND -n "newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:" -s "" METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" -d TYPEDECL -f "NSObject(NSScripting)"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 3 SUBTYPE TYPE -f "Class"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 5 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:]" PAR -i 6 SUBTYPE TYPE -f "NSDictionary*"
+
+# -[NSObject(NSScripting) scriptingProperties]
+BIND -n "scriptingProperties" -s "" METHOD -f "-[NSObject(NSScripting) scriptingProperties]" TYPEDECL -f "NSObject"
+BIND -n "scriptingProperties" -s "" METHOD -f "-[NSObject(NSScripting) scriptingProperties]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScripting) scriptingProperties]" -d TYPEDECL -f "NSObject(NSScripting)"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingProperties]" RET SUBTYPE TYPE -f "NSDictionary*"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingProperties]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingProperties]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+
+# -[NSObject(NSScripting) scriptingValueForSpecifier:]
+BIND -n "scriptingValueForSpecifier:" -s "" METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingValueForSpecifier:" -s "" METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" -d TYPEDECL -f "NSObject(NSScripting)"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" RET SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) scriptingValueForSpecifier:]" PAR -i 3 SUBTYPE TYPE -f "NSScriptObjectSpecifier*"
+
+# -[NSObject(NSScripting) setScriptingProperties:]
+BIND -n "setScriptingProperties:" -s "" METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" TYPEDECL -f "NSObject"
+BIND -n "setScriptingProperties:" -s "" METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" -d TYPEDECL -f "NSObject(NSScripting)"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScripting) setScriptingProperties:]" PAR -i 3 SUBTYPE TYPE -f "NSDictionary*"
+
+# NSObject(NSScriptingComparisonMethods)
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]
+BIND -n "scriptingBeginsWith:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingBeginsWith:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingBeginsWith:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingContains:]
+BIND -n "scriptingContains:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingContains:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingContains:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]
+BIND -n "scriptingEndsWith:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingEndsWith:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingEndsWith:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]
+BIND -n "scriptingIsEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingIsEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]
+BIND -n "scriptingIsGreaterThan:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingIsGreaterThan:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThan:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]
+BIND -n "scriptingIsGreaterThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingIsGreaterThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsGreaterThanOrEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]
+BIND -n "scriptingIsLessThan:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingIsLessThan:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThan:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]
+BIND -n "scriptingIsLessThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" TYPEDECL -f "NSObject"
+BIND -n "scriptingIsLessThanOrEqualTo:" -s "" METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" -d TYPEDECL -f "NSObject(NSScriptingComparisonMethods)"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" RET SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSScriptingComparisonMethods) scriptingIsLessThanOrEqualTo:]" PAR -i 3 SUBTYPE TYPE -f "id"
+
+# NSObject(NSThreadPerformAdditions)
+
+# -[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]
+BIND -n "performSelector:onThread:withObject:waitUntilDone:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" TYPEDECL -f "NSObject"
+BIND -n "performSelector:onThread:withObject:waitUntilDone:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" -d TYPEDECL -f "NSObject(NSThreadPerformAdditions)"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 4 SUBTYPE TYPE -f "NSThread*"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 5 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:]" PAR -i 6 SUBTYPE TYPE -f "BOOL"
+
+# -[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]
+BIND -n "performSelector:onThread:withObject:waitUntilDone:modes:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" TYPEDECL -f "NSObject"
+BIND -n "performSelector:onThread:withObject:waitUntilDone:modes:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" -d TYPEDECL -f "NSObject(NSThreadPerformAdditions)"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 4 SUBTYPE TYPE -f "NSThread*"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 5 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 6 SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelector:onThread:withObject:waitUntilDone:modes:]" PAR -i 7 SUBTYPE TYPE -f "NSArray*"
+
+# -[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]
+BIND -n "performSelectorInBackground:withObject:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" TYPEDECL -f "NSObject"
+BIND -n "performSelectorInBackground:withObject:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" -d TYPEDECL -f "NSObject(NSThreadPerformAdditions)"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorInBackground:withObject:]" PAR -i 4 SUBTYPE TYPE -f "id"
+
+# -[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]
+BIND -n "performSelectorOnMainThread:withObject:waitUntilDone:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" TYPEDECL -f "NSObject"
+BIND -n "performSelectorOnMainThread:withObject:waitUntilDone:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" -d TYPEDECL -f "NSObject(NSThreadPerformAdditions)"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" PAR -i 4 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:]" PAR -i 5 SUBTYPE TYPE -f "BOOL"
+
+# -[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]
+BIND -n "performSelectorOnMainThread:withObject:waitUntilDone:modes:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" TYPEDECL -f "NSObject"
+BIND -n "performSelectorOnMainThread:withObject:waitUntilDone:modes:" -s "" METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" -d TYPEDECL -f "NSObject(NSThreadPerformAdditions)"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 3 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 4 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 5 SUBTYPE TYPE -f "BOOL"
+TYPEASSERT METHOD -f "-[NSObject(NSThreadPerformAdditions) performSelectorOnMainThread:withObject:waitUntilDone:modes:]" PAR -i 6 SUBTYPE TYPE -f "NSArray*"
+
+# NSObject(NSURLClient)
+
+# -[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]
+BIND -n "URL:resourceDataDidBecomeAvailable:" -s "" METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" TYPEDECL -f "NSObject"
+BIND -n "URL:resourceDataDidBecomeAvailable:" -s "" METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" -d TYPEDECL -f "NSObject(NSURLClient)"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" PAR -i 3 SUBTYPE TYPE -f "NSURL*"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDataDidBecomeAvailable:]" PAR -i 4 SUBTYPE TYPE -f "NSData*"
+
+# -[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]
+BIND -n "URL:resourceDidFailLoadingWithReason:" -s "" METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" TYPEDECL -f "NSObject"
+BIND -n "URL:resourceDidFailLoadingWithReason:" -s "" METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" -d TYPEDECL -f "NSObject(NSURLClient)"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" PAR -i 3 SUBTYPE TYPE -f "NSURL*"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URL:resourceDidFailLoadingWithReason:]" PAR -i 4 SUBTYPE TYPE -f "NSString*"
+
+# -[NSObject(NSURLClient) URLResourceDidCancelLoading:]
+BIND -n "URLResourceDidCancelLoading:" -s "" METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" TYPEDECL -f "NSObject"
+BIND -n "URLResourceDidCancelLoading:" -s "" METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" -d TYPEDECL -f "NSObject(NSURLClient)"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidCancelLoading:]" PAR -i 3 SUBTYPE TYPE -f "NSURL*"
+
+# -[NSObject(NSURLClient) URLResourceDidFinishLoading:]
+BIND -n "URLResourceDidFinishLoading:" -s "" METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" TYPEDECL -f "NSObject"
+BIND -n "URLResourceDidFinishLoading:" -s "" METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" TYPEDECL -f "NSObject*"
+#EDGE BOTH AST -s METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" -d TYPEDECL -f "NSObject(NSURLClient)"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" RET SUBTYPE TYPE -f "void"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" PAR -i 1 SUBTYPE TYPE -f "id"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" PAR -i 2 SUBTYPE TYPE -f "SEL"
+TYPEASSERT METHOD -f "-[NSObject(NSURLClient) URLResourceDidFinishLoading:]" PAR -i 3 SUBTYPE TYPE -f "NSURL*"
+
