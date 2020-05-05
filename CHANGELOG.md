@@ -1,7 +1,13 @@
+## [0.7.0] - 05 May 2020
+
+- Added ObjC type policies for official SDKs (macOS, iPhoneOS, WatchOS, AppleTVOS, + simulators)
+- Extract more ObjC type information from debug info
+
 ## [0.6.0] - 14 Apr 2020
 
 - Strict mode added (`-strict-mode`)
-- Added warnings for missing debug information and for the missing 'recommended flags' 
+- Added warnings for missing debug information and for the missing 'recommended flags'
+- CPG emission sped up by tweaking `libzip` options
 
 ## [0.5.0] - 30 Mar 2020
 
