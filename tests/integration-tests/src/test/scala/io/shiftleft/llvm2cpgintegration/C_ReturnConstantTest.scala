@@ -9,7 +9,7 @@ class C_ReturnConstantTest extends CPGMatcher {
 
   "metadata" in {
     cpg.metaData.l.size shouldBe 1
-    cpg.metaData.head.language shouldBe "C"
+    cpg.metaData.head.language shouldBe "LLVM"
     cpg.metaData.head.version shouldBe "0"
   }
 

@@ -1,9 +1,5 @@
 // RUN: %llvm2cpg --output=%t.cpg.bin.zip %data_dir/llvm2cpg-samples/iGoat/x86_64/*.bc
 
-// Temporary thing until ObjC policies shipped with Ocular
-// RUN: mkdir -p %OCULAR_DIR/policy/dynamic/objectivec
-// RUN: cp %p/policies/*.policy %OCULAR_DIR/policy/dynamic/objectivec/
-
 // RUN: cd %OCULAR_DIR
 // RUN: %ocular.sh -J-Xmx4g --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines
 

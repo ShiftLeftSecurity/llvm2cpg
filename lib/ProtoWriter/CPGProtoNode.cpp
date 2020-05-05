@@ -11,7 +11,8 @@ int64_t CPGProtoNode::getID() const {
   return cpgNode->key();
 }
 
-CPGProtoNode &CPGProtoNode::setLanguage(cpg::LANGUAGES language) {
+CPGProtoNode &CPGProtoNode::setFrontend(cpg::LANGUAGES language) {
+  /// TODO: The LANGUAGE is supposed to be renamed to FRONTEND eventually
   assert(cpgNode->type() == cpg::CpgStruct_Node_NodeType::CpgStruct_Node_NodeType_META_DATA);
   setStringProperty(cpg::NodePropertyName::LANGUAGE, cpg::LANGUAGES_Name(language));
   return *this;

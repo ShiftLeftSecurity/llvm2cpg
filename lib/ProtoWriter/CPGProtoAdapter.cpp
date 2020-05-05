@@ -18,7 +18,7 @@ void CPGProtoAdapter::writeCpg(const llvm2cpg::CPG &cpg) {
 
   CPGProtoNode *metadata = builder.metadataNode();
   (*metadata) //
-      .setLanguage(cpg::LANGUAGES::C)
+      .setFrontend(cpg::LANGUAGES::LLVM)
       .setVersion("0")
       .setPolicyDirectories(cpg.detectLanguages());
 

@@ -183,6 +183,8 @@ CSHARP = 4;
 C = 5;
 // 
 PYTHON = 6;
+// 
+LLVM = 7;
 }
 
 enum FRAMEWORKS {

@@ -10,7 +10,7 @@ class C_ReturnCastTest extends CPGMatcher {
 
   "metadata" in {
     cpg.metaData.l.size shouldBe 1
-    cpg.metaData.head.language shouldBe "C"
+    cpg.metaData.head.language shouldBe "LLVM"
     cpg.metaData.head.version shouldBe "0"
     cpg.metaData.head.policyDirectories.toSet shouldBe Set("c")
   }
