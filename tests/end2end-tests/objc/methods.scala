@@ -1,5 +1,3 @@
-// XFAIL: *
-
 // RUN: %llvm2cpg --output=%t.cpg.bin.zip %p/fixtures/objc_methods.ll
 
 // RUN: cd %OCULAR_DIR

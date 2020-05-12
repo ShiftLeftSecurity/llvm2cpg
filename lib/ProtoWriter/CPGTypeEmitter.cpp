@@ -207,11 +207,16 @@ void CPGTypeEmitter::emitObjCMethodBindings(
 
     for (ObjCMethod &method : objCTypeHierarchy.getMethods(className)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
+
       CPGProtoNode *binding = builder.bindingNode();
       (*binding).setName(method.name).setSignature("");
       builder.connectREF(binding, methodNode);
       builder.connectBinding(typeDecl, binding);
-      builder.connectBinding(typeDeclPtr, binding);
+
+      CPGProtoNode *pointerBinding = builder.bindingNode();
+      (*pointerBinding).setName(method.name).setSignature("");
+      builder.connectREF(pointerBinding, methodNode);
+      builder.connectBinding(typeDeclPtr, pointerBinding);
     }
 
     std::string metaclassName = objCTypeHierarchy.getMetaclass(className);
@@ -220,11 +225,16 @@ void CPGTypeEmitter::emitObjCMethodBindings(
     CPGProtoNode *superclassTypeDeclPtr = emitTypeDecl(metaclassName + "*", "<global>");
     for (ObjCMethod &method : objCTypeHierarchy.getMethods(metaclassName)) {
       CPGProtoNode *methodNode = emittedMethods.at(method.function);
+
       CPGProtoNode *binding = builder.bindingNode();
       (*binding).setName(method.name).setSignature("");
       builder.connectREF(binding, methodNode);
       builder.connectBinding(superclassTypeDecl, binding);
-      builder.connectBinding(superclassTypeDeclPtr, binding);
+
+      CPGProtoNode *pointerBinding = builder.bindingNode();
+      (*pointerBinding).setName(method.name).setSignature("");
+      builder.connectREF(pointerBinding, methodNode);
+      builder.connectBinding(superclassTypeDeclPtr, pointerBinding);
     }
   }
 }
