@@ -1,7 +1,8 @@
-// RUN: %llvm2cpg --output=%t.cpg.bin.zip %data_dir/llvm2cpg-samples/iGoat/x86_64/*.bc
+// REQUIRES: OCULAR
+// RUN: %llvm2cpg --output=%t.cpg.bin.zip %DATA_DIR/llvm2cpg-samples/iGoat/x86_64/*.bc
 
-// RUN: cd %OCULAR_DIR
-// RUN: %ocular.sh -J-Xmx4g --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines
+// RUN: cd %ANALYZER_DIR
+// RUN: %analyzer -J-Xmx4g --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines
 
 def getArgument(call: Call, n: Int): String = {
   return call.start.argument.order(n).code.head

@@ -1,7 +1,8 @@
+// REQUIRES: OCULAR
 // RUN: %llvm2cpg --output=%t.cpg.bin.zip %p/fixtures/double-init.ll
 
-// RUN: cd %OCULAR_DIR
-// RUN: %ocular.sh --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines --strict-whitespace
+// RUN: cd %ANALYZER_DIR
+// RUN: %analyzer --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines --strict-whitespace
 
 
 @main
