@@ -16,3 +16,16 @@
   command: make run-end2end-tests
   args:
     chdir: "{{ build_dir }}"
+
+- name: Regenerate Build System for Joern tests ({{ build_type }})
+  command: cmake -DPATH_TO_LLVM={{ llvm_dir }} -DPATH_TO_JOERN={{ joern_dir }} -DCMAKE_BUILD_TYPE={{ build_type }} -DCMAKE_CXX_FLAGS="{{ llvm2cpg_cxx_flags }}" {{ source_dir }}
+  args:
+    chdir: "{{ build_dir }}"
+  environment:
+    CC: "{{ llvm_dir }}/bin/clang"
+    CXX: "{{ llvm_dir }}/bin/clang++"
+
+- name: Run End2End Tests ({{ build_type }})
+  command: make run-end2end-tests
+  args:
+    chdir: "{{ build_dir }}"

@@ -1,0 +1,15 @@
+---
+- name: Download Joern ({{ joern_version }})
+  get_url:
+    url: "{{ joern_url }}"
+    dest: "{{ working_dir }}/joern.zip"
+    timeout: 30
+  register: download_joern
+
+- name: Extract Joern ({{ joern_version }})
+  no_log: true
+  unarchive:
+    src: "{{ working_dir }}/joern.zip"
+    dest: "{{ working_dir }}"
+    remote_src: yes
+  when: download_joern.changed

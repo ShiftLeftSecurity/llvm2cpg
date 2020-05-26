@@ -76,6 +76,9 @@
     - name: Install Ocular
       include: helpers/install-ocular.yaml
 
+    - name: Install Joern
+      include: helpers/install-joern.yaml
+
     - name: Install LLVM
       include: helpers/install-llvm.yaml
 
