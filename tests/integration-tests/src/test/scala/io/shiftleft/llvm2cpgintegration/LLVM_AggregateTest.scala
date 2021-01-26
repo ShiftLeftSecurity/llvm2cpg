@@ -5,6 +5,7 @@ import io.shiftleft.semanticcpg.language._
 import org.scalatest.{Matchers, WordSpec}
 import io.shiftleft.codepropertygraph.generated.nodes._
 import io.shiftleft.semanticcpg.language.types.expressions.generalizations
+import overflowdb.traversal.NodeOps
 
 class LLVM_AggregateTest extends CPGMatcher {
     private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AggregateTestCPG)

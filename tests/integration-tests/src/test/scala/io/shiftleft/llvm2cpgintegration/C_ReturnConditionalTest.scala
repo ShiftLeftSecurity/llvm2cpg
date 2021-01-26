@@ -2,6 +2,7 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 class C_ReturnConditionalTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnConditionalTestCPG)

@@ -2,6 +2,7 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 /*
 call void asm sideeffect "add %al, (%rax)", "~{dirflag},~{fpsr},~{flags}"()

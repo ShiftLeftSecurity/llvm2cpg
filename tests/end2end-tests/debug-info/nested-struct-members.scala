@@ -2,7 +2,7 @@
 // RUN: %llvm2cpg --output=%t.cpg.bin.zip %t.bc
 
 // RUN: cd %ANALYZER_DIR
-// RUN: %analyzer --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines
+// RUN: %analyzer --script %s --params cpgFilePath=%t.cpg.bin.zip 2>&1 | %filecheck %s --match-full-lines
 
 @main
 def exec(cpgFilePath: String) = {

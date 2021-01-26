@@ -1,8 +1,8 @@
 package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
-import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 // ret i32 zext (i1 icmp ne (i8* bitcast (i32 (i32*, void (i8*)*)* @__pthread_key_create to i8*), i8* null) to i32)
 

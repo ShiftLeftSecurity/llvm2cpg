@@ -101,6 +101,7 @@ CPGProtoNode *CPGEmitter::emitMethod(const CPGMethod &method) {
 
     if (nodes.empty()) {
       nodes.push_back(emitNoop());
+      nodes.back()->setOrderAndIndex(topLevelOrder++);
     }
     entryPoints.insert(std::make_pair(&basicBlock, nodes.front()));
     exitPoints.push_back(nodes.back());

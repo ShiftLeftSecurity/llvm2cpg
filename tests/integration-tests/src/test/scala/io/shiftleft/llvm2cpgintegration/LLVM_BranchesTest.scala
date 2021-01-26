@@ -3,6 +3,7 @@ package io.shiftleft.llvm2cpgintegration
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.codepropertygraph.generated.nodes.{Expression, Unknown}
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 class LLVM_BranchesTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_BranchesTestCPG)
@@ -21,7 +22,7 @@ class LLVM_BranchesTest extends CPGMatcher {
 
     val noop2 = block.start.astChildren.l.apply(2).asInstanceOf[Unknown]
     noop2.code shouldBe "noop"
-    noop1.getId shouldNot be(noop2.getId)
+    noop1.id shouldNot be(noop2.id)
 
     val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
@@ -54,9 +55,9 @@ class LLVM_BranchesTest extends CPGMatcher {
     val noop3 = block.start.astChildren.l.apply(2).asInstanceOf[Unknown]
     noop3.code shouldBe "noop"
 
-    noop1.getId shouldNot be(noop2.getId)
-    noop2.getId shouldNot be(noop3.getId)
-    noop3.getId shouldNot be(noop1.getId)
+    noop1.id shouldNot be(noop2.id)
+    noop2.id shouldNot be(noop3.id)
+    noop3.id shouldNot be(noop1.id)
 
     val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"
@@ -87,7 +88,7 @@ class LLVM_BranchesTest extends CPGMatcher {
 
     val noop2 = block.start.astChildren.l.apply(1).asInstanceOf[Unknown]
     noop2.code shouldBe "noop"
-    noop1.getId shouldNot be(noop2.getId)
+    noop1.id shouldNot be(noop2.id)
 
     val ret = block.start.astChildren.isReturn.head
     ret.code shouldBe "return"

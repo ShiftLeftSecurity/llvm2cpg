@@ -2,7 +2,7 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import io.shiftleft.semanticcpg.language.types.expressions.MethodRef
+import overflowdb.traversal.NodeOps
 
 /*
   declare i32 @something(...)

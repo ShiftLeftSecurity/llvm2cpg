@@ -3,6 +3,7 @@ package io.shiftleft.llvm2cpgintegration
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.codepropertygraph.generated.nodes.Unknown
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 class C_ReturnCastTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.C_ReturnCastTestCPG)

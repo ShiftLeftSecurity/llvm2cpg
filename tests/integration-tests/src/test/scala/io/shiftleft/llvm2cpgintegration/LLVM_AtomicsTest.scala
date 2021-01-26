@@ -2,7 +2,7 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
-import org.scalatest.{Matchers, WordSpec}
+import overflowdb.traversal.NodeOps
 
 class LLVM_AtomicsTest extends CPGMatcher {
   private val cpg = CpgLoader.load(TestCpgPaths.LLVM_AtomicsTestCPG)

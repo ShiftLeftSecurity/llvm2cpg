@@ -4,12 +4,13 @@ import io.shiftleft.codepropertygraph.Cpg
 import io.shiftleft.codepropertygraph.generated.nodes._
 import io.shiftleft.semanticcpg.language._
 import org.scalatest.{AppendedClues, Matchers, WordSpec}
+import overflowdb.traversal.NodeOps
 
 abstract class CPGMatcher extends WordSpec with Matchers with AppendedClues {
   def validateTypes(cpg: Cpg, types: List[String]) {
-    val expectation = types.prepended("i32").prepended("i64").toSet.toList.sorted
-    val cpgDecls = cpg.typeDecl.name.toList.prepended("i32").prepended("i64").toSet.toList.sorted
-    val cpgTypes = cpg.types.name.toList.prepended("i32").prepended("i64").toSet.toList.sorted
+    val expectation = types.prepended("i32").prepended("i64").distinct.sorted
+    val cpgDecls = cpg.typeDecl.name.toList.prepended("i32").prepended("i64").distinct.sorted
+    val cpgTypes = cpg.types.name.toList.prepended("i32").prepended("i64").distinct.sorted
     cpgDecls shouldBe expectation
     cpgTypes shouldBe expectation
   }

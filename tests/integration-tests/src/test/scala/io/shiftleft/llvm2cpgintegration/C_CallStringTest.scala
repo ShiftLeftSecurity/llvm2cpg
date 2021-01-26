@@ -2,6 +2,7 @@ package io.shiftleft.llvm2cpgintegration
 
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.semanticcpg.language._
+import overflowdb.traversal.NodeOps
 
 /*
   @.str = private unnamed_addr constant [6 x i8] c"hello\00"

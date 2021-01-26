@@ -12,7 +12,7 @@ def getLocation(call: Call): String = {
   return call.start.file.name.head.split("/").last + ":" + call.lineNumber.get.toString
 }
 
-def concatArgs(call: NodeSteps[Call], first: Int, second: Int) : String = {
+def concatArgs(call: Traversal[Call], first: Int, second: Int) : String = {
   return call.map(c =>
     getArgument(c, first) + " = " +
     getArgument(c, second) + " at " +
@@ -41,13 +41,13 @@ def yapDatabaseExercise(cpg: Cpg) = {
 }
 
 def userDefaultsExercise(cpg: Cpg) = {
-  val call = cpg.method.fullNameExact("-[NSUserDefaults setObject:forKey:]").callIn.where(c => c.start.file.name.head.contains("NSUserDefaultsStorageExerciseViewController"))
+  val call = cpg.method.fullNameExact("-[NSUserDefaults setObject:forKey:]").callIn.filter(c => c.start.file.name.head.contains("NSUserDefaultsStorageExerciseViewController"))
   println(concatArgs(call, 4, 3))
   // CHECK: PIN = 53cr3tP at NSUserDefaultsStorageExerciseViewController.m:22
 }
 
 def keychainExercise(cpg: Cpg) = {
-  val call = cpg.method.fullNameExact("-[NSUserDefaults setObject:forKey:]").callIn.where(c => c.start.file.name.head.contains("KeychainExerciseViewController"))
+  val call = cpg.method.fullNameExact("-[NSUserDefaults setObject:forKey:]").callIn.filter(c => c.start.file.name.head.contains("KeychainExerciseViewController"))
   val callArgs = call.map(c => "Storing " + getArgument(c, 4) + " in NSUserDefaults at " + getLocation(c)).toList.sorted.mkString("\n")
   println(callArgs)
   // CHECK: Storing password in NSUserDefaults at KeychainExerciseViewController.m:28
@@ -84,7 +84,7 @@ def coreDataExercise(cpg: Cpg) = {
   println(cpg.typeDecl.name("NSManagedObject").derivedTypeDecl.name.l.mkString("\n"))
   // CHECK: User
 
-  println(cpg.call.where(c => c.start.typ.name.head == "User*").name.toSet.toList.sorted.mkString("\n"))
+  println(cpg.call.filter(c => c.start.typ.name.head == "User*").name.toSet.toList.sorted.mkString("\n"))
   // CHECK: <operator>.assignment
   // CHECK-NEXT: <operator>.cast
   // CHECK-NEXT: <operator>.indirection
@@ -94,8 +94,8 @@ def coreDataExercise(cpg: Cpg) = {
   // CHECK-NEXT: setPassword:
 
   /// TODO: Rewrite when we support dynamic properties
-  val setEmail = cpg.call.where(c => c.start.typ.name.head == "User*").name("setEmail:").head
-  val setPassword = cpg.call.where(c => c.start.typ.name.head == "User*").name("setPassword:").head
+  val setEmail = cpg.call.filter(c => c.start.typ.name.head == "User*").name("setEmail:").head
+  val setPassword = cpg.call.filter(c => c.start.typ.name.head == "User*").name("setPassword:").head
 
   println("Setting email to" + getArgument(setEmail, 3) + " at " + getLocation(setEmail))
   println("Setting password to " + getArgument(setPassword, 3) + " at " + getLocation(setPassword))
