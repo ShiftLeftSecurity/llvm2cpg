@@ -13,6 +13,8 @@ enum NodePropertyName {
 NODE_LABEL = 105;
 // 
 CATEGORIES = 814;
+// Hash value of the artifact that this CPG is built from.
+HASH = 120;
 // The static types a TYPE_DECL inherits from. This property is matched against the FULL_NAME of TYPE nodes and thus it is required to have at least one TYPE node for each TYPE_FULL_NAME
 INHERITS_FROM_TYPE_FULL_NAME = 53;
 // The FULL_NAME of a method. Used to link CALL and METHOD nodes. It is required to have exactly one METHOD node for each METHOD_FULL_NAME
@@ -99,6 +101,8 @@ MODIFIER_TYPE = 26;
 TYPE_FULL_NAME = 51;
 // Indicates that the construct (METHOD or TYPE_DECL) is external, that is, it is referenced but not defined in the code (applies both to insular parsing and to library functions where we have header files only)
 IS_EXTERNAL = 7;
+// References to other nodes. This is not a real property; it exists here for the sake of proto serialization only. valueType and cardinality are meaningless.
+CONTAINED_REF = 2007161;
 // 
 SPID = 122;
 // Deprecated
@@ -143,12 +147,14 @@ SINK_TYPE = 116;
 
 enum EdgePropertyName {
   UNKNOWN_EDGE_PROPERT = 0;
-  // Local name of referenced CONTAINED node
+  // Local name of referenced CONTAINED node. This key is deprecated.
 LOCAL_NAME = 6;
 // Defines whether a PROPAGATE edge creates an alias
 ALIAS = 1;
-// Index of referenced CONTAINED node (0 based) - used together with cardinality=list
+// Index of referenced CONTAINED node (0 based) - used together with cardinality=list. This key is deprecated.
 INDEX = 8;
+// A variable propagated by a reaching-def edge
+VARIABLE = 11;
 }
 
 enum EvaluationStrategies {
@@ -185,6 +191,8 @@ C = 5;
 PYTHON = 6;
 // 
 LLVM = 7;
+// 
+PHP = 8;
 }
 
 enum FRAMEWORKS {
@@ -237,7 +245,13 @@ message PropertyValue {
     LongList long_list = 10;
     FloatList float_list = 11;
     DoubleList double_list = 12;
+    ContainedRefs contained_refs = 13;
   }
+}
+
+message ContainedRefs {
+  string local_name = 1;
+  repeated int64 refs = 2;
 }
 
 message StringList {
@@ -279,8 +293,12 @@ COMMENT = 511;
 METHOD = 1;
 // A string tag
 TAG = 24;
+// Reference to a type/class
+TYPE_REF = 335;
 // A literal value assigned to an ANNOTATION_PARAMETER
 ANNOTATION_LITERAL = 49;
+// Indicates the existence of a call executed on a return value or out parameter of a method after this method has been executed. This is used to model framework code calling functors returned from user code. The outgoing REF edge indicates on which returned entitity the call will happen.
+POST_EXECUTION_CALL = 3071;
 // 
 IOFLOW = 212;
 // 
@@ -355,7 +373,7 @@ SENSITIVE_MEMBER = 53;
 IDENTIFIER = 27;
 // 
 TRANSFORMATION = 213;
-// Node representing a source file. Often also the AST root
+// Node representing a source file - the root of the AST
 FILE = 38;
 // This node represents a dependency
 DEPENDENCY = 35;
@@ -365,6 +383,8 @@ PACKAGE_PREFIX = 36;
 IMPLICIT_CALL = 307;
 // 
 MATCH_INFO = 51;
+// A jump target made explicit in the code using a label
+JUMP_TARGET = 340;
 // Indicates the usage of a framework. E.g. java spring. The name key is one of the values from frameworks list
 FRAMEWORK = 42;
 // A modifier, e.g., static, public, private
@@ -438,13 +458,15 @@ BINDS = 155;
 TAINT_REMOVE = 17;
 // Link to evaluation type
 EVAL_TYPE = 21;
+// Alias relation between two TYPE_DECL
+TYPE_DECL_ALIAS = 139;
 // Connection between a captured LOCAL and the corresponding CLOSURE_BINDING
 CAPTURED_BY = 41;
 // Points to dominated node in post DOM tree
 POST_DOMINATE = 182;
 // 
 IS_SENSITIVE_DATA_OF_TYPE = 902;
-// Encodes propagation of data from on node to another
+// Encodes propagation of data from on node to another. The ALIAS property is deprecated.
 PROPAGATE = 1;
 // 
 IS_SENSITIVE_DATA_DESCR_OF_REF = 901;
@@ -464,7 +486,7 @@ TAGGED_BY = 11;
 ALIAS_OF = 138;
 // Control dependency graph
 CDG = 183;
-// Membership relation for a compound object
+// Membership relation for a compound object. This edge is deprecated.
 CONTAINS_NODE = 9;
 // Links together corresponding METHOD_PARAMETER_IN and METHOD_PARAMETER_OUT nodes
 PARAMETER_LINK = 12;
@@ -539,6 +561,7 @@ message DiffGraph {
   message RemoveNodeProperty {
     int64 key = 1;
     NodePropertyName name = 2;
+    string local_name = 3;
   }
 
   message RemoveEdge {
