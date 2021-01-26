@@ -4,7 +4,7 @@ set (SOURCES
 
 foreach(source ${SOURCES})
   compile_fixture(
-    COMPILER ${CMAKE_CXX_COMPILER}
+    COMPILER ${LLVM_CXX_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION ll
     FLAGS -c -emit-llvm -S -fno-discard-value-names

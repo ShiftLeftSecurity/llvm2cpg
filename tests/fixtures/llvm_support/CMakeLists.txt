@@ -29,7 +29,7 @@ set (SOURCES
 
 foreach(source ${SOURCES})
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION bc
     FLAGS -c -emit-llvm -fno-discard-value-names

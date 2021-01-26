@@ -72,14 +72,6 @@ TEST(Demangler, tableTests) {
                   "abssort(float*, unsigned int)::$_0::operator()(float, float) const",
                   "operator()"),
 
-      Expectation("_ZNSt3__1L4moveIRfEEONS_16remove_referenceIT_E4typeEOS3_",
-#ifdef __APPLE__
-                  "std::__1::remove_reference<float&>::type&& std::__1::move<float&>(float&&&)",
-#else
-                  "std::__1::remove_reference<float&>::type&& std::__1::move<float&>(float&)",
-#endif
-                  "move<float&>"),
-
       Expectation("_ZNSt3__1neIPiEEbRKNS_11__wrap_iterIT_EES6_",
                   "bool std::__1::operator!=<int*>(std::__1::__wrap_iter<int*> const&, std::__1::__wrap_iter<int*> const&)",
                   "operator!=<int*>"),

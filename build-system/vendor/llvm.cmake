@@ -45,9 +45,6 @@ else()
   get_llvm_version_component("${LLVM_CMAKELISTS}" LLVM_VERSION_PATCH)
   set (LLVM_VERSION ${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.${LLVM_VERSION_PATCH})
 
-  if (LIBIRM_BUILD_32_BITS)
-    set (LLVM_BUILD_32_BITS ON CACHE BOOL "Forcing LLVM to be built for 32 bits as well" FORCE)
-  endif()
   set (LLVM_ENABLE_PROJECTS "llvm" CACHE BOOL "Don't build anything besides LLVM core" FORCE)
   set (LLVM_TARGETS_TO_BUILD "host" CACHE STRING "Don't build " FORCE)
 
@@ -58,3 +55,6 @@ else()
   get_target_property(LLVM_INCLUDE_DIRS LLVMSupport INCLUDE_DIRECTORIES)
   list(REMOVE_DUPLICATES LLVM_INCLUDE_DIRS)
 endif()
+
+set (LLVM_C_COMPILER ${PATH_TO_LLVM}/bin/clang)
+set (LLVM_CXX_COMPILER ${PATH_TO_LLVM}/bin/clang++)

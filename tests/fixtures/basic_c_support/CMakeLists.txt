@@ -32,29 +32,29 @@ set (SOURCES_OPT
 
 foreach(source ${SOURCES})
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION bc
-    FLAGS -c -emit-llvm -fno-discard-value-names
+    FLAGS -c -emit-llvm -fno-discard-value-names -Wno-implicit-function-declaration
   )
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION ll
-    FLAGS -c -emit-llvm -S -fno-discard-value-names
+    FLAGS -c -emit-llvm -S -fno-discard-value-names -Wno-implicit-function-declaration
   )
 endforeach()
 
 
 foreach(source ${SOURCES_DBG})
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION dbg.bc
     FLAGS -c -emit-llvm -g
   )
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION dbg.ll
     FLAGS -c -emit-llvm -S -g
@@ -64,13 +64,13 @@ endforeach()
 
 foreach(source ${SOURCES_DBG_OPT})
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION o3.dbg.bc
     FLAGS -c -emit-llvm -gfull -gdwarf-5 -O3 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
   )
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION o3.dbg.ll
     FLAGS -c -emit-llvm -S -gfull -gdwarf-5 -O3 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
@@ -79,13 +79,13 @@ endforeach()
 
 foreach(source ${SOURCES_OPT})
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION o3.bc
     FLAGS -c -emit-llvm -O3
   )
   compile_fixture(
-    COMPILER ${CMAKE_C_COMPILER}
+    COMPILER ${LLVM_C_COMPILER}
     INPUT ${source}
     OUTPUT_EXTENSION o3.ll
     FLAGS -c -emit-llvm -S -O3
