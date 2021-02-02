@@ -25,17 +25,17 @@ def exec(cpgFilePath: String) = {
   // | tmp4                 | 21        | main                 | main.m|
   // | p2                   | N/A       | <operator>.cast      |       |
   // | ret                  | N/A       | <operator>.cast      |       |
-  // | <operator>.cast      | 21        | main                 | main.m|
+  // | (FooClass*)tmp4      | 21        | main                 | main.m|
   // | p2                   | N/A       | <operator>.assignment|       |
   // | p1                   | N/A       | <operator>.assignment|       |
-  // | store                | 21        | main                 | main.m|
-  // | load                 | 22        | main                 | main.m|
+  // | *obj.addr            | 21        | main                 | main.m|
+  // | *obj.addr            | 22        | main                 | main.m|
   //
   // We check only a few lines to ensure we've got the right output
 
   // CHECK: | tracked              | lineNumber| method               | file  |
   // CHECK: | initWithBytes:length:| 21        | main                 | main.m|
-  // CHECK: | load                 | 22        | main                 | main.m|
+  // CHECK: | *obj.addr            | 22        | main                 | main.m|
 }
 
 // CHECK:script finished successfully

@@ -42,7 +42,7 @@ class LLVM_VectorTest extends CPGMatcher {
   "AST" in {
     val insertv =  cpg.method.name("insert").ast.isLiteral.code("undef").astParent.isCall.head
     val shuffle = cpg.method.name("findbyte").ast.isCall.name("<operator>.shufflevector").l.head
-    val extract = cpg.method.name("extract").ast.isCall.code("extractelement").l.head
+    val extract = cpg.method.name("extract").ast.isCall.codeExact("extractElement(x, idx)").l.head
 
     val gep1 = cpg.method.name("vectorGEP").ast.isIdentifier.name("A").astParent.isCall.argument.isCall.name("<operator>.pointerShift").head
     val gep2 = cpg.method.name("vectorGEP").ast.isIdentifier.name("B").astParent.isCall.argument.isCall.name("<operator>.pointerShift").head

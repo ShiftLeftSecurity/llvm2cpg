@@ -203,3 +203,14 @@ int64_t CPGProtoNode::getEntry() const {
   assert(entry != 0);
   return entry;
 }
+
+std::string CPGProtoNode::getCode() const {
+  for (int i = 0; i < cpgNode->property_size(); i++) {
+    auto &property = cpgNode->property(i);
+    if (property.has_value() && property.name() == cpg::NodePropertyName::CODE) {
+      return property.value().string_value();
+    }
+  }
+  assert(false && "Node should have code");
+  return std::string("no code");
+}

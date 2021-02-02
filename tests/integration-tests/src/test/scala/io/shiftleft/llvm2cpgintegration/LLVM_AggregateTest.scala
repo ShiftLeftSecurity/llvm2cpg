@@ -36,12 +36,12 @@ class LLVM_AggregateTest extends CPGMatcher {
         val extractBParent = cpg.method.name("extract").ast.isIdentifier.name("B").astParent.isCall.l.head
         extractBParent.name shouldBe "<operator>.assignment"
         val P1 = extractBParent.start.cfgPrev.isCall.head
-        P1.code shouldBe "extractvalue"
+        P1.code shouldBe "extractValue()"
         P1.typeFullName shouldBe "i8"
         val P2 = P1.start.cfgPrev.isLiteral.head
         P2.code shouldBe "0"
         val P3 = P2.start.cfgPrev.isCall.head
-        P3.code shouldBe "extractvalue"
+        P3.code shouldBe "extractValue()"
         P3.typeFullName shouldBe "[4 x i8]"
         val P4 = P3.start.cfgPrev.isLiteral.head
         P4.code shouldBe "3"
