@@ -1,5 +1,6 @@
 // REQUIRES: OCULAR
-// RUN: %llvm2cpg --output=%t.cpg.bin.zip %DATA_DIR/llvm2cpg-samples/iGoat/x86_64/*.bc
+// REQUIRES: OCULAR_SAMPLES
+// RUN: %llvm2cpg --output=%t.cpg.bin.zip %OCULAR_SAMPLES_DIR/iGoat/x86_64/*.bc
 
 // RUN: cd %ANALYZER_DIR
 // RUN: %analyzer -J-Xmx4g --script %s --params cpgFilePath=%t.cpg.bin.zip | %filecheck %s --match-full-lines

@@ -31,7 +31,7 @@ function(enable_end2end_tests)
     CLANG=${PATH_TO_LLVM}/bin/clang
     CLANGXX=${PATH_TO_LLVM}/bin/clang++
     FILECHECK=filecheck
-    TEST_DATA_DIR=${CMAKE_SOURCE_DIR}/tests/test-data
+    OCULAR_SAMPLES_DIR=${CMAKE_SOURCE_DIR}/tests/test-data/llvm2cpg-samples
   )
 
   string(REPLACE "\n" ";" TEST_LIST ${LIT_TESTS})

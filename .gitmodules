@@ -7,6 +7,3 @@
 [submodule "vendor/LibEBC"]
 	path = vendor/LibEBC
 	url = https://github.com/AlexDenisov/LibEBC.git
-[submodule "tests/test-data/llvm2cpg-samples"]
-	path = tests/test-data/llvm2cpg-samples
-	url = git@github.com:ShiftLeftSecurity/llvm2cpg-samples.git
