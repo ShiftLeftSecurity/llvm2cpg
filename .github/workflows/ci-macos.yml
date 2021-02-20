@@ -1,0 +1,47 @@
+name: CI macOS
+
+env:
+  LLVM_RELEASE: "9.0"
+  OCULAR_ORG_ID: ${{ secrets.OCULAR_ORG_ID }}
+  OCULAR_ORG_PASSWORD: ${{ secrets.OCULAR_ORG_PASSWORD }}
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+
+jobs:
+  test:
+    name: LLVM ${{ matrix.LLVM_VERSION }}
+    runs-on: macOS-latest
+    strategy:
+      matrix:
+        LLVM_VERSION: ["9.0"]
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: Run CI task
+        run: |
+          pip3 install ansible
+          cd ci && ansible-playbook macos-playbook.yaml \
+            -e source_dir=$PWD/.. \
+            -e llvm_version="${{ matrix.LLVM_VERSION }}.0" \
+            -e gitref=$GITHUB_SHA \
+            -e host=localhost \
+            --verbose
+      - name: Attach package to the tag
+        if: matrix.LLVM_VERSION == env.LLVM_RELEASE && contains(github.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /tmp/packages/*.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+
+
