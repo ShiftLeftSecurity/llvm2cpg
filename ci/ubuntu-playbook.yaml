@@ -73,8 +73,8 @@
       when: download_cmake.changed
       become: true
 
-    - name: Install Ocular
-      include: helpers/install-ocular.yaml
+    # - name: Install Ocular
+    #   include: helpers/install-ocular.yaml
 
     - name: Install Joern
       include: helpers/install-joern.yaml
