@@ -1,4 +1,5 @@
 #include "llvm2cpg/Transforms/CustomPasses.h"
+#include <llvm/Analysis/AliasAnalysis.h>
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/IntrinsicInst.h>

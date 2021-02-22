@@ -87,7 +87,7 @@ static std::set<std::string> getInputFilePaths(llvm2cpg::CPGLogger &logger) {
       continue;
     }
 
-    std::string filePath = realPath.str();
+    std::string filePath = realPath.str().str();
     llvm2cpg::FileType type = getFileType(logger, filePath);
     switch (type) {
     case llvm2cpg::FileType::Unsupported:

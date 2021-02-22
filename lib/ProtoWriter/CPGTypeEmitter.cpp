@@ -85,10 +85,17 @@ std::string CPGTypeEmitter::typeToString(const llvm::FunctionType *type) {
 std::string CPGTypeEmitter::typeToString(const llvm::VectorType *type) {
   std::stringstream stream;
   stream << "<";
+#if LLVM_VERSION_MAJOR <= 10
   if (type->isScalable()) {
     stream << "vscale x ";
   }
   stream << type->getVectorNumElements() << " x " << typeToString(type->getElementType()) << ">";
+#else
+  if (type->getElementCount().Scalable) {
+    stream << "vscale x ";
+  }
+  stream << type->getElementCount().Min << " x " << typeToString(type->getElementType()) << ">";
+#endif
   return stream.str();
 }
 
@@ -112,6 +119,9 @@ std::string CPGTypeEmitter::typeToString(const llvm::Type *type) {
   case llvm::Type::X86_MMXTyID:
   case llvm::Type::TokenTyID:
   case llvm::Type::IntegerTyID:
+#if LLVM_VERSION_MAJOR >= 11
+  case llvm::Type::BFloatTyID:
+#endif
     return defaultTypeToString(type);
 
   case llvm::Type::FunctionTyID:
@@ -126,7 +136,12 @@ std::string CPGTypeEmitter::typeToString(const llvm::Type *type) {
   case llvm::Type::PointerTyID:
     return typeToString(llvm::cast<llvm::PointerType>(type));
 
+#if LLVM_VERSION_MAJOR <= 10
   case llvm::Type::VectorTyID:
+#else
+  case llvm::Type::ScalableVectorTyID:
+  case llvm::Type::FixedVectorTyID:
+#endif
     return typeToString(llvm::cast<llvm::VectorType>(type));
   }
 }
@@ -434,8 +449,8 @@ void CPGTypeEmitter::recordStructInformation(const llvm::Module *module) {
       llvm::DIType *baseType = derivedType->getBaseType();
       worklist.push(baseType);
       if (derivedType->getTag() == llvm::dwarf::DW_TAG_typedef && baseType) {
-        std::string baseName = baseType->getName();
-        std::string aliasName = derivedType->getName();
+        std::string baseName = baseType->getName().str();
+        std::string aliasName = derivedType->getName().str();
         if (!baseName.empty() && !aliasName.empty()) {
           typeAliases[baseName].push_back(aliasName);
         }
@@ -449,12 +464,12 @@ void CPGTypeEmitter::recordStructInformation(const llvm::Module *module) {
   }
 
   for (llvm::DICompositeType *compositeType : compositeTypes) {
-    std::string name = compositeType->getName();
+    std::string name = compositeType->getName().str();
     if (!name.empty()) {
       structMemberNames[name] = std::vector<std::string>();
       for (auto memberElement : compositeType->getElements()) {
         if (auto memberType = llvm::dyn_cast<llvm::DIDerivedType>(memberElement)) {
-          structMemberNames[name].push_back(memberType->getName());
+          structMemberNames[name].push_back(memberType->getName().str());
         }
       }
     }

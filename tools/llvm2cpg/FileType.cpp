@@ -1,5 +1,6 @@
 #include "FileType.h"
 #include "llvm2cpg/Logger/CPGLogger.h"
+#include <llvm/ADT/Twine.h>
 #include <llvm/BinaryFormat/Magic.h>
 
 using namespace llvm2cpg;
@@ -69,6 +70,10 @@ const char *magicName(llvm::file_magic &magic) {
   case llvm::file_magic::xcoff_object_64:
     return "xcoff_object_64";
 #endif
+#if LLVM_VERSION_MAJOR >= 10
+  case llvm::file_magic::tapi_file:
+    return "tapi_file";
+#endif
   }
 }
 
@@ -126,6 +131,9 @@ FileType llvm2cpg::getFileType(llvm2cpg::CPGLogger &logger, const std::string &p
   case llvm::file_magic::minidump:
   case llvm::file_magic::xcoff_object_32:
   case llvm::file_magic::xcoff_object_64:
+#endif
+#if LLVM_VERSION_MAJOR >= 10
+  case llvm::file_magic::tapi_file:
 #endif
     return FileType::Unsupported;
   }

@@ -11,10 +11,22 @@ gitref: master
 
 llvm_mapping:
   ubuntu:
+    11.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+      path: clang+llvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04
+    10.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+      path: clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04
     9.0.0:
       url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
       path: clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04
   macos:
+    11.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/clang+llvm-11.0.0-x86_64-apple-darwin.tar.xz
+      path: clang+llvm-11.0.0-x86_64-apple-darwin
+    10.0.0:
+      url: https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-apple-darwin.tar.xz
+      path: clang+llvm-10.0.0-x86_64-apple-darwin
     9.0.0:
       url: http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz
       path: clang+llvm-9.0.0-x86_64-darwin-apple

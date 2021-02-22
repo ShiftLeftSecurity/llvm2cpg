@@ -7,9 +7,9 @@ set (SOURCES
 add_executable(llvm2cpg ${SOURCES})
 
 if (LLVM IN_LIST LLVM_AVAILABLE_LIBS)
-  target_link_libraries(llvm2cpg CPG CPGProtoWriter CPGLogger LLVM)
+  target_link_libraries(llvm2cpg CPG CPGProtoWriter CPGLogger LLVM z)
 else()
-  target_link_libraries(llvm2cpg CPG CPGProtoWriter CPGLogger) # LLVMSupport LLVMLinker LLVMPasses LLVMAnalysis LLVMTransformUtils LLVMCore
+  target_link_libraries(llvm2cpg CPG CPGProtoWriter CPGLogger LLVMSupport LLVMLinker LLVMPasses LLVMAnalysis LLVMTransformUtils LLVMCore z)
 endif()
 
 

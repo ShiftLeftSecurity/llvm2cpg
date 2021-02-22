@@ -9,7 +9,7 @@ static std::string getDebugLogPath() {
   llvm::Twine model("llvm2cpg-%%%%%%.log");
   llvm::SmallString<128> output;
   llvm::sys::fs::createUniquePath(model, output, true);
-  return output.str();
+  return output.str().str();
 }
 
 static std::shared_ptr<spdlog::sinks::sink> stdoutSink() {

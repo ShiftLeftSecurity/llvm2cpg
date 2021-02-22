@@ -19,6 +19,9 @@ static size_t getTypeArity(const llvm::Type *type) {
   case llvm::Type::MetadataTyID:
   case llvm::Type::X86_MMXTyID:
   case llvm::Type::TokenTyID:
+#if LLVM_VERSION_MAJOR >= 11
+  case llvm::Type::BFloatTyID:
+#endif
     return 0;
 
   case llvm::Type::IntegerTyID:
@@ -27,7 +30,12 @@ static size_t getTypeArity(const llvm::Type *type) {
     return 2;
   case llvm::Type::PointerTyID:
     return 1;
+#if LLVM_VERSION_MAJOR <= 10
   case llvm::Type::VectorTyID:
+#else
+  case llvm::Type::FixedVectorTyID:
+  case llvm::Type::ScalableVectorTyID:
+#endif
     return 3;
 
   case llvm::Type::FunctionTyID:
@@ -81,6 +89,9 @@ constructTypeVector(const llvm::Type *topType,
     case llvm::Type::MetadataTyID:
     case llvm::Type::X86_MMXTyID:
     case llvm::Type::TokenTyID:
+#if LLVM_VERSION_MAJOR >= 11
+    case llvm::Type::BFloatTyID:
+#endif
       continue;
     case llvm::Type::IntegerTyID: {
       result.push_back(type->getIntegerBitWidth());
@@ -138,11 +149,21 @@ constructTypeVector(const llvm::Type *topType,
     case llvm::Type::PointerTyID: {
       state.push(type->getPointerElementType());
     } break;
+#if LLVM_VERSION_MAJOR <= 10
     case llvm::Type::VectorTyID: {
       result.push_back(type->getVectorNumElements());
       result.push_back(type->getVectorIsScalable());
       state.push(type->getVectorElementType());
     } break;
+#else
+    case llvm::Type::FixedVectorTyID:
+    case llvm::Type::ScalableVectorTyID: {
+      auto vectorType = llvm::dyn_cast<llvm::VectorType>(type);
+      result.push_back(vectorType->getElementCount().Min);
+      result.push_back(vectorType->getElementCount().Scalable);
+      state.push(vectorType->getElementType());
+    } break;
+#endif
     }
   }
 
@@ -158,7 +179,7 @@ std::string llvm_ext::getCanonicalName(const llvm::StructType *type) {
   name.consume_front("class.");
   name.consume_front("struct.");
   name.consume_front("union.");
-  return name.substr(0, name.find_first_of('.', 0));
+  return name.substr(0, name.find_first_of('.', 0)).str();
 }
 
 static size_t
