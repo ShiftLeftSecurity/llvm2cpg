@@ -31,8 +31,8 @@ llvm::cl::opt<bool> SimplifyBC("simplify", llvm::cl::Optional,
                                llvm::cl::cat(BitcodeTransformerCategory), llvm::cl::init(false));
 
 static std::string getOutputFilename(const std::string &input) {
-  std::string inputFilename = llvm::sys::path::stem(input);
-  std::string extension = llvm::sys::path::extension(input);
+  std::string inputFilename = llvm::sys::path::stem(input).str();
+  std::string extension = llvm::sys::path::extension(input).str();
   std::string outputDir = OutputDirectory.getValue();
   std::string outputFilename = outputDir.append(llvm::sys::path::get_separator().str())
                                    .append(inputFilename)

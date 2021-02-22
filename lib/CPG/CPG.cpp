@@ -24,7 +24,7 @@ std::vector<std::string> CPG::detectLanguages() const {
         break;
       }
       if (function.hasName()) {
-        ManglingResult manglingResult = demangleString(function.getName());
+        ManglingResult manglingResult = demangleString(function.getName().str());
         switch (manglingResult.type) {
         case ManglingType::Unknown:
         case ManglingType::CXX:

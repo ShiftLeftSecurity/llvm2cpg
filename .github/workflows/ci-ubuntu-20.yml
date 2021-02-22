@@ -1,7 +1,7 @@
 name: CI Ubuntu 20.04
 
 env:
-  LLVM_RELEASE: "9.0"
+  LLVM_RELEASE: "11.0"
   OCULAR_ORG_ID: ${{ secrets.OCULAR_ORG_ID }}
   OCULAR_ORG_PASSWORD: ${{ secrets.OCULAR_ORG_PASSWORD }}
 
@@ -20,7 +20,7 @@ jobs:
     container: ubuntu:20.04
     strategy:
       matrix:
-        LLVM_VERSION: ["9.0"]
+        LLVM_VERSION: ["11.0"]
 
     steps:
       - name: Install software

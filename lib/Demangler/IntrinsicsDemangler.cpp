@@ -100,6 +100,6 @@ std::string llvm2cpg::intrinsicName(const llvm::Function *function) {
   case llvm::Intrinsic::vastart:
     return "va_start";
   default:
-    return function->getName();
+    return function->getName().str();
   }
 }

@@ -5,7 +5,7 @@
 using namespace llvm2cpg;
 
 static DemangledName demangleIntrinsic(const llvm::Function *function) {
-  return DemangledName{ .fullName = function->getName(), .name = intrinsicName(function) };
+  return DemangledName{ .fullName = function->getName().str(), .name = intrinsicName(function) };
 }
 
 const DemangledName &CPGDemangler::demangleFunctionName(const llvm::Function *function) {
@@ -13,7 +13,7 @@ const DemangledName &CPGDemangler::demangleFunctionName(const llvm::Function *fu
     if (function->isIntrinsic()) {
       cache[function] = demangleIntrinsic(function);
     } else {
-      std::string mangledName = function->getName();
+      std::string mangledName = function->getName().str();
       cache[function] = DemangledName{ .fullName = demangler.extractFullName(mangledName),
                                        .name = demangler.extractName(mangledName) };
     }

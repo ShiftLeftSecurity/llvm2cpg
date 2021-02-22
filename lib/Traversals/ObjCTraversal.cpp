@@ -165,7 +165,7 @@ static std::string extractName(const llvm::ConstantStruct *objcObject, unsigned 
   nameConstExpr->deleteValue();
 
   auto *nameData = llvm::cast<llvm::ConstantDataArray>(nameDecl->getInitializer());
-  return nameData->getAsCString();
+  return nameData->getAsCString().str();
 }
 
 std::string ObjCTraversal::objcClassName(const llvm::ConstantStruct *objcClass) {
@@ -205,7 +205,7 @@ static std::vector<ObjCMethod> objcMethods(llvm::Constant *methodsListSlot) {
     auto *methodNameDecl = llvm::cast<llvm::GlobalVariable>(methodNameGEP->getOperand(0));
     assert(methodNameDecl->hasInitializer());
     auto *methodNameData = llvm::cast<llvm::ConstantDataArray>(methodNameDecl->getInitializer());
-    std::string methodName = methodNameData->getAsCString();
+    std::string methodName = methodNameData->getAsCString().str();
 
     auto *methodRefConstExpr = llvm::cast<llvm::ConstantExpr>(methodStruct->getAggregateElement(2));
     auto *methodRefCast = llvm::cast<llvm::BitCastInst>(methodRefConstExpr->getAsInstruction());
@@ -301,7 +301,7 @@ ObjCClassDefinition *ObjCTraversal::objcClassFromGlobalObject(const llvm::Global
     className = objcClassName(definitionRO);
   } else {
     size_t prefix = metaclass ? strlen(ObjCMetaclassPrefix) : strlen(ObjCClassPrefix);
-    className = variable->getName().substr(prefix);
+    className = variable->getName().substr(prefix).str();
   }
 
   ownedClassDefinitions.emplace_back(new ObjCClassDefinition(className, metaclass, definition));

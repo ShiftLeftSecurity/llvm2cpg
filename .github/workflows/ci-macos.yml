@@ -1,7 +1,7 @@
 name: CI macOS
 
 env:
-  LLVM_RELEASE: "9.0"
+  LLVM_RELEASE: "11.0"
   OCULAR_ORG_ID: ${{ secrets.OCULAR_ORG_ID }}
   OCULAR_ORG_PASSWORD: ${{ secrets.OCULAR_ORG_PASSWORD }}
 
@@ -19,7 +19,7 @@ jobs:
     runs-on: macOS-latest
     strategy:
       matrix:
-        LLVM_VERSION: ["9.0"]
+        LLVM_VERSION: ["9.0", "10.0", "11.0"]
 
     steps:
       - uses: actions/checkout@v1

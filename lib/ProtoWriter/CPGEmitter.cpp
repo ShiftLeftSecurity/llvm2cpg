@@ -336,8 +336,15 @@ CPGProtoNode *CPGEmitter::visitShuffleVectorInst(llvm::ShuffleVectorInst &instru
 CPGProtoNode *CPGEmitter::emitShuffleVector(llvm::ShuffleVectorInst *instruction) {
   CPGProtoNode *vector1 = emitRefOrConstant(instruction->getOperand(0));
   CPGProtoNode *vector2 = emitRefOrConstant(instruction->getOperand(1));
-  CPGProtoNode *mask = emitRefOrConstant(instruction->getOperand(2));
-  std::vector<CPGProtoNode *> children({ vector1, vector2, mask });
+  llvm::Value *mask =
+#if LLVM_VERSION_MAJOR <= 10
+      instruction->getOperand(2);
+#else
+      instruction->getShuffleMaskForBitcode();
+#endif
+  CPGProtoNode *maskNode = emitRefOrConstant(mask);
+  std::vector<CPGProtoNode *> children({ vector1, vector2, maskNode });
+
   return resolveConnections(emitGenericOp("<operator>.shufflevector",
                                           pseudoCall("shufflevector", children),
                                           getTypeName(instruction->getType()),
@@ -399,7 +406,7 @@ CPGProtoNode *CPGEmitter::emitMethodNode(const CPGMethod &method) {
     methodNode->setLineNumber(sub->getLine());
   }
   if (sub != nullptr && !sub->getName().empty()) {
-    methodNode->setName(sub->getName());
+    methodNode->setName(sub->getName().str());
   } else {
     methodNode->setName(name.name);
   }
@@ -479,8 +486,8 @@ CPGProtoNode *CPGEmitter::emitRefOrConstant(llvm::Value *value) {
   if (isLocal(value) || isGlobal(value)) {
     CPGProtoNode *valueRef = builder.identifierNode();
     (*valueRef) //
-        .setName(value->getName())
-        .setCode(value->getName())
+        .setName(value->getName().str())
+        .setCode(value->getName().str())
         .setTypeFullName(getTypeName(value->getType()));
 
     if (!isGlobal(value)) {
@@ -569,7 +576,7 @@ CPGProtoNode *CPGEmitter::emitConstant(llvm::Value *value) {
     if (cda->isCString()) {
       llvm::StringRef str = cda->getAsCString();
       if (llvm::json::isUTF8(str, nullptr)) {
-        literalNode->setCode(str);
+        literalNode->setCode(str.str());
       } else {
         std::stringstream stream;
         for (unsigned i = 0; i < cda->getNumElements() - 1; i++) {
@@ -659,8 +666,8 @@ CPGProtoNode *CPGEmitter::emitConstantExpr(llvm::ConstantExpr *constantExpr) {
 CPGProtoNode *CPGEmitter::emitLocalVariable(const llvm::Value *variable, size_t order) {
   CPGProtoNode *local = builder.localVariableNode();
   (*local) //
-      .setName(variable->getName())
-      .setCode(variable->getName())
+      .setName(variable->getName().str())
+      .setCode(variable->getName().str())
       .setTypeFullName(getTypeName(variable->getType()))
       .setOrder(order);
   return local;
@@ -669,8 +676,8 @@ CPGProtoNode *CPGEmitter::emitLocalVariable(const llvm::Value *variable, size_t 
 CPGProtoNode *CPGEmitter::emitFunctionArgument(const llvm::Value *argument, size_t order) {
   CPGProtoNode *parameterInNode = builder.methodParameterInNode();
   (*parameterInNode) //
-      .setName(argument->getName())
-      .setCode(argument->getName())
+      .setName(argument->getName().str())
+      .setCode(argument->getName().str())
       .setTypeFullName(getTypeName(argument->getType()))
       .setEvaluationStrategy("BY_VALUE")
       .setOrder(order);
@@ -710,7 +717,7 @@ CPGProtoNode *CPGEmitter::emitDereference(llvm::LoadInst *load) {
     if (llvm::MDNode *md = load->getMetadata("shiftleft.objc_type_hint")) {
       assert(md->getNumOperands() == 1);
       auto *typeHint = llvm::cast<llvm::MDString>(md->getOperand(0).get());
-      dereference->setDynamicTypeHintFullName(typeHint->getString());
+      dereference->setDynamicTypeHintFullName(typeHint->getString().str());
     }
   }
   return resolveConnections(dereference, { pointer });
@@ -1119,7 +1126,7 @@ static std::string objcSelectorName(llvm::Value *selector) {
         }
         if (auto constSelectorString = llvm::dyn_cast<llvm::ConstantDataArray>(constSelector)) {
           if (constSelectorString->isCString()) {
-            return constSelectorString->getAsCString();
+            return constSelectorString->getAsCString().str();
           }
         }
       }
@@ -1207,7 +1214,7 @@ CPGProtoNode *CPGEmitter::emitCastFunctionCall(llvm::CallBase *instruction) {
   assert(function);
 
   CPGProtoNode *callNode = builder.functionCallNode();
-  std::string name = function->getName();
+  std::string name = function->getName().str();
   (*callNode) //
       .setName(name)
       .setTypeFullName(getTypeName(instruction->getType()))

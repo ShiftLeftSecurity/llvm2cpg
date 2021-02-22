@@ -2,10 +2,11 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Type.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llvm2cpg/LLVMExt/TypeEquality.h>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 struct BasicTestInput {
   llvm::Type *type_0;
@@ -239,12 +240,8 @@ TEST(ComplexTypeEquality, recursiveStructReference) {
 
 TEST(ComplexTypeEquality, canonicalNames) {
   std::unordered_map<std::string, std::string> inputs{
-      { "foo", "foo" },
-      { "bar", "bar" },
-      { "foo.0", "foo" },
-      { "struct.foo", "foo" },
-      { "class.foo", "foo" },
-      { "union.foo", "foo" },
+    { "foo", "foo" },        { "bar", "bar" },       { "foo.0", "foo" },
+    { "struct.foo", "foo" }, { "class.foo", "foo" }, { "union.foo", "foo" },
   };
 
   llvm::LLVMContext context;
@@ -299,11 +296,15 @@ TEST(ComplexTypeEquality, nestedOpaqueStructs) {
   ASSERT_TRUE(opaque_2->isOpaque());
   ASSERT_TRUE(opaque_3->isOpaque());
 
-  llvm::StructType *wrapper_0 = llvm::StructType::create(context_0, { llvm::PointerType::get(opaque_0, 0) });
-  llvm::StructType *wrapper_1 = llvm::StructType::create(context_0, { llvm::PointerType::get(opaque_1, 0) });
+  llvm::StructType *wrapper_0 =
+      llvm::StructType::create(context_0, { llvm::PointerType::get(opaque_0, 0) });
+  llvm::StructType *wrapper_1 =
+      llvm::StructType::create(context_0, { llvm::PointerType::get(opaque_1, 0) });
 
-  llvm::StructType *wrapper_2 = llvm::StructType::create(context_1, { llvm::PointerType::get(opaque_2, 0) });
-  llvm::StructType *wrapper_3 = llvm::StructType::create(context_1, { llvm::PointerType::get(opaque_3, 0) });
+  llvm::StructType *wrapper_2 =
+      llvm::StructType::create(context_1, { llvm::PointerType::get(opaque_2, 0) });
+  llvm::StructType *wrapper_3 =
+      llvm::StructType::create(context_1, { llvm::PointerType::get(opaque_3, 0) });
 
   ASSERT_TRUE(comparator.typesEqual(wrapper_0, wrapper_2));
   ASSERT_TRUE(comparator.typesEqual(wrapper_0, wrapper_3));
