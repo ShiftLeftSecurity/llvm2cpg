@@ -1,3 +1,7 @@
+## [0.8.0] - 27 Feb 2021
+
+- LLVM 10/11 support
+
 ## [0.7.0] - 05 May 2020
 
 - Added ObjC type policies for official SDKs (macOS, iPhoneOS, WatchOS, AppleTVOS, + simulators)
